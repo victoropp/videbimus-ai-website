@@ -18,6 +18,13 @@ dist/
 .env.production
 .env.local
 .env.development.local
+
+# SSH Keys and Secrets
+github_actions_key
+github_actions_key.pub
+SECRETS_FOR_GITHUB.txt
+*.key
+*.pem
 .env.test.local
 .env.production.local
 
