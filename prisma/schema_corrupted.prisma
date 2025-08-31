@@ -1,0 +1,1856 @@
+// This is your Prisma schema file,
+// learn more about it in the docs: https://pris.ly/d/prisma-schema
+
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "postgresql"
+  url      = env("DATABASE_URL")
+}
+
+// NextAuth.js required models
+model Account {
+  id                String  @id @default(cuid())
+  userId            String
+  type              String
+  provider          String
+  providerAccountId String
+  refresh_token     String?
+  access_token      String?
+  expires_at        Int?
+  token_type        String?
+  scope             String?
+  id_token          String?
+  session_state     String?
+
+  user User @relation(fields: [userId], references: [id], onDelete: Cascade)
+
+  @@unique([provider, providerAccountId])
+}
+
+model Session {
+  id           String   @id @default(cuid())
+  sessionToken String   @unique
+  userId       String
+  expires      DateTime
+  user         User     @relation(fields: [userId], references: [id], onDelete: Cascade)
+}
+
+model VerificationToken {
+  identifier String
+  token      String   @unique
+  expires    DateTime
+
+  @@unique([identifier, token])
+}
+
+// User management
+model User {
+  id            String          @id @default(cuid())
+  name          String?
+  email         String          @unique
+  emailVerified DateTime?
+  image         String?
+  password      String?
+  role          UserRole        @default(CLIENT)
+  isActive      Boolean         @default(true)
+  createdAt     DateTime        @default(now())
+  updatedAt     DateTime        @updatedAt
+  lastLoginAt   DateTime?
+
+  // Stripe customer information
+  stripeCustomerId String?   @unique
+  timezone        String?
+  currency        String?    @default("USD")
+
+  // Relations
+  accounts      Account[]
+  sessions      Session[]
+  projects      Project[]
+  consultations Consultation[]
+  blogPosts     BlogPost[]
+  blogRevisions BlogRevision[]
+  analytics     Analytics[]
+  newsletters   Newsletter[]
+  contacts      Contact[]
+  
+  // Collaboration relations
+  createdRooms        Room[]             @relation
+  organizedMeetings   Meeting[]          @relation("MeetingOrganizer")
+  meetingParticipants MeetingParticipant[] @relation("MeetingParticipants")
+  roomParticipants    RoomParticipant[]  @relation("RoomParticipants")
+  createdWhiteboards  Whiteboard[]       @relation("WhiteboardCreator")
+  createdDocuments    Document[]         @relation("DocumentCreator")
+  lockedDocuments     Document[]         @relation("DocumentLocker")
+  documentVersions    DocumentVersion[]  @relation("DocumentVersionCreator")
+  sentMessages        ChatMessage[]      @relation("ChatMessageSender")
+  notifications       Notification[]     @relation("UserNotifications")
+  presence            UserPresence?      @relation("UserPresence")
+  sharedFiles         SharedFile[]       @relation("SharedFileUploader")
+  
+  // Content and business relations
+  caseStudies         CaseStudyEntry[]
+  invoices            Invoice[]
+  activities          UserActivity[]
+  uploads             FileUpload[]
+  backups             DataBackup[]
+  apiKeys             APIKey[]
+  
+  // Payment relations
+  customers           Customer[]
+  subscriptions       Subscription[]
+  paymentMethods      PaymentMethod[]
+  paymentsInitiated   Payment[]      @relation("PaymentInitiator")
+  usageLogs           UsageLog[]
+  credits             Credit[]
+  billingAddresses    BillingAddress[]
+  refunds             Refund[]
+  disputes            Dispute[]
+
+  @@map("users")
+}
+
+enum UserRole {
+  ADMIN
+  CLIENT
+  CONSULTANT
+  GUEST
+}
+
+// Project management
+model Project {
+  id          String        @id @default(cuid())
+  title       String
+  description String?
+  status      ProjectStatus @default(PLANNING)
+  priority    Priority      @default(MEDIUM)
+  budget      Decimal?
+  startDate   DateTime?
+  endDate     DateTime?
+  userId      String
+  createdAt   DateTime      @default(now())
+  updatedAt   DateTime      @updatedAt
+
+  // Relations
+  user          User           @relation(fields: [userId], references: [id], onDelete: Cascade)
+  consultations Consultation[]
+  files         ProjectFile[]
+  tasks         Task[]
+  rooms         Room[]
+  invoices      Invoice[]
+
+  @@map("projects")
+}
+
+enum ProjectStatus {
+  PLANNING
+  IN_PROGRESS
+  REVIEW
+  COMPLETED
+  CANCELLED
+}
+
+enum Priority {
+  LOW
+  MEDIUM
+  HIGH
+  URGENT
+}
+
+// Consultation management
+model Consultation {
+  id          String            @id @default(cuid())
+  title       String
+  description String?
+  status      ConsultationStatus @default(SCHEDULED)
+  type        ConsultationType
+  duration    Int?              // Duration in minutes
+  scheduledAt DateTime?
+  completedAt DateTime?
+  notes       String?
+  userId      String
+  projectId   String?
+  createdAt   DateTime          @default(now())
+  updatedAt   DateTime          @updatedAt
+
+  // Relations
+  user    User     @relation(fields: [userId], references: [id], onDelete: Cascade)
+  project Project? @relation(fields: [projectId], references: [id], onDelete: SetNull)
+  files   ConsultationFile[]
+
+  @@map("consultations")
+}
+
+enum ConsultationStatus {
+  SCHEDULED
+  IN_PROGRESS
+  COMPLETED
+  CANCELLED
+  RESCHEDULED
+}
+
+enum ConsultationType {
+  DISCOVERY
+  STRATEGY
+  TECHNICAL
+  REVIEW
+  TRAINING
+  FOLLOW_UP
+}
+
+// Task management
+model Task {
+  id          String     @id @default(cuid())
+  title       String
+  description String?
+  status      TaskStatus @default(TODO)
+  priority    Priority   @default(MEDIUM)
+  dueDate     DateTime?
+  completedAt DateTime?
+  projectId   String
+  createdAt   DateTime   @default(now())
+  updatedAt   DateTime   @updatedAt
+
+  // Relations
+  project Project @relation(fields: [projectId], references: [id], onDelete: Cascade)
+
+  @@map("tasks")
+}
+
+enum TaskStatus {
+  TODO
+  IN_PROGRESS
+  REVIEW
+  COMPLETED
+  CANCELLED
+}
+
+// File management
+model ProjectFile {
+  id        String   @id @default(cuid())
+  filename  String
+  originalName String
+  mimeType  String
+  size      Int
+  url       String
+  projectId String
+  createdAt DateTime @default(now())
+
+  // Relations
+  project Project @relation(fields: [projectId], references: [id], onDelete: Cascade)
+
+  @@map("project_files")
+}
+
+model ConsultationFile {
+  id             String   @id @default(cuid())
+  filename       String
+  originalName   String
+  mimeType       String
+  size           Int
+  url            String
+  consultationId String
+  createdAt      DateTime @default(now())
+
+  // Relations
+  consultation Consultation @relation(fields: [consultationId], references: [id], onDelete: Cascade)
+
+  @@map("consultation_files")
+}
+
+// Contact form submissions
+model Contact {
+  id          String        @id @default(cuid())
+  name        String
+  email       String
+  company     String?
+  phone       String?
+  subject     String
+  message     String
+  status      ContactStatus @default(NEW)
+  priority    Priority      @default(MEDIUM)
+  userId      String?       // Optional - if user is logged in
+  createdAt   DateTime      @default(now())
+  updatedAt   DateTime      @updatedAt
+  respondedAt DateTime?
+
+  // Relations
+  user User? @relation(fields: [userId], references: [id], onDelete: SetNull)
+
+  @@map("contacts")
+}
+
+enum ContactStatus {
+  NEW
+  IN_PROGRESS
+  RESPONDED
+  CLOSED
+  SPAM
+}
+
+// Newsletter subscriptions
+model Newsletter {
+  id          String            @id @default(cuid())
+  email       String            @unique
+  status      NewsletterStatus  @default(SUBSCRIBED)
+  userId      String?           // Optional - if user is logged in
+  preferences Json?             // Store subscription preferences
+  createdAt   DateTime          @default(now())
+  updatedAt   DateTime          @updatedAt
+
+  // Relations
+  user User? @relation(fields: [userId], references: [id], onDelete: SetNull)
+
+  @@map("newsletters")
+}
+
+enum NewsletterStatus {
+  SUBSCRIBED
+  UNSUBSCRIBED
+  BOUNCED
+  COMPLAINED
+}
+
+// Blog and content management
+model BlogPost {
+  id          String      @id @default(cuid())
+  title       String
+  slug        String      @unique
+  excerpt     String?
+  content     String      @db.Text
+  metaContent String?     @db.Text // Rich content metadata
+  status      PostStatus  @default(DRAFT)
+  published   Boolean     @default(false)
+  publishedAt DateTime?
+  featured    Boolean     @default(false)
+  authorId    String
+  categoryId  String?
+  tags        BlogTag[]
+  seoTitle    String?
+  seoDescription String?
+  seoKeywords String[]
+  readTime    Int?        // Estimated read time in minutes
+  views       Int         @default(0)
+  likes       Int         @default(0)
+  shares      Int         @default(0)
+  featuredImage String?   // Main featured image URL
+  images      BlogImage[] // Associated images
+  createdAt   DateTime    @default(now())
+  updatedAt   DateTime    @updatedAt
+
+  // Relations
+  author    User         @relation(fields: [authorId], references: [id], onDelete: Cascade)
+  category  Category?    @relation(fields: [categoryId], references: [id], onDelete: SetNull)
+  comments  Comment[]
+  revisions BlogRevision[]
+
+  @@index([status, published])
+  @@index([publishedAt])
+  @@index([categoryId])
+  @@index([authorId])
+  @@fulltext([title, excerpt, content])
+  @@map("blog_posts")
+}
+
+enum PostStatus {
+  DRAFT
+  PUBLISHED
+  SCHEDULED
+  ARCHIVED
+  DELETED
+}
+
+model Category {
+  id          String     @id @default(cuid())
+  name        String     @unique
+  slug        String     @unique
+  description String?
+  color       String?
+  parentId    String?    // For hierarchical categories
+  orderIndex  Int        @default(0)
+  isActive    Boolean    @default(true)
+  seoTitle    String?
+  seoDescription String?
+  createdAt   DateTime   @default(now())
+  updatedAt   DateTime   @updatedAt
+
+  // Relations
+  parent    Category?   @relation("CategoryHierarchy", fields: [parentId], references: [id])
+  children  Category[]  @relation("CategoryHierarchy")
+  blogPosts BlogPost[]
+
+  @@map("categories")
+}
+
+model BlogTag {
+  id          String     @id @default(cuid())
+  name        String     @unique
+  slug        String     @unique
+  description String?
+  color       String?
+  createdAt   DateTime   @default(now())
+  updatedAt   DateTime   @updatedAt
+
+  // Relations
+  blogPosts BlogPost[]
+
+  @@map("blog_tags")
+}
+
+model BlogImage {
+  id          String    @id @default(cuid())
+  filename    String
+  originalName String
+  alt         String?
+  caption     String?
+  url         String
+  width       Int?
+  height      Int?
+  size        Int       // File size in bytes
+  mimeType    String
+  blogPostId  String?
+  createdAt   DateTime  @default(now())
+  updatedAt   DateTime  @updatedAt
+
+  // Relations
+  blogPost BlogPost? @relation(fields: [blogPostId], references: [id], onDelete: SetNull)
+
+  @@map("blog_images")
+}
+
+model Comment {
+  id          String        @id @default(cuid())
+  content     String
+  authorName  String
+  authorEmail String
+  authorUrl   String?
+  isApproved  Boolean       @default(false)
+  parentId    String?       // For nested comments
+  blogPostId  String
+  createdAt   DateTime      @default(now())
+  updatedAt   DateTime      @updatedAt
+
+  // Relations
+  blogPost BlogPost  @relation(fields: [blogPostId], references: [id], onDelete: Cascade)
+  parent   Comment?  @relation("CommentReplies", fields: [parentId], references: [id])
+  replies  Comment[] @relation("CommentReplies")
+
+  @@index([blogPostId])
+  @@index([isApproved])
+  @@map("comments")
+}
+
+model BlogRevision {
+  id          String    @id @default(cuid())
+  title       String
+  excerpt     String?
+  content     String    @db.Text
+  authorId    String
+  blogPostId  String
+  version     Int
+  changeNote  String?
+  createdAt   DateTime  @default(now())
+
+  // Relations
+  author   User     @relation(fields: [authorId], references: [id], onDelete: Cascade)
+  blogPost BlogPost @relation(fields: [blogPostId], references: [id], onDelete: Cascade)
+
+  @@unique([blogPostId, version])
+  @@map("blog_revisions")
+}
+
+model EmailSubscription {
+  id          String              @id @default(cuid())
+  email       String              @unique
+  status      SubscriptionStatus  @default(ACTIVE)
+  tags        String[]            // Interest tags
+  preferences Json?               // Email preferences
+  verifiedAt  DateTime?
+  unsubscribedAt DateTime?
+  createdAt   DateTime            @default(now())
+  updatedAt   DateTime            @updatedAt
+
+  @@map("email_subscriptions")
+}
+
+enum SubscriptionStatus {
+  ACTIVE
+  UNSUBSCRIBED
+  BOUNCED
+  COMPLAINED
+}
+
+// Analytics and tracking
+model Analytics {
+  id          String      @id @default(cuid())
+  userId      String?     // Optional - for logged in users
+  sessionId   String?     // Session tracking
+  event       String      // Event name (page_view, click, form_submit, etc.)
+  page        String?     // Page URL
+  referrer    String?     // Referrer URL
+  userAgent   String?     // User agent string
+  ipAddress   String?     // IP address (for geo tracking)
+  country     String?     // Country code
+  city        String?     // City name
+  device      String?     // Device type (mobile, desktop, tablet)
+  browser     String?     // Browser name
+  os          String?     // Operating system
+  properties  Json?       // Additional event properties
+  createdAt   DateTime    @default(now())
+
+  // Relations
+  user User? @relation(fields: [userId], references: [id], onDelete: SetNull)
+
+  @@index([event])
+  @@index([userId])
+  @@index([createdAt])
+  @@map("analytics")
+}
+
+// System settings and configuration
+model Setting {
+  id        String   @id @default(cuid())
+  key       String   @unique
+  value     String
+  category  String   @default("general")
+  isPublic  Boolean  @default(false)
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  @@map("settings")
+}
+
+// Rate limiting for API protection
+model RateLimit {
+  id        String   @id @default(cuid())
+  identifier String  // IP address or user ID
+  key       String   // API endpoint or action
+  requests  Int      @default(1)
+  windowStart DateTime @default(now())
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  @@unique([identifier, key])
+  @@index([windowStart])
+  @@map("rate_limits")
+}
+
+// Collaboration Models
+model Room {
+  id          String     @id @default(cuid())
+  name        String
+  description String?
+  type        RoomType   @default(CONSULTATION)
+  isActive    Boolean    @default(true)
+  maxParticipants Int    @default(10)
+  dailyRoomName String?  @unique // Daily.co room name
+  dailyRoomUrl  String?  // Daily.co room URL
+  createdBy   String
+  projectId   String?
+  createdAt   DateTime   @default(now())
+  updatedAt   DateTime   @updatedAt
+
+  // Relations
+  creator       User           @relation(fields: [createdBy], references: [id], onDelete: Cascade)
+  project       Project?       @relation(fields: [projectId], references: [id], onDelete: SetNull)
+  meetings      Meeting[]
+  participants  RoomParticipant[]
+  whiteboards   Whiteboard[]
+  documents     Document[]
+  chatMessages  ChatMessage[]
+  sharedFiles   SharedFile[]
+
+  @@map("rooms")
+}
+
+enum RoomType {
+  CONSULTATION
+  COLLABORATION
+  TRAINING
+  PRESENTATION
+  MEETING
+}
+
+model Meeting {
+  id           String        @id @default(cuid())
+  title        String
+  description  String?
+  scheduledAt  DateTime
+  startedAt    DateTime?
+  endedAt      DateTime?
+  duration     Int?          // Duration in minutes
+  status       MeetingStatus @default(SCHEDULED)
+  isRecording  Boolean       @default(false)
+  recordingUrl String?
+  agenda       Json?         // Meeting agenda items
+  notes        String?
+  actionItems  Json?         // Action items from meeting
+  roomId       String
+  organizerId  String
+  createdAt    DateTime      @default(now())
+  updatedAt    DateTime      @updatedAt
+
+  // Relations
+  room          Room             @relation(fields: [roomId], references: [id], onDelete: Cascade)
+  organizer     User             @relation("MeetingOrganizer", fields: [organizerId], references: [id], onDelete: Cascade)
+  participants  MeetingParticipant[]
+  invites       MeetingInvite[]
+
+  @@map("meetings")
+}
+
+enum MeetingStatus {
+  SCHEDULED
+  STARTED
+  ENDED
+  CANCELLED
+  RESCHEDULED
+}
+
+model MeetingParticipant {
+  id        String   @id @default(cuid())
+  meetingId String
+  userId    String
+  joinedAt  DateTime?
+  leftAt    DateTime?
+  role      ParticipantRole @default(PARTICIPANT)
+  createdAt DateTime @default(now())
+
+  // Relations
+  meeting Meeting @relation(fields: [meetingId], references: [id], onDelete: Cascade)
+  user    User    @relation("MeetingParticipants", fields: [userId], references: [id], onDelete: Cascade)
+
+  @@unique([meetingId, userId])
+  @@map("meeting_participants")
+}
+
+model MeetingInvite {
+  id        String      @id @default(cuid())
+  meetingId String
+  email     String
+  status    InviteStatus @default(PENDING)
+  sentAt    DateTime?
+  respondedAt DateTime?
+  createdAt DateTime    @default(now())
+
+  // Relations
+  meeting Meeting @relation(fields: [meetingId], references: [id], onDelete: Cascade)
+
+  @@unique([meetingId, email])
+  @@map("meeting_invites")
+}
+
+enum InviteStatus {
+  PENDING
+  ACCEPTED
+  DECLINED
+  CANCELLED
+}
+
+model RoomParticipant {
+  id       String          @id @default(cuid())
+  roomId   String
+  userId   String
+  role     ParticipantRole @default(PARTICIPANT)
+  joinedAt DateTime        @default(now())
+  leftAt   DateTime?
+  isOnline Boolean         @default(false)
+
+  // Relations
+  room Room @relation(fields: [roomId], references: [id], onDelete: Cascade)
+  user User @relation("RoomParticipants", fields: [userId], references: [id], onDelete: Cascade)
+
+  @@unique([roomId, userId])
+  @@map("room_participants")
+}
+
+enum ParticipantRole {
+  HOST
+  MODERATOR
+  PARTICIPANT
+  OBSERVER
+}
+
+model Whiteboard {
+  id          String   @id @default(cuid())
+  name        String
+  data        Json     // Fabric.js canvas data
+  roomId      String
+  createdBy   String
+  isActive    Boolean  @default(true)
+  version     Int      @default(1)
+  createdAt   DateTime @default(now())
+  updatedAt   DateTime @updatedAt
+
+  // Relations
+  room    Room @relation(fields: [roomId], references: [id], onDelete: Cascade)
+  creator User @relation("WhiteboardCreator", fields: [createdBy], references: [id], onDelete: Cascade)
+
+  @@map("whiteboards")
+}
+
+model Document {
+  id          String       @id @default(cuid())
+  title       String
+  content     String       @default("")
+  language    String       @default("javascript")
+  type        DocumentType @default(CODE)
+  roomId      String
+  createdBy   String
+  isLocked    Boolean      @default(false)
+  lockedBy    String?
+  lockedAt    DateTime?
+  version     Int          @default(1)
+  createdAt   DateTime     @default(now())
+  updatedAt   DateTime     @updatedAt
+
+  // Relations
+  room      Room  @relation(fields: [roomId], references: [id], onDelete: Cascade)
+  creator   User  @relation("DocumentCreator", fields: [createdBy], references: [id], onDelete: Cascade)
+  lockedByUser User? @relation("DocumentLocker", fields: [lockedBy], references: [id], onDelete: SetNull)
+  versions  DocumentVersion[]
+
+  @@map("documents")
+}
+
+enum DocumentType {
+  CODE
+  TEXT
+  MARKDOWN
+  JSON
+  XML
+  HTML
+  CSS
+}
+
+model DocumentVersion {
+  id         String   @id @default(cuid())
+  documentId String
+  content    String
+  version    Int
+  createdBy  String
+  createdAt  DateTime @default(now())
+
+  // Relations
+  document Document @relation(fields: [documentId], references: [id], onDelete: Cascade)
+  creator  User     @relation("DocumentVersionCreator", fields: [createdBy], references: [id], onDelete: Cascade)
+
+  @@map("document_versions")
+}
+
+model ChatMessage {
+  id        String      @id @default(cuid())
+  content   String
+  type      MessageType @default(TEXT)
+  roomId    String
+  senderId  String
+  replyToId String?
+  isEdited  Boolean     @default(false)
+  reactions Json?       // Emoji reactions
+  createdAt DateTime    @default(now())
+  updatedAt DateTime    @updatedAt
+
+  // Relations
+  room     Room         @relation(fields: [roomId], references: [id], onDelete: Cascade)
+  sender   User         @relation("ChatMessageSender", fields: [senderId], references: [id], onDelete: Cascade)
+  replyTo  ChatMessage? @relation("MessageReply", fields: [replyToId], references: [id], onDelete: SetNull)
+  replies  ChatMessage[] @relation("MessageReply")
+  attachments MessageAttachment[]
+
+  @@map("chat_messages")
+}
+
+enum MessageType {
+  TEXT
+  FILE
+  IMAGE
+  CODE
+  SYSTEM
+}
+
+model MessageAttachment {
+  id        String   @id @default(cuid())
+  messageId String
+  filename  String
+  originalName String
+  mimeType  String
+  size      Int
+  url       String
+  createdAt DateTime @default(now())
+
+  // Relations
+  message ChatMessage @relation(fields: [messageId], references: [id], onDelete: Cascade)
+
+  @@map("message_attachments")
+}
+
+model Notification {
+  id        String           @id @default(cuid())
+  title     String
+  content   String
+  type      NotificationType
+  userId    String
+  isRead    Boolean          @default(false)
+  data      Json?            // Additional notification data
+  createdAt DateTime         @default(now())
+
+  // Relations
+  user User @relation("UserNotifications", fields: [userId], references: [id], onDelete: Cascade)
+
+  @@map("notifications")
+}
+
+enum NotificationType {
+  MEETING_INVITE
+  MEETING_STARTED
+  MEETING_ENDED
+  DOCUMENT_SHARED
+  MENTION
+  SYSTEM
+  PROJECT_UPDATE
+}
+
+// Extensions to existing User model for collaboration
+model UserPresence {
+  id         String   @id @default(cuid())
+  userId     String   @unique
+  isOnline   Boolean  @default(false)
+  lastSeen   DateTime @default(now())
+  status     String?  // Custom status message
+  activity   String?  // Current activity
+  roomId     String?  // Current room if in one
+  updatedAt  DateTime @updatedAt
+
+  // Relations
+  user User  @relation("UserPresence", fields: [userId], references: [id], onDelete: Cascade)
+
+  @@map("user_presence")
+}
+
+// File sharing model
+model SharedFile {
+  id           String   @id @default(cuid())
+  filename     String
+  originalName String
+  mimeType     String
+  size         Int
+  url          String
+  roomId       String
+  uploadedBy   String
+  downloadCount Int     @default(0)
+  createdAt    DateTime @default(now())
+
+  // Relations
+  room       Room @relation(fields: [roomId], references: [id], onDelete: Cascade)
+  uploader   User @relation("SharedFileUploader", fields: [uploadedBy], references: [id], onDelete: Cascade)
+
+  @@map("shared_files")
+}
+
+// Content Management Models
+model TeamMember {
+  id          String   @id @default(cuid())
+  name        String
+  role        String
+  bio         String?
+  image       String?
+  email       String?  @unique
+  linkedin    String?
+  twitter     String?
+  github      String?
+  isActive    Boolean  @default(true)
+  sortOrder   Int      @default(0)
+  skills      String[] // Array of skills
+  experience  Int?     // Years of experience
+  createdAt   DateTime @default(now())
+  updatedAt   DateTime @updatedAt
+
+  @@map("team_members")
+}
+
+model Testimonial {
+  id        String   @id @default(cuid())
+  name      String
+  role      String
+  company   String
+  content   String
+  image     String?
+  rating    Int      @default(5)
+  isActive  Boolean  @default(true)
+  sortOrder Int      @default(0)
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  @@map("testimonials")
+}
+
+model CaseStudyEntry {
+  id          String               @id @default(cuid())
+  title       String
+  description String
+  client      String
+  industry    String
+  image       String?
+  slug        String               @unique
+  tags        String[]
+  results     Json                 // Array of {metric: string, value: string}
+  content     String?              // Full case study content
+  status      CaseStudyStatus      @default(DRAFT)
+  featured    Boolean              @default(false)
+  sortOrder   Int                  @default(0)
+  seoTitle    String?
+  seoDescription String?
+  publishedAt DateTime?
+  authorId    String?
+  createdAt   DateTime             @default(now())
+  updatedAt   DateTime             @updatedAt
+
+  // Relations
+  author      User?                @relation(fields: [authorId], references: [id], onDelete: SetNull)
+  files       CaseStudyFile[]
+
+  @@map("case_studies")
+}
+
+enum CaseStudyStatus {
+  DRAFT
+  PUBLISHED
+  ARCHIVED
+}
+
+model CaseStudyFile {
+  id           String         @id @default(cuid())
+  filename     String
+  originalName String
+  mimeType     String
+  size         Int
+  url          String
+  description  String?
+  caseStudyId  String
+  createdAt    DateTime       @default(now())
+
+  // Relations
+  caseStudy    CaseStudyEntry @relation(fields: [caseStudyId], references: [id], onDelete: Cascade)
+
+  @@map("case_study_files")
+}
+
+// Service Management Models
+model ServiceOffering {
+  id          String        @id @default(cuid())
+  title       String
+  description String
+  price       String
+  duration    String
+  features    String[]      // Array of features
+  category    ServiceCategory
+  icon        String?
+  isActive    Boolean       @default(true)
+  sortOrder   Int           @default(0)
+  seoTitle    String?
+  seoDescription String?
+  createdAt   DateTime      @default(now())
+  updatedAt   DateTime      @updatedAt
+
+  @@map("service_offerings")
+}
+
+enum ServiceCategory {
+  DISCOVERY
+  IMPLEMENTATION
+  TRANSFORMATION
+  SPECIALIZED
+  CONSULTING
+}
+
+// Financial Models
+model Invoice {
+  id          String        @id @default(cuid())
+  number      String        @unique
+  amount      Decimal
+  tax         Decimal?
+  total       Decimal
+  currency    String        @default("USD")
+  status      InvoiceStatus @default(DRAFT)
+  issuedDate  DateTime?
+  dueDate     DateTime?
+  paidDate    DateTime?
+  description String?
+  notes       String?
+  projectId   String?
+  clientId    String
+  createdAt   DateTime      @default(now())
+  updatedAt   DateTime      @updatedAt
+
+  // Relations
+  client      User          @relation(fields: [clientId], references: [id], onDelete: Cascade)
+  project     Project?      @relation(fields: [projectId], references: [id], onDelete: SetNull)
+  items       InvoiceItem[]
+  payments    Payment[]
+
+  @@map("invoices")
+}
+
+enum InvoiceStatus {
+  DRAFT
+  SENT
+  PAID
+  OVERDUE
+  CANCELLED
+  REFUNDED
+}
+
+model InvoiceItem {
+  id          String  @id @default(cuid())
+  description String
+  quantity    Decimal @default(1)
+  rate        Decimal
+  amount      Decimal
+  invoiceId   String
+  createdAt   DateTime @default(now())
+
+  // Relations
+  invoice     Invoice @relation(fields: [invoiceId], references: [id], onDelete: Cascade)
+
+  @@map("invoice_items")
+}
+
+model Payment {
+  id            String        @id @default(cuid())
+  amount        Decimal
+  currency      String        @default("USD")
+  status        PaymentStatus @default(PENDING)
+  method        PaymentMethod
+  transactionId String?       @unique
+  reference     String?
+  notes         String?
+  processedAt   DateTime?
+  invoiceId     String
+  createdAt     DateTime      @default(now())
+  updatedAt     DateTime      @updatedAt
+
+  // Relations
+  invoice       Invoice       @relation(fields: [invoiceId], references: [id], onDelete: Cascade)
+
+  @@map("payments")
+}
+
+enum PaymentStatus {
+  PENDING
+  PROCESSING
+  COMPLETED
+  FAILED
+  CANCELLED
+  REFUNDED
+}
+
+enum PaymentMethod {
+  CREDIT_CARD
+  BANK_TRANSFER
+  PAYPAL
+  STRIPE
+  WIRE_TRANSFER
+  CHECK
+  CASH
+}
+
+// Metrics and Analytics Models
+model PerformanceMetric {
+  id        String            @id @default(cuid())
+  name      String
+  value     Json              // Flexible value storage
+  type      MetricType
+  category  String
+  unit      String?
+  timestamp DateTime          @default(now())
+  metadata  Json?             // Additional metric data
+  createdAt DateTime          @default(now())
+
+  @@index([name, timestamp])
+  @@map("performance_metrics")
+}
+
+enum MetricType {
+  COUNTER
+  GAUGE
+  HISTOGRAM
+  SUMMARY
+  RATE
+}
+
+model SystemHealth {
+  id          String   @id @default(cuid())
+  service     String   // Service name (api, database, redis, etc.)
+  status      String   // healthy, degraded, down
+  responseTime Int?    // Response time in ms
+  uptime      Float?   // Uptime percentage
+  lastCheck   DateTime @default(now())
+  metadata    Json?    // Additional health data
+  createdAt   DateTime @default(now())
+
+  @@index([service, lastCheck])
+  @@map("system_health")
+}
+
+// User Engagement Models
+model UserActivity {
+  id         String   @id @default(cuid())
+  userId     String?
+  sessionId  String?
+  action     String   // Action taken
+  resource   String?  // Resource accessed
+  metadata   Json?    // Additional activity data
+  ipAddress  String?
+  userAgent  String?
+  timestamp  DateTime @default(now())
+
+  // Relations
+  user       User?    @relation(fields: [userId], references: [id], onDelete: SetNull)
+
+  @@index([userId, timestamp])
+  @@index([action, timestamp])
+  @@map("user_activities")
+}
+
+// File Storage Models
+model FileUpload {
+  id          String     @id @default(cuid())
+  filename    String
+  originalName String
+  mimeType    String
+  size        Int
+  url         String     // Cloud storage URL
+  bucket      String?    // S3 bucket or storage container
+  key         String?    // Storage key/path
+  uploadedBy  String
+  metadata    Json?      // Additional file metadata
+  isPublic    Boolean    @default(false)
+  tags        String[]   // File tags for organization
+  createdAt   DateTime   @default(now())
+  updatedAt   DateTime   @updatedAt
+
+  // Relations
+  uploader    User       @relation(fields: [uploadedBy], references: [id], onDelete: Cascade)
+
+  @@index([uploadedBy])
+  @@index([mimeType])
+  @@map("file_uploads")
+}
+
+// Backup and Recovery Models
+model DataBackup {
+  id          String       @id @default(cuid())
+  name        String
+  type        BackupType
+  status      BackupStatus @default(PENDING)
+  size        Int?         // Backup size in bytes
+  location    String?      // Backup storage location
+  checksum    String?      // File integrity checksum
+  startedAt   DateTime     @default(now())
+  completedAt DateTime?
+  errorMessage String?
+  metadata    Json?
+  createdBy   String?
+  createdAt   DateTime     @default(now())
+
+  // Relations
+  creator     User?        @relation(fields: [createdBy], references: [id], onDelete: SetNull)
+
+  @@map("data_backups")
+}
+
+enum BackupType {
+  FULL
+  INCREMENTAL
+  DIFFERENTIAL
+  MANUAL
+}
+
+enum BackupStatus {
+  PENDING
+  IN_PROGRESS
+  COMPLETED
+  FAILED
+  CANCELLED
+}
+
+// Cache Management Models
+model CacheEntry {
+  id        String   @id @default(cuid())
+  key       String   @unique
+  value     Json     // Cached data
+  tags      String[] // Cache tags for invalidation
+  expiresAt DateTime?
+  hitCount  Int      @default(0)
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  @@index([expiresAt])
+  @@index([tags])
+  @@map("cache_entries")
+}
+
+// API and Integration Models
+model APIKey {
+  id          String     @id @default(cuid())
+  name        String
+  key         String     @unique
+  secret      String?
+  permissions String[]   // Array of permissions
+  isActive    Boolean    @default(true)
+  lastUsed    DateTime?
+  expiresAt   DateTime?
+  createdBy   String
+  createdAt   DateTime   @default(now())
+  updatedAt   DateTime   @updatedAt
+
+  // Relations
+  creator     User       @relation(fields: [createdBy], references: [id], onDelete: Cascade)
+
+  @@map("api_keys")
+}
+
+// =============================================
+// ENHANCED PAYMENT SYSTEM MODELS  
+// =============================================
+
+// Customer management for Stripe integration
+model Customer {
+  id                String   @id @default(cuid())
+  userId            String
+  stripeCustomerId  String   @unique
+  email            String
+  name             String?
+  phone            String?
+  defaultPaymentMethodId String?
+  defaultCurrency   String   @default("USD")
+  taxId            String?
+  vatId            String?
+  businessName     String?
+  metadata         Json?
+  createdAt        DateTime @default(now())
+  updatedAt        DateTime @updatedAt
+
+  // Relations
+  user             User            @relation(fields: [userId], references: [id], onDelete: Cascade)
+  subscriptions    Subscription[]
+  paymentMethods   PaymentMethod[]
+  invoices         Invoice[]
+  payments         Payment[]
+  billingAddress   BillingAddress?
+  usageLogs        UsageLog[]
+  credits          Credit[]
+
+  @@map("customers")
+}
+
+// Subscription management with 3-tier model
+model Subscription {
+  id                 String             @id @default(cuid())
+  userId             String
+  customerId         String
+  stripeSubscriptionId String           @unique
+  stripePriceId      String
+  status             SubscriptionStatus @default(ACTIVE)
+  plan               SubscriptionPlan
+  billingCycle       BillingCycle       @default(MONTHLY)
+  currentPeriodStart DateTime
+  currentPeriodEnd   DateTime
+  trialStart         DateTime?
+  trialEnd           DateTime?
+  canceledAt         DateTime?
+  cancelAtPeriodEnd  Boolean            @default(false)
+  quantity           Int                @default(1)
+  unitAmount         Decimal
+  currency           String             @default("USD")
+  metadata           Json?
+  createdAt          DateTime           @default(now())
+  updatedAt          DateTime           @updatedAt
+
+  // Relations
+  user               User               @relation(fields: [userId], references: [id], onDelete: Cascade)
+  customer           Customer           @relation(fields: [customerId], references: [id], onDelete: Cascade)
+  subscriptionItems  SubscriptionItem[]
+  invoices           Invoice[]
+  usageRecords       UsageRecord[]
+
+  @@map("subscriptions")
+}
+
+enum SubscriptionStatus {
+  ACTIVE
+  PAST_DUE
+  UNPAID
+  CANCELED
+  INCOMPLETE
+  INCOMPLETE_EXPIRED
+  TRIALING
+  PAUSED
+}
+
+enum SubscriptionPlan {
+  STARTER      // Basic AI features
+  PROFESSIONAL // Advanced AI + collaboration
+  ENTERPRISE   // Full suite + priority support
+}
+
+enum BillingCycle {
+  MONTHLY
+  QUARTERLY
+  YEARLY
+}
+
+// Subscription line items for usage-based billing
+model SubscriptionItem {
+  id                String       @id @default(cuid())
+  subscriptionId    String
+  stripeItemId      String       @unique
+  stripePriceId     String
+  quantity          Int          @default(1)
+  unitAmount        Decimal
+  currency          String       @default("USD")
+  usageType         UsageType    @default(LICENSED)
+  meteringMode      MeteringMode @default(SUMMED)
+  aggregationUsage  String?
+  createdAt         DateTime     @default(now())
+  updatedAt         DateTime     @updatedAt
+
+  // Relations
+  subscription      Subscription @relation(fields: [subscriptionId], references: [id], onDelete: Cascade)
+  usageRecords      UsageRecord[]
+
+  @@map("subscription_items")
+}
+
+enum UsageType {
+  LICENSED
+  METERED
+}
+
+enum MeteringMode {
+  SUMMED
+  LAST_DURING_PERIOD
+  LAST_EVER
+  MAX_DURING_PERIOD
+}
+
+// Usage-based billing for AI services
+model UsageRecord {
+  id                 String           @id @default(cuid())
+  subscriptionId     String
+  subscriptionItemId String
+  userId             String
+  customerId         String
+  quantity           Int
+  timestamp          DateTime         @default(now())
+  service            AIService
+  model              String?
+  inputTokens        Int?
+  outputTokens       Int?
+  totalTokens        Int?
+  requestDuration    Int?             // in milliseconds
+  metadata           Json?
+  processed          Boolean          @default(false)
+  billable           Boolean          @default(true)
+  createdAt          DateTime         @default(now())
+
+  // Relations
+  subscription       Subscription     @relation(fields: [subscriptionId], references: [id], onDelete: Cascade)
+  subscriptionItem   SubscriptionItem @relation(fields: [subscriptionItemId], references: [id], onDelete: Cascade)
+  user               User             @relation(fields: [userId], references: [id], onDelete: Cascade)
+  customer           Customer         @relation(fields: [customerId], references: [id], onDelete: Cascade)
+
+  @@index([userId, timestamp])
+  @@index([service, timestamp])
+  @@map("usage_records")
+}
+
+enum AIService {
+  CHAT_COMPLETION
+  TEXT_GENERATION
+  IMAGE_GENERATION
+  TRANSCRIPTION
+  TRANSLATION
+  SENTIMENT_ANALYSIS
+  SUMMARIZATION
+  ENTITY_EXTRACTION
+  KNOWLEDGE_SEARCH
+  RECOMMENDATIONS
+  COLLABORATION_AI
+}
+
+// Usage logging for tracking API calls
+model UsageLog {
+  id            String    @id @default(cuid())
+  userId        String
+  customerId    String?
+  service       AIService
+  endpoint      String
+  method        String
+  model         String?
+  inputTokens   Int?
+  outputTokens  Int?
+  totalTokens   Int?
+  duration      Int       // in milliseconds
+  success       Boolean   @default(true)
+  errorCode     String?
+  errorMessage  String?
+  ipAddress     String?
+  userAgent     String?
+  metadata      Json?
+  timestamp     DateTime  @default(now())
+
+  // Relations
+  user          User      @relation(fields: [userId], references: [id], onDelete: Cascade)
+  customer      Customer? @relation(fields: [customerId], references: [id], onDelete: SetNull)
+
+  @@index([userId, timestamp])
+  @@index([service, timestamp])
+  @@index([success])
+  @@map("usage_logs")
+}
+
+// Payment methods management
+model PaymentMethod {
+  id                String            @id @default(cuid())
+  userId            String
+  customerId        String
+  stripePaymentMethodId String        @unique
+  type              PaymentMethodType
+  cardBrand         String?
+  cardLast4         String?
+  cardExpMonth      Int?
+  cardExpYear       Int?
+  bankName          String?
+  bankLast4         String?
+  isDefault         Boolean           @default(false)
+  isActive          Boolean           @default(true)
+  billingDetails    Json?             // Stripe billing details
+  metadata          Json?
+  createdAt         DateTime          @default(now())
+  updatedAt         DateTime          @updatedAt
+
+  // Relations
+  user              User              @relation(fields: [userId], references: [id], onDelete: Cascade)
+  customer          Customer          @relation(fields: [customerId], references: [id], onDelete: Cascade)
+  payments          Payment[]
+
+  @@map("payment_methods")
+}
+
+enum PaymentMethodType {
+  CARD
+  BANK_ACCOUNT
+  SEPA_DEBIT
+  ACH_DEBIT
+  AU_BECS_DEBIT
+  BACS_DEBIT
+  IDEAL
+  SOFORT
+  GIROPAY
+  EPS
+  BANCONTACT
+  ALIPAY
+  WECHAT_PAY
+}
+
+// Enhanced Payment model
+model Payment {
+  id                    String                @id @default(cuid())
+  userId                String
+  customerId            String
+  invoiceId             String?
+  stripePaymentIntentId String                @unique
+  stripeChargeId        String?
+  paymentMethodId       String?
+  amount                Decimal
+  amountReceived        Decimal?
+  currency              String                @default("USD")
+  status                PaymentStatus
+  type                  PaymentType           @default(PAYMENT)
+  description           String?
+  receiptEmail          String?
+  receiptUrl            String?
+  failureCode           String?
+  failureMessage        String?
+  fraudScore            Float?
+  riskLevel             RiskLevel?
+  fees                  Json?                 // Stripe fees breakdown
+  metadata              Json?
+  processedAt           DateTime?
+  settledAt             DateTime?
+  createdAt             DateTime              @default(now())
+  updatedAt             DateTime              @updatedAt
+
+  // Relations
+  user                  User                  @relation("PaymentInitiator", fields: [userId], references: [id], onDelete: Cascade)
+  customer              Customer              @relation(fields: [customerId], references: [id], onDelete: Cascade)
+  invoice               Invoice?              @relation(fields: [invoiceId], references: [id], onDelete: SetNull)
+  paymentMethod         PaymentMethod?        @relation(fields: [paymentMethodId], references: [id], onDelete: SetNull)
+  refunds               Refund[]
+
+  @@map("payments")
+}
+
+enum PaymentStatus {
+  PENDING
+  REQUIRES_PAYMENT_METHOD
+  REQUIRES_CONFIRMATION
+  REQUIRES_ACTION
+  PROCESSING
+  SUCCEEDED
+  REQUIRES_CAPTURE
+  CANCELED
+  FAILED
+}
+
+enum PaymentType {
+  PAYMENT
+  REFUND
+  CHARGEBACK
+  DISPUTE
+}
+
+enum RiskLevel {
+  LOW
+  NORMAL
+  ELEVATED
+  HIGHEST
+}
+
+// Enhanced Invoice model for comprehensive billing
+model Invoice {
+  id                  String               @id @default(cuid())
+  customerId          String
+  subscriptionId      String?
+  stripeInvoiceId     String               @unique
+  number              String               @unique
+  status              EnhancedInvoiceStatus
+  description         String?
+  currency            String               @default("USD")
+  subtotal            Decimal
+  tax                 Decimal              @default(0)
+  discount            Decimal              @default(0)
+  total               Decimal
+  amountPaid          Decimal              @default(0)
+  amountDue           Decimal
+  amountRemaining     Decimal
+  attemptCount        Int                  @default(0)
+  attempted           Boolean              @default(false)
+  autoAdvance         Boolean              @default(true)
+  collectionMethod    CollectionMethod     @default(CHARGE_AUTOMATICALLY)
+  dueDate             DateTime?
+  paidAt              DateTime?
+  periodStart         DateTime
+  periodEnd           DateTime
+  hostedInvoiceUrl    String?
+  invoicePdf          String?
+  receiptNumber       String?
+  statementDescriptor String?
+  footer              String?
+  customFields        Json?
+  metadata            Json?
+  createdAt           DateTime             @default(now())
+  updatedAt           DateTime             @updatedAt
+
+  // Relations
+  customer            Customer             @relation(fields: [customerId], references: [id], onDelete: Cascade)
+  subscription        Subscription?        @relation(fields: [subscriptionId], references: [id], onDelete: SetNull)
+  items               InvoiceItem[]
+  payments            Payment[]
+  taxRates            InvoiceTaxRate[]
+  
+  @@map("invoices")
+}
+
+enum EnhancedInvoiceStatus {
+  DRAFT
+  OPEN
+  PAID
+  VOID
+  UNCOLLECTIBLE
+  DELETED
+}
+
+enum CollectionMethod {
+  CHARGE_AUTOMATICALLY
+  SEND_INVOICE
+}
+
+// Invoice line items
+model InvoiceItem {
+  id            String   @id @default(cuid())
+  invoiceId     String
+  description   String
+  quantity      Decimal  @default(1)
+  unitAmount    Decimal
+  amount        Decimal
+  currency      String   @default("USD")
+  period        Json?    // Period information
+  proration     Boolean  @default(false)
+  metadata      Json?
+  createdAt     DateTime @default(now())
+
+  // Relations
+  invoice       Invoice  @relation(fields: [invoiceId], references: [id], onDelete: Cascade)
+
+  @@map("invoice_items")
+}
+
+// Tax calculation and compliance
+model TaxRate {
+  id            String           @id @default(cuid())
+  stripeTaxRateId String         @unique
+  displayName   String
+  percentage    Decimal
+  inclusive     Boolean          @default(false)
+  country       String?
+  state         String?
+  jurisdiction  String?
+  description   String?
+  active        Boolean          @default(true)
+  createdAt     DateTime         @default(now())
+  updatedAt     DateTime         @updatedAt
+
+  // Relations
+  invoices      InvoiceTaxRate[]
+
+  @@map("tax_rates")
+}
+
+model InvoiceTaxRate {
+  id        String   @id @default(cuid())
+  invoiceId String
+  taxRateId String
+  amount    Decimal
+  
+  // Relations
+  invoice   Invoice  @relation(fields: [invoiceId], references: [id], onDelete: Cascade)
+  taxRate   TaxRate  @relation(fields: [taxRateId], references: [id], onDelete: Cascade)
+
+  @@unique([invoiceId, taxRateId])
+  @@map("invoice_tax_rates")
+}
+
+// Billing addresses
+model BillingAddress {
+  id         String   @id @default(cuid())
+  userId     String
+  customerId String   @unique
+  line1      String
+  line2      String?
+  city       String
+  state      String?
+  postalCode String
+  country    String
+  createdAt  DateTime @default(now())
+  updatedAt  DateTime @updatedAt
+
+  // Relations
+  user       User     @relation(fields: [userId], references: [id], onDelete: Cascade)
+  customer   Customer @relation(fields: [customerId], references: [id], onDelete: Cascade)
+
+  @@map("billing_addresses")
+}
+
+// Credits system for usage-based billing
+model Credit {
+  id          String      @id @default(cuid())
+  userId      String
+  customerId  String
+  type        CreditType
+  amount      Decimal
+  balance     Decimal
+  currency    String      @default("USD")
+  description String?
+  expiresAt   DateTime?
+  metadata    Json?
+  createdAt   DateTime    @default(now())
+  updatedAt   DateTime    @updatedAt
+
+  // Relations
+  user        User        @relation(fields: [userId], references: [id], onDelete: Cascade)
+  customer    Customer    @relation(fields: [customerId], references: [id], onDelete: Cascade)
+  transactions CreditTransaction[]
+
+  @@map("credits")
+}
+
+enum CreditType {
+  PROMOTIONAL
+  REFUND
+  TRIAL
+  BONUS
+  PURCHASE
+}
+
+model CreditTransaction {
+  id          String             @id @default(cuid())
+  creditId    String
+  type        CreditTransactionType
+  amount      Decimal
+  balanceBefore Decimal
+  balanceAfter  Decimal
+  description String?
+  reference   String?           // Invoice ID, usage record ID, etc.
+  metadata    Json?
+  createdAt   DateTime          @default(now())
+
+  // Relations
+  credit      Credit            @relation(fields: [creditId], references: [id], onDelete: Cascade)
+
+  @@map("credit_transactions")
+}
+
+enum CreditTransactionType {
+  CREDIT
+  DEBIT
+  REFUND
+  EXPIRY
+}
+
+// Refund management
+model Refund {
+  id                String         @id @default(cuid())
+  userId            String
+  paymentId         String
+  stripeRefundId    String         @unique
+  amount            Decimal
+  currency          String         @default("USD")
+  reason            RefundReason?
+  status            RefundStatus   @default(PENDING)
+  receiptNumber     String?
+  failureReason     String?
+  metadata          Json?
+  createdAt         DateTime       @default(now())
+  updatedAt         DateTime       @updatedAt
+
+  // Relations
+  user              User           @relation(fields: [userId], references: [id], onDelete: Cascade)
+  payment           Payment        @relation(fields: [paymentId], references: [id], onDelete: Cascade)
+
+  @@map("refunds")
+}
+
+enum RefundReason {
+  DUPLICATE
+  FRAUDULENT
+  REQUESTED_BY_CUSTOMER
+  EXPIRED_UNCAPTURED_CHARGE
+}
+
+enum RefundStatus {
+  PENDING
+  SUCCEEDED
+  FAILED
+  CANCELED
+}
+
+// Dispute management
+model Dispute {
+  id                String        @id @default(cuid())
+  userId            String
+  stripeDisputeId   String        @unique
+  amount            Decimal
+  currency          String        @default("USD")
+  reason            DisputeReason
+  status            DisputeStatus
+  evidence          Json?         // Dispute evidence
+  evidenceDetails   Json?
+  isChargeRefundable Boolean      @default(true)
+  balanceTransactions Json?
+  metadata          Json?
+  createdAt         DateTime      @default(now())
+  updatedAt         DateTime      @updatedAt
+
+  // Relations
+  user              User          @relation(fields: [userId], references: [id], onDelete: Cascade)
+
+  @@map("disputes")
+}
+
+enum DisputeReason {
+  CREDIT_NOT_PROCESSED
+  DUPLICATE
+  FRAUDULENT
+  GENERAL
+  INCORRECT_ACCOUNT_DETAILS
+  INSUFFICIENT_FUNDS
+  PRODUCT_NOT_RECEIVED
+  PRODUCT_UNACCEPTABLE
+  SUBSCRIPTION_CANCELED
+  UNRECOGNIZED
+}
+
+enum DisputeStatus {
+  WARNING_NEEDS_RESPONSE
+  WARNING_UNDER_REVIEW
+  WARNING_CLOSED
+  NEEDS_RESPONSE
+  UNDER_REVIEW
+  CHARGE_REFUNDED
+  WON
+  LOST
+}
+
+// Webhook events for audit trail
+model WebhookEvent {
+  id            String          @id @default(cuid())
+  stripeEventId String          @unique
+  type          String
+  data          Json
+  processed     Boolean         @default(false)
+  processingError String?
+  retryCount    Int             @default(0)
+  createdAt     DateTime        @default(now())
+  processedAt   DateTime?
+
+  @@index([type])
+  @@index([processed])
+  @@map("webhook_events")
+}
+
+// Financial reporting
+model FinancialReport {
+  id          String         @id @default(cuid())
+  type        ReportType
+  period      ReportPeriod
+  startDate   DateTime
+  endDate     DateTime
+  data        Json           // Report data
+  status      ReportStatus   @default(GENERATING)
+  fileUrl     String?
+  metadata    Json?
+  createdAt   DateTime       @default(now())
+  updatedAt   DateTime       @updatedAt
+
+  @@map("financial_reports")
+}
+
+enum ReportType {
+  REVENUE
+  SUBSCRIPTION_METRICS
+  USAGE_ANALYTICS
+  TAX_REPORT
+  CHURN_ANALYSIS
+  MRR_REPORT
+  CUSTOMER_LIFETIME_VALUE
+}
+
+enum ReportPeriod {
+  DAILY
+  WEEKLY
+  MONTHLY
+  QUARTERLY
+  YEARLY
+  CUSTOM
+}
+
+enum ReportStatus {
+  GENERATING
+  COMPLETED
+  FAILED
+}
+

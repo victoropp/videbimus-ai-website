@@ -1,0 +1,237 @@
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+@layer base {
+  :root {
+    /* Primary Brand Colors */
+    --color-primary-50: #eef2f5;
+    --color-primary-100: #d1dae3;
+    --color-primary-200: #a4b5c7;
+    --color-primary-300: #728ba5;
+    --color-primary-400: #4d6a89;
+    --color-primary-500: #194670; /* Base */
+    --color-primary-600: #143b60;
+    --color-primary-700: #0f3050;
+    --color-primary-800: #0A2540;
+    --color-primary-900: #051e34;
+
+    /* Accent Colors */
+    --color-cyan-400: #40EEFF;
+    --color-cyan-500: #00E5FF;
+    --color-cyan-600: #00B8CC;
+
+    --color-purple-400: #8B7EEA;
+    --color-purple-500: #6C5CE7;
+    --color-purple-600: #5442D3;
+
+    --color-green-400: #00D9A6;
+    --color-green-500: #00B894;
+    --color-green-600: #009975;
+
+    /* Semantic Colors */
+    --color-success: #00B894;
+    --color-warning: #FDCB6E;
+    --color-error: #FF6B6B;
+    --color-info: #4ECDC4;
+  }
+
+  [data-theme="dark"] {
+    --bg-primary: #0A0A0A;
+    --bg-secondary: #1A1A1A;
+    --bg-tertiary: #2A2A2A;
+    
+    --text-primary: #F8F9FA;
+    --text-secondary: #B2BEC3;
+    --text-tertiary: #95A5A6;
+    
+    --border-color: #2D3436;
+    
+    /* Glass effect for dark mode */
+    --glass-bg: rgba(255, 255, 255, 0.05);
+    --glass-border: rgba(255, 255, 255, 0.1);
+  }
+
+  * {
+    @apply border-gray-200 dark:border-gray-800;
+  }
+
+  body {
+    @apply bg-white text-gray-950 dark:bg-gray-950 dark:text-gray-50;
+  }
+
+  /* Focus visible styles */
+  *:focus-visible {
+    @apply outline-2 outline-cyan-500 outline-offset-2;
+  }
+
+  /* Skip to main content */
+  .skip-link {
+    @apply absolute -top-96 left-4 z-50 rounded-md bg-primary-800 px-4 py-2 text-white;
+    @apply focus:top-4;
+  }
+}
+
+@layer components {
+  /* Glass morphism effect */
+  .glass {
+    background: rgba(255, 255, 255, 0.1);
+    backdrop-filter: blur(10px);
+    -webkit-backdrop-filter: blur(10px);
+    border: 1px solid rgba(255, 255, 255, 0.2);
+  }
+
+  .dark .glass {
+    background: var(--glass-bg);
+    border-color: var(--glass-border);
+  }
+
+  /* Gradient borders */
+  .gradient-border {
+    background: linear-gradient(white, white) padding-box,
+                linear-gradient(135deg, var(--color-cyan-500), var(--color-purple-500)) border-box;
+    border: 2px solid transparent;
+  }
+
+  .dark .gradient-border {
+    background: linear-gradient(#1A1A1A, #1A1A1A) padding-box,
+                linear-gradient(135deg, var(--color-cyan-500), var(--color-purple-500)) border-box;
+  }
+
+  /* Skeleton loading */
+  .skeleton {
+    @apply animate-pulse bg-gray-200 dark:bg-gray-800;
+    background: linear-gradient(
+      90deg,
+      theme('colors.gray.200') 0%,
+      theme('colors.gray.100') 50%,
+      theme('colors.gray.200') 100%
+    );
+    background-size: 200% 100%;
+    animation: skeleton 1.5s infinite;
+  }
+
+  .dark .skeleton {
+    background: linear-gradient(
+      90deg,
+      theme('colors.gray.800') 0%,
+      theme('colors.gray.700') 50%,
+      theme('colors.gray.800') 100%
+    );
+    background-size: 200% 100%;
+  }
+
+  @keyframes skeleton {
+    0% {
+      background-position: 200% 0;
+    }
+    100% {
+      background-position: -200% 0;
+    }
+  }
+
+  /* Custom scrollbar */
+  ::-webkit-scrollbar {
+    @apply w-2;
+  }
+
+  ::-webkit-scrollbar-track {
+    @apply bg-gray-100 dark:bg-gray-800;
+  }
+
+  ::-webkit-scrollbar-thumb {
+    @apply bg-gray-300 dark:bg-gray-600 rounded-full;
+  }
+
+  ::-webkit-scrollbar-thumb:hover {
+    @apply bg-gray-400 dark:bg-gray-500;
+  }
+
+  /* Text selection */
+  ::selection {
+    @apply bg-cyan-500/20 text-cyan-900 dark:text-cyan-100;
+  }
+
+  /* Hide scrollbar for elements with overflow-x-auto */
+  .hide-scrollbar {
+    -ms-overflow-style: none;
+    scrollbar-width: none;
+  }
+  
+  .hide-scrollbar::-webkit-scrollbar {
+    display: none;
+  }
+
+  /* Container max widths */
+  .container {
+    @apply mx-auto px-4 sm:px-6 lg:px-8;
+    max-width: 1440px;
+  }
+
+  /* Typography styles */
+  .text-gradient {
+    @apply bg-gradient-to-r from-cyan-500 to-purple-500 bg-clip-text text-transparent;
+  }
+
+  /* Hero section background patterns */
+  .hero-bg {
+    background-image: 
+      radial-gradient(circle at 25% 25%, rgba(0, 229, 255, 0.1) 0%, transparent 50%),
+      radial-gradient(circle at 75% 75%, rgba(108, 92, 231, 0.1) 0%, transparent 50%);
+  }
+
+  .dark .hero-bg {
+    background-image: 
+      radial-gradient(circle at 25% 25%, rgba(0, 229, 255, 0.05) 0%, transparent 50%),
+      radial-gradient(circle at 75% 75%, rgba(108, 92, 231, 0.05) 0%, transparent 50%);
+  }
+
+  /* Grid background pattern */
+  .grid-bg {
+    background-image: 
+      linear-gradient(rgba(0, 0, 0, 0.05) 1px, transparent 1px),
+      linear-gradient(90deg, rgba(0, 0, 0, 0.05) 1px, transparent 1px);
+    background-size: 50px 50px;
+  }
+
+  .dark .grid-bg {
+    background-image: 
+      linear-gradient(rgba(255, 255, 255, 0.05) 1px, transparent 1px),
+      linear-gradient(90deg, rgba(255, 255, 255, 0.05) 1px, transparent 1px);
+  }
+}
+
+@layer utilities {
+  /* Animation delays */
+  .animate-delay-75 {
+    animation-delay: 0.075s;
+  }
+  
+  .animate-delay-100 {
+    animation-delay: 0.1s;
+  }
+  
+  .animate-delay-150 {
+    animation-delay: 0.15s;
+  }
+  
+  .animate-delay-200 {
+    animation-delay: 0.2s;
+  }
+  
+  .animate-delay-300 {
+    animation-delay: 0.3s;
+  }
+
+  .animate-delay-500 {
+    animation-delay: 0.5s;
+  }
+
+  .animate-delay-700 {
+    animation-delay: 0.7s;
+  }
+
+  .animate-delay-1000 {
+    animation-delay: 1s;
+  }
+}

@@ -1,0 +1,16 @@
+{
+  "name": "Vidibemus AI",
+  "short_name": "Vidibemus",
+  "description": "AI Consulting Services",
+  "start_url": "/",
+  "display": "standalone",
+  "background_color": "#ffffff",
+  "theme_color": "#00E5FF",
+  "icons": [
+    {
+      "src": "favicon.svg",
+      "sizes": "any",
+      "type": "image/svg+xml"
+    }
+  ]
+}

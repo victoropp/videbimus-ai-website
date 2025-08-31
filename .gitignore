@@ -1,0 +1,143 @@
+# Dependencies
+node_modules/
+.pnp
+.pnp.js
+
+# Testing
+coverage/
+.nyc_output
+
+# Next.js
+.next/
+out/
+build/
+dist/
+
+# Production
+*.production
+.env.production
+.env.local
+.env.development.local
+.env.test.local
+.env.production.local
+
+# Debug
+npm-debug.log*
+yarn-debug.log*
+yarn-error.log*
+.pnpm-debug.log*
+lerna-debug.log*
+
+# Misc
+.DS_Store
+*.pem
+.vscode/
+.idea/
+*.swp
+*.swo
+*~
+
+# Certificates
+*.crt
+*.key
+*.pem
+
+# Logs
+logs/
+*.log
+
+# Runtime data
+pids
+*.pid
+*.seed
+*.pid.lock
+
+# Database
+*.sqlite
+*.sqlite3
+*.db
+prisma/migrations/dev/
+
+# Cache
+.cache/
+.parcel-cache/
+.turbo/
+
+# Vercel
+.vercel
+
+# TypeScript
+*.tsbuildinfo
+next-env.d.ts
+
+# PWA
+public/workbox-*.js
+public/sw.js
+public/worker-*.js
+
+# Uploads
+public/uploads/
+uploads/
+
+# Backup files
+*.backup
+*.bak
+backup/
+
+# OS Files
+Thumbs.db
+Desktop.ini
+
+# Editor directories and files
+.vscode/*
+!.vscode/extensions.json
+!.vscode/settings.json
+.idea
+*.sublime-project
+*.sublime-workspace
+
+# macOS
+.DS_Store
+.AppleDouble
+.LSOverride
+Icon
+._*
+
+# Windows
+Thumbs.db
+ehthumbs.db
+Desktop.ini
+$RECYCLE.BIN/
+*.cab
+*.msi
+*.msix
+*.msm
+*.msp
+*.lnk
+
+# Linux
+.directory
+.Trash-*
+.nfs*
+
+# Temporary files
+tmp/
+temp/
+*.tmp
+*.temp
+
+# Docker
+docker-compose.override.yml
+.dockerignore
+
+# Deployment
+deployment/config/*.conf
+deployment/ssl/
+!deployment/**/*.template
+!deployment/**/*.example
+
+# Private keys
+*.key
+*.pem
+ssh_keys/
+.ssh/
