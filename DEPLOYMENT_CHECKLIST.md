@@ -19,7 +19,7 @@ Go to: https://github.com/victoropp/videbimus-ai-website/settings/secrets/action
 - [ ] SSH_KEY = [Copy from SECRETS_FOR_GITHUB.txt]
 - [ ] DATABASE_URL = postgresql://vidibemus:fb671b96bdd3463085f9dfd645af44d4@localhost:5432/vidibemus_ai
 - [ ] NEXTAUTH_SECRET = CopY9fhWSKvxd7TAsaVFfT/oqbnG6LcJ4cx89OVJmqw=
-- [ ] NEXTAUTH_URL = https://vidibemus.ai
+- [ ] NEXTAUTH_URL = https://videbimusai.com
 
 ### 2. Hostinger VPS Setup (30 minutes)
 **What you need:**
@@ -66,7 +66,7 @@ npx prisma migrate deploy
 ### 5. SSL Certificate (5 minutes)
 On your VPS:
 ```bash
-sudo certbot --nginx -d vidibemus.ai -d www.vidibemus.ai --non-interactive --agree-tos --email admin@vidibemus.ai
+sudo certbot --nginx -d videbimusai.com -d www.videbimusai.com --non-interactive --agree-tos --email admin@videbimusai.com
 ```
 
 ### 6. Deploy Application (5 minutes)
@@ -80,8 +80,8 @@ pm2 startup systemd -u root --hp /root
 ```
 
 ### 7. Test Deployment
-- [ ] Visit https://vidibemus.ai
-- [ ] Check API health: https://vidibemus.ai/api/health
+- [ ] Visit https://videbimusai.com
+- [ ] Check API health: https://videbimusai.com/api/health
 - [ ] Test AI chat functionality
 - [ ] Verify SSL certificate (green padlock)
 
@@ -104,10 +104,10 @@ pm2 startup systemd -u root --hp /root
 ### Support Contacts
 - UK: +44 7442 852675 (Call or WhatsApp)
 - Ghana: +233 248769377 (Call or WhatsApp)
-- Email: support@vidibemus.ai
+- Email: support@videbimusai.com
 
 ## 🎯 Success Criteria
-- [ ] Website accessible at https://vidibemus.ai
+- [ ] Website accessible at https://videbimusai.com
 - [ ] SSL certificate active (green padlock)
 - [ ] API health check returns 200 OK
 - [ ] GitHub Actions can deploy automatically

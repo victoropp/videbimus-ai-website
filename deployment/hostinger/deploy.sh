@@ -7,7 +7,7 @@ set -e
 
 # Configuration
 APP_DIR="/var/www/vidibemus"
-REPO_URL="https://github.com/victoroppp/vidibemus-ai-website.git"
+REPO_URL="https://github.com/victoropp/videbimus-ai-website.git"
 BRANCH="main"
 PM2_APP_NAME="vidibemus-ai"
 

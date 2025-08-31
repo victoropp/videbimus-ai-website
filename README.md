@@ -224,9 +224,9 @@ This project is licensed under the MIT License - see the [LICENSE](LICENSE) file
 For support and questions:
 - **UK**: +44 7442 852675 (Call or WhatsApp)
 - **Ghana**: +233 248769377 (Call or WhatsApp)
-- **Email**: support@vidibemus.ai
-- **Website**: [https://vidibemus.ai](https://vidibemus.ai)
-- **Documentation**: [docs.vidibemus.ai](https://docs.vidibemus.ai)
+- **Email**: support@videbimusai.com
+- **Website**: [https://videbimusai.com](https://videbimusai.com)
+- **Documentation**: [docs.videbimusai.com](https://docs.videbimusai.com)
 
 ## 🔄 Updates
 
