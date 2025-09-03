@@ -18,7 +18,7 @@
     "db:seed": "tsx prisma/seed.ts",
     "db:reset": "prisma migrate reset",
     "db:setup": "node scripts/setup-db.js",
-    "postinstall": "prisma generate",
+    "postinstall": "npx prisma generate || true",
     "test": "vitest",
     "test:ui": "vitest --ui",
     "test:run": "vitest run",
