@@ -2,7 +2,7 @@ import { NextRequest, NextResponse } from 'next/server';
 import { monitoringService } from '@/lib/services/monitoring';
 import { aiService } from '@/lib/services/ai';
 import { emailService } from '@/lib/services/email';
-// import { storageService } from '@/lib/services/storage'; // Commented out - AWS SDK not installed
+import { storageService } from '@/lib/services/storage-mock'; // Using mock storage for deployment
 import { videoService } from '@/lib/services/video';
 import { vectorStoreService } from '@/lib/services/vector-store';
 import { authService } from '@/lib/services/auth';

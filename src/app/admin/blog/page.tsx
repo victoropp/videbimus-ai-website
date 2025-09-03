@@ -8,7 +8,6 @@ import { motion } from 'framer-motion'
 import {
   Plus,
   Search,
-  Filter,
   MoreVertical,
   Edit,
   Trash2,
