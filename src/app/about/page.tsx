@@ -231,7 +231,7 @@ export default function AboutPage() {
             viewport={{ once: true }}
             className="grid md:grid-cols-2 lg:grid-cols-4 gap-8"
           >
-            {values.map((value, index) => {
+            {values.map((value) => {
               const Icon = value.icon
               return (
                 <motion.div key={value.title} variants={itemVariants}>
