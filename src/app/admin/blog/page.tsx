@@ -365,7 +365,7 @@ export default function BlogAdminPage() {
                                 {post.tags.slice(0, 3).map((tag, index) => (
                                   <Badge key={index} variant="outline" className="text-xs">
                                     <Tag className="h-2 w-2 mr-1" />
-                                    {typeof tag === 'string' ? tag : tag.name}
+                                    {typeof tag === 'string' ? tag : (tag as any).name || tag}
                                   </Badge>
                                 ))}
                                 {post.tags.length > 3 && (
