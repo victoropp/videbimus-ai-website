@@ -34,14 +34,14 @@ export default function RoomPage() {
       setError(null);
       
       // Load room data
-      const roomResponse = await fetch(`/api/collaboration/rooms/${roomId}`);
+      const roomResponse = await fetch(`/api/consultation/rooms/${roomId}`);
       if (!roomResponse.ok) {
         throw new Error('Failed to load room data');
       }
       const room = await roomResponse.json();
       
       // Load room documents
-      const docsResponse = await fetch(`/api/collaboration/documents?roomId=${roomId}`);
+      const docsResponse = await fetch(`/api/consultation/rooms/${roomId}/documents`);
       if (docsResponse.ok) {
         const docs = await docsResponse.json();
         setDocuments(docs.documents || []);

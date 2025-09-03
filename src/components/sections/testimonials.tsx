@@ -11,7 +11,7 @@ const testimonials: Testimonial[] = [
     name: 'Sarah Chen',
     role: 'Chief Technology Officer',
     company: 'TechCorp Industries',
-    content: 'Vidibemus AI transformed our entire data infrastructure. Their team delivered a comprehensive ML platform that increased our operational efficiency by 40% and reduced costs by $2M annually.',
+    content: 'Videbimus AI transformed our entire data infrastructure. Their team delivered a comprehensive ML platform that increased our operational efficiency by 40% and reduced costs by $2M annually.',
     image: '/testimonials/sarah-chen.jpg',
     rating: 5
   },
@@ -38,7 +38,7 @@ const testimonials: Testimonial[] = [
     name: 'James Liu',
     role: 'CEO',
     company: 'RetailMax',
-    content: 'The personalization engine Vidibemus AI created for us increased our conversion rates by 35% and customer lifetime value by 50%. Their team understood our business from day one.',
+    content: 'The personalization engine Videbimus AI created for us increased our conversion rates by 35% and customer lifetime value by 50%. Their team understood our business from day one.',
     image: '/testimonials/james-liu.jpg',
     rating: 5
   },
@@ -47,7 +47,7 @@ const testimonials: Testimonial[] = [
     name: 'Amanda Foster',
     role: 'Operations Director',
     company: 'ManufacturePro',
-    content: 'Predictive maintenance was just a concept until Vidibemus AI made it reality. We\'ve prevented 90% of equipment failures and saved over $5M in unplanned downtime.',
+    content: 'Predictive maintenance was just a concept until Videbimus AI made it reality. We\'ve prevented 90% of equipment failures and saved over $5M in unplanned downtime.',
     image: '/testimonials/amanda-foster.jpg',
     rating: 5
   },

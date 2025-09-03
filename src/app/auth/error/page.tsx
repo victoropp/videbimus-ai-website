@@ -58,8 +58,8 @@ export default function AuthErrorPage() {
           <CardContent className="space-y-4">
             <div className="text-sm text-center text-gray-500 dark:text-gray-400">
               If you continue to experience issues, please contact our support team at{' '}
-              <a href="mailto:support@vidibemus.ai" className="text-primary hover:underline">
-                support@vidibemus.ai
+              <a href="mailto:support@videbimusai.com" className="text-primary hover:underline">
+                support@videbimusai.com
               </a>
             </div>
           </CardContent>

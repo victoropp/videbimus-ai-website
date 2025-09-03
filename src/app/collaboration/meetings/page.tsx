@@ -16,25 +16,25 @@ const mockMeetings = [
     organizer: {
       id: '1',
       name: 'Sarah Johnson',
-      email: 'sarah.johnson@vidibemus.com',
+      email: 'sarah.johnson@videbimus.com',
     },
     participants: [
       {
         id: '1',
         name: 'Mike Chen',
-        email: 'mike.chen@vidibemus.com',
+        email: 'mike.chen@videbimus.com',
         status: 'accepted' as const,
       },
       {
         id: '2',
         name: 'Dr. Lisa Park',
-        email: 'lisa.park@vidibemus.com',
+        email: 'lisa.park@videbimus.com',
         status: 'accepted' as const,
       },
       {
         id: '3',
         name: 'Emily Davis',
-        email: 'emily.davis@vidibemus.com',
+        email: 'emily.davis@videbimus.com',
         status: 'pending' as const,
       },
     ],
@@ -52,7 +52,7 @@ const mockMeetings = [
     organizer: {
       id: '1',
       name: 'Sarah Johnson',
-      email: 'sarah.johnson@vidibemus.com',
+      email: 'sarah.johnson@videbimus.com',
     },
     participants: [
       {
@@ -88,25 +88,25 @@ const mockMeetings = [
     organizer: {
       id: '3',
       name: 'Dr. Lisa Park',
-      email: 'lisa.park@vidibemus.com',
+      email: 'lisa.park@videbimus.com',
     },
     participants: [
       {
         id: '1',
         name: 'Mike Chen',
-        email: 'mike.chen@vidibemus.com',
+        email: 'mike.chen@videbimus.com',
         status: 'accepted' as const,
       },
       {
         id: '2',
         name: 'Alex Rivera',
-        email: 'alex.rivera@vidibemus.com',
+        email: 'alex.rivera@videbimus.com',
         status: 'accepted' as const,
       },
       {
         id: '3',
         name: 'Sarah Johnson',
-        email: 'sarah.johnson@vidibemus.com',
+        email: 'sarah.johnson@videbimus.com',
         status: 'accepted' as const,
       },
     ],
@@ -124,19 +124,19 @@ const mockMeetings = [
     organizer: {
       id: '2',
       name: 'Mike Chen',
-      email: 'mike.chen@vidibemus.com',
+      email: 'mike.chen@videbimus.com',
     },
     participants: [
       {
         id: '1',
         name: 'Alex Rivera',
-        email: 'alex.rivera@vidibemus.com',
+        email: 'alex.rivera@videbimus.com',
         status: 'accepted' as const,
       },
       {
         id: '2',
         name: 'Emily Davis',
-        email: 'emily.davis@vidibemus.com',
+        email: 'emily.davis@videbimus.com',
         status: 'pending' as const,
       },
     ],
@@ -154,31 +154,31 @@ const mockMeetings = [
     organizer: {
       id: '1',
       name: 'Sarah Johnson',
-      email: 'sarah.johnson@vidibemus.com',
+      email: 'sarah.johnson@videbimus.com',
     },
     participants: [
       {
         id: '1',
         name: 'Mike Chen',
-        email: 'mike.chen@vidibemus.com',
+        email: 'mike.chen@videbimus.com',
         status: 'pending' as const,
       },
       {
         id: '2',
         name: 'Dr. Lisa Park',
-        email: 'lisa.park@vidibemus.com',
+        email: 'lisa.park@videbimus.com',
         status: 'pending' as const,
       },
       {
         id: '3',
         name: 'Emily Davis',
-        email: 'emily.davis@vidibemus.com',
+        email: 'emily.davis@videbimus.com',
         status: 'pending' as const,
       },
       {
         id: '4',
         name: 'Alex Rivera',
-        email: 'alex.rivera@vidibemus.com',
+        email: 'alex.rivera@videbimus.com',
         status: 'pending' as const,
       },
     ],
@@ -196,7 +196,7 @@ const mockMeetings = [
     organizer: {
       id: '1',
       name: 'Sarah Johnson',
-      email: 'sarah.johnson@vidibemus.com',
+      email: 'sarah.johnson@videbimus.com',
     },
     participants: [
       {

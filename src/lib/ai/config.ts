@@ -15,7 +15,7 @@ export const aiConfigSchema = z.object({
   // Vector Database
   pineconeApiKey: z.string().optional(),
   pineconeEnvironment: z.string().optional(),
-  pineconeIndex: z.string().default('vidibemus-knowledge-base'),
+  pineconeIndex: z.string().default('videbimus-knowledge-base'),
   
   // AI Configuration
   provider: z.enum(['openai', 'anthropic', 'huggingface', 'cohere', 'groq', 'google', 'together', 'replicate']).default('huggingface'),

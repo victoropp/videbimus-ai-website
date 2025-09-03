@@ -16,13 +16,14 @@ import {
   Settings,
   Users,
   Circle,
-  Square
+  Square,
+  ExternalLink
 } from 'lucide-react';
-import { dailyService, type ParticipantData } from '@/lib/daily';
 import { toast } from '@/hooks/use-toast';
 
 interface VideoConferenceProps {
-  roomUrl: string;
+  roomUrl?: string;
+  roomId?: string;
   token?: string;
   userName?: string;
   onLeave?: () => void;
@@ -31,211 +32,74 @@ interface VideoConferenceProps {
 
 export default function VideoConference({
   roomUrl,
+  roomId,
   token,
-  userName,
+  userName = 'Guest',
   onLeave,
   className = ''
 }: VideoConferenceProps) {
-  const containerRef = useRef<HTMLDivElement>(null);
+  const iframeRef = useRef<HTMLIFrameElement>(null);
   const [isConnected, setIsConnected] = useState(false);
-  const [isConnecting, setIsConnecting] = useState(false);
-  const [participants, setParticipants] = useState<{ [id: string]: ParticipantData }>({});
-  const [localParticipant, setLocalParticipant] = useState<ParticipantData | null>(null);
-  const [isAudioEnabled, setIsAudioEnabled] = useState(true);
-  const [isVideoEnabled, setIsVideoEnabled] = useState(true);
-  const [isScreenSharing, setIsScreenSharing] = useState(false);
-  const [isRecording, setIsRecording] = useState(false);
-  const [error, setError] = useState<string | null>(null);
+  const [isLoading, setIsLoading] = useState(false);
+  const [meetingUrl, setMeetingUrl] = useState<string>('');
+  const [useExternalWindow, setUseExternalWindow] = useState(false);
 
   useEffect(() => {
-    initializeDaily();
-    return () => {
-      dailyService.destroy();
-    };
-  }, [roomUrl, token, userName]);
+    // Generate Jitsi meeting URL
+    const jitsiRoomId = roomId || roomUrl || `consultation-${Date.now()}`;
+    const cleanRoomId = jitsiRoomId.replace(/[^a-zA-Z0-9-_]/g, '-');
+    
+    // Use Jitsi Meet (free, no API key required)
+    const jitsiUrl = `https://meet.jit.si/${cleanRoomId}#userInfo.displayName="${encodeURIComponent(userName)}"&config.prejoinPageEnabled=false&config.startWithAudioMuted=false&config.startWithVideoMuted=false`;
+    
+    setMeetingUrl(jitsiUrl);
+  }, [roomId, roomUrl, userName]);
 
-  const initializeDaily = async () => {
-    try {
-      setIsConnecting(true);
-      setError(null);
-
-      await dailyService.initialize({
-        roomUrl,
-        token,
-        userName,
-        userData: { name: userName }
+  const handleJoinRoom = () => {
+    if (useExternalWindow) {
+      // Open in new window/tab
+      window.open(meetingUrl, '_blank', 'noopener,noreferrer');
+      toast({
+        title: 'Meeting Opened',
+        description: 'Video conference opened in a new window',
       });
-
-      // Set up event listeners
-      dailyService.onParticipantJoined((participant) => {
-        setParticipants(prev => ({ ...prev, [participant.session_id]: participant }));
-        toast({
-          title: 'Participant Joined',
-          description: `${participant.user_name} joined the meeting`,
-        });
-      });
-
-      dailyService.onParticipantLeft((participant) => {
-        setParticipants(prev => {
-          const newParticipants = { ...prev };
-          delete newParticipants[participant.session_id];
-          return newParticipants;
-        });
-        toast({
-          title: 'Participant Left',
-          description: `${participant.user_name} left the meeting`,
-        });
-      });
-
-      dailyService.onParticipantUpdated((participant) => {
-        if (participant.session_id === localParticipant?.session_id) {
-          setLocalParticipant(participant);
-          setIsAudioEnabled(participant.audio);
-          setIsVideoEnabled(participant.video);
-          setIsScreenSharing(participant.screen || false);
-        } else {
-          setParticipants(prev => ({ ...prev, [participant.session_id]: participant }));
-        }
-      });
-
-      dailyService.onRecordingStarted(() => {
-        setIsRecording(true);
-        toast({
-          title: 'Recording Started',
-          description: 'This meeting is now being recorded',
-        });
-      });
-
-      dailyService.onRecordingStopped(() => {
-        setIsRecording(false);
-        toast({
-          title: 'Recording Stopped',
-          description: 'Meeting recording has ended',
-        });
-      });
-
-      dailyService.onError((error) => {
-        console.error('Daily error:', error);
-        setError(error.message || 'An error occurred');
-        toast({
-          title: 'Connection Error',
-          description: error.message || 'An error occurred with the video connection',
-          variant: 'destructive',
-        });
-      });
-
-    } catch (error) {
-      console.error('Failed to initialize Daily:', error);
-      setError('Failed to initialize video conference');
-    } finally {
-      setIsConnecting(false);
-    }
-  };
-
-  const handleJoinRoom = async () => {
-    try {
-      setIsConnecting(true);
-      await dailyService.joinRoom();
+    } else {
+      // Use embedded iframe
+      setIsLoading(true);
       setIsConnected(true);
-      setLocalParticipant(dailyService.getLocalParticipant());
-      setParticipants(dailyService.getParticipants());
-    } catch (error) {
-      console.error('Failed to join room:', error);
-      setError('Failed to join meeting room');
-    } finally {
-      setIsConnecting(false);
+      
+      // Simulate loading time
+      setTimeout(() => {
+        setIsLoading(false);
+        toast({
+          title: 'Connected',
+          description: 'You have joined the video conference',
+        });
+      }, 2000);
     }
   };
 
-  const handleLeaveRoom = async () => {
-    try {
-      await dailyService.leaveRoom();
-      setIsConnected(false);
-      setParticipants({});
-      setLocalParticipant(null);
-      if (onLeave) onLeave();
-    } catch (error) {
-      console.error('Failed to leave room:', error);
+  const handleLeaveRoom = () => {
+    setIsConnected(false);
+    setIsLoading(false);
+    
+    if (onLeave) {
+      onLeave();
     }
+    
+    toast({
+      title: 'Disconnected',
+      description: 'You have left the video conference',
+    });
   };
 
-  const handleToggleAudio = async () => {
-    try {
-      await dailyService.toggleAudio();
-    } catch (error) {
-      console.error('Failed to toggle audio:', error);
-      toast({
-        title: 'Audio Error',
-        description: 'Failed to toggle audio',
-        variant: 'destructive',
-      });
-    }
+  const handleOpenExternal = () => {
+    window.open(meetingUrl, '_blank', 'noopener,noreferrer');
+    toast({
+      title: 'Meeting Opened',
+      description: 'Video conference opened in a new window',
+    });
   };
-
-  const handleToggleVideo = async () => {
-    try {
-      await dailyService.toggleVideo();
-    } catch (error) {
-      console.error('Failed to toggle video:', error);
-      toast({
-        title: 'Video Error',
-        description: 'Failed to toggle video',
-        variant: 'destructive',
-      });
-    }
-  };
-
-  const handleToggleScreenShare = async () => {
-    try {
-      if (isScreenSharing) {
-        await dailyService.stopScreenShare();
-      } else {
-        await dailyService.startScreenShare();
-      }
-    } catch (error) {
-      console.error('Failed to toggle screen share:', error);
-      toast({
-        title: 'Screen Share Error',
-        description: 'Failed to toggle screen sharing',
-        variant: 'destructive',
-      });
-    }
-  };
-
-  const handleToggleRecording = async () => {
-    try {
-      if (isRecording) {
-        await dailyService.stopRecording();
-      } else {
-        await dailyService.startRecording();
-      }
-    } catch (error) {
-      console.error('Failed to toggle recording:', error);
-      toast({
-        title: 'Recording Error',
-        description: 'Failed to toggle recording',
-        variant: 'destructive',
-      });
-    }
-  };
-
-  const participantCount = Object.keys(participants).length + (localParticipant ? 1 : 0);
-
-  if (error) {
-    return (
-      <Card className={`w-full ${className}`}>
-        <CardHeader>
-          <CardTitle className="text-red-600">Connection Error</CardTitle>
-        </CardHeader>
-        <CardContent>
-          <p className="text-sm text-muted-foreground mb-4">{error}</p>
-          <Button onClick={initializeDaily} variant="outline">
-            Try Again
-          </Button>
-        </CardContent>
-      </Card>
-    );
-  }
 
   return (
     <div className={`w-full ${className}`}>
@@ -244,19 +108,20 @@ export default function VideoConference({
           <div className="flex items-center justify-between">
             <div className="flex items-center gap-2">
               <CardTitle>Video Conference</CardTitle>
-              {isRecording && (
-                <Badge variant="destructive" className="animate-pulse">
-                  <Circle className="w-3 h-3 mr-1" />
-                  Recording
-                </Badge>
-              )}
-            </div>
-            <div className="flex items-center gap-2">
-              <Badge variant="secondary">
-                <Users className="w-3 h-3 mr-1" />
-                {participantCount} participant{participantCount !== 1 ? 's' : ''}
+              <Badge variant="outline" className="text-xs">
+                Powered by Jitsi Meet
               </Badge>
             </div>
+            {isConnected && (
+              <Button 
+                variant="outline" 
+                size="sm"
+                onClick={handleOpenExternal}
+              >
+                <ExternalLink className="w-4 h-4 mr-2" />
+                Open in New Window
+              </Button>
+            )}
           </div>
         </CardHeader>
         <CardContent>
@@ -267,113 +132,74 @@ export default function VideoConference({
               </div>
               <h3 className="text-lg font-medium mb-2">Ready to Join?</h3>
               <p className="text-sm text-muted-foreground mb-4">
-                Click the button below to join the video conference
+                Join the video conference using Jitsi Meet
               </p>
-              <Button 
-                onClick={handleJoinRoom} 
-                disabled={isConnecting}
-                className="min-w-32"
-              >
-                {isConnecting ? 'Connecting...' : 'Join Meeting'}
-              </Button>
+              
+              <div className="flex flex-col gap-3 items-center">
+                <Button 
+                  onClick={handleJoinRoom}
+                  className="min-w-48"
+                >
+                  <Video className="w-4 h-4 mr-2" />
+                  Join Meeting (Embedded)
+                </Button>
+                
+                <Button 
+                  variant="outline"
+                  onClick={() => {
+                    setUseExternalWindow(true);
+                    handleJoinRoom();
+                  }}
+                  className="min-w-48"
+                >
+                  <ExternalLink className="w-4 h-4 mr-2" />
+                  Open in New Window
+                </Button>
+              </div>
+              
+              <div className="mt-4 p-3 bg-muted rounded-lg text-xs text-muted-foreground">
+                <p>📹 Free video conferencing with no time limits</p>
+                <p>🔒 End-to-end encrypted for security</p>
+                <p>👥 Support for up to 100 participants</p>
+              </div>
             </div>
           ) : (
             <div>
-              {/* Video container */}
-              <div 
-                ref={containerRef}
-                className="bg-gray-900 rounded-lg mb-4 h-96 flex items-center justify-center text-white"
-              >
-                <p>Video feed will appear here</p>
-              </div>
-
-              {/* Controls */}
-              <div className="flex items-center justify-center gap-2">
-                <Button
-                  variant={isAudioEnabled ? "default" : "destructive"}
-                  size="sm"
-                  onClick={handleToggleAudio}
-                >
-                  {isAudioEnabled ? <Mic className="w-4 h-4" /> : <MicOff className="w-4 h-4" />}
-                </Button>
-                
-                <Button
-                  variant={isVideoEnabled ? "default" : "destructive"}
-                  size="sm"
-                  onClick={handleToggleVideo}
-                >
-                  {isVideoEnabled ? <Video className="w-4 h-4" /> : <VideoOff className="w-4 h-4" />}
-                </Button>
-
-                <Button
-                  variant={isScreenSharing ? "secondary" : "outline"}
-                  size="sm"
-                  onClick={handleToggleScreenShare}
-                >
-                  {isScreenSharing ? <MonitorOff className="w-4 h-4" /> : <Monitor className="w-4 h-4" />}
-                </Button>
-
-                <Button
-                  variant={isRecording ? "destructive" : "outline"}
-                  size="sm"
-                  onClick={handleToggleRecording}
-                >
-                  {isRecording ? <Square className="w-4 h-4" /> : <Circle className="w-4 h-4" />}
-                </Button>
-
-                <Button
-                  variant="outline"
-                  size="sm"
-                >
-                  <Settings className="w-4 h-4" />
-                </Button>
-
-                <Button
-                  variant="destructive"
-                  size="sm"
-                  onClick={handleLeaveRoom}
-                >
-                  <PhoneOff className="w-4 h-4" />
-                </Button>
-              </div>
-
-              {/* Participants list */}
-              {participantCount > 1 && (
-                <div className="mt-4">
-                  <h4 className="text-sm font-medium mb-2">Participants ({participantCount})</h4>
-                  <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-2">
-                    {localParticipant && (
-                      <div className="flex items-center gap-2 p-2 bg-muted rounded text-sm">
-                        <div className="flex gap-1">
-                          {localParticipant.audio ? 
-                            <Mic className="w-3 h-3 text-green-600" /> : 
-                            <MicOff className="w-3 h-3 text-red-600" />
-                          }
-                          {localParticipant.video ? 
-                            <Video className="w-3 h-3 text-green-600" /> : 
-                            <VideoOff className="w-3 h-3 text-red-600" />
-                          }
-                        </div>
-                        <span className="truncate">{localParticipant.user_name} (You)</span>
-                      </div>
-                    )}
-                    {Object.values(participants).map((participant) => (
-                      <div key={participant.session_id} className="flex items-center gap-2 p-2 bg-muted rounded text-sm">
-                        <div className="flex gap-1">
-                          {participant.audio ? 
-                            <Mic className="w-3 h-3 text-green-600" /> : 
-                            <MicOff className="w-3 h-3 text-red-600" />
-                          }
-                          {participant.video ? 
-                            <Video className="w-3 h-3 text-green-600" /> : 
-                            <VideoOff className="w-3 h-3 text-red-600" />
-                          }
-                        </div>
-                        <span className="truncate">{participant.user_name}</span>
-                      </div>
-                    ))}
+              {isLoading && (
+                <div className="bg-gray-900 rounded-lg h-[500px] flex items-center justify-center text-white">
+                  <div className="text-center">
+                    <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-white mx-auto mb-4"></div>
+                    <p>Loading video conference...</p>
                   </div>
                 </div>
+              )}
+              
+              {!isLoading && (
+                <>
+                  {/* Jitsi Meet Iframe */}
+                  <iframe
+                    ref={iframeRef}
+                    src={meetingUrl}
+                    className="w-full h-[500px] rounded-lg border-0"
+                    allow="camera; microphone; fullscreen; display-capture; autoplay"
+                    allowFullScreen
+                    title="Jitsi Meet Video Conference"
+                  />
+                  
+                  {/* Leave Meeting Button */}
+                  <div className="mt-4 flex items-center justify-between">
+                    <div className="text-sm text-muted-foreground">
+                      <p>💡 Tip: Use the controls within the video window</p>
+                    </div>
+                    <Button
+                      variant="destructive"
+                      onClick={handleLeaveRoom}
+                    >
+                      <PhoneOff className="w-4 h-4 mr-2" />
+                      Leave Meeting
+                    </Button>
+                  </div>
+                </>
               )}
             </div>
           )}

@@ -10,8 +10,8 @@ const contactMethods = [
     icon: Mail,
     title: 'Email Us',
     description: 'Send us an email and we\'ll respond within 24 hours',
-    contact: 'consulting@vidibemus.ai',
-    action: 'mailto:consulting@vidibemus.ai'
+    contact: 'consulting@videbimusai.com',
+    action: 'mailto:consulting@videbimusai.com'
   },
   {
     icon: Phone,
@@ -211,7 +211,7 @@ export default function ContactPage() {
                 <CardContent className="space-y-4">
                   <div className="flex items-center space-x-3">
                     <Mail className="h-5 w-5 text-gray-400" />
-                    <span className="text-gray-600 dark:text-gray-300">consulting@videbimus.ai</span>
+                    <span className="text-gray-600 dark:text-gray-300">consulting@videbimusai.com</span>
                   </div>
                   <div className="flex items-center space-x-3">
                     <Phone className="h-5 w-5 text-gray-400" />

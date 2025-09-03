@@ -13,7 +13,7 @@ Sentry.init({
   integrations: [
     new Sentry.BrowserTracing({
       // Set sampling rate for performance monitoring
-      tracingOrigins: ['localhost', process.env.NEXT_PUBLIC_APP_URL || 'https://vidibemus.ai'],
+      tracingOrigins: ['localhost', process.env.NEXT_PUBLIC_APP_URL || 'https://videbimus.ai'],
     }),
     new Sentry.Replay({
       // Capture 10% of all sessions in production

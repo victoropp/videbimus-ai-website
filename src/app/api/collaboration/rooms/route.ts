@@ -97,8 +97,8 @@ export async function POST(request: NextRequest) {
     const validatedData = createRoomSchema.parse(body);
 
     // Generate Daily.co room (in a real implementation, you'd call Daily.co API)
-    const dailyRoomName = `vidibemus-${Date.now()}-${Math.random().toString(36).substr(2, 9)}`;
-    const dailyRoomUrl = `https://vidibemus.daily.co/${dailyRoomName}`;
+    const dailyRoomName = `videbimus-${Date.now()}-${Math.random().toString(36).substr(2, 9)}`;
+    const dailyRoomUrl = `https://videbimus.daily.co/${dailyRoomName}`;
 
     const room = await prisma.room.create({
       data: {

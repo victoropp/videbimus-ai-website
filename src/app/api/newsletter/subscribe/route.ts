@@ -47,13 +47,13 @@ export async function POST(request: NextRequest) {
         // Send welcome email
         try {
           await resend.emails.send({
-            from: process.env.FROM_EMAIL || 'noreply@vidibemus.com',
+            from: process.env.FROM_EMAIL || 'noreply@videbimus.com',
             to: [data.email],
-            subject: 'Welcome back to Vidibemus AI Newsletter',
+            subject: 'Welcome back to Videbimus AI Newsletter',
             html: `
               <div style="font-family: Arial, sans-serif; max-width: 600px; margin: 0 auto;">
                 <h1 style="color: #1f2937; text-align: center;">Welcome back!</h1>
-                <p>Thank you for resubscribing to the Vidibemus AI Newsletter.</p>
+                <p>Thank you for resubscribing to the Videbimus AI Newsletter.</p>
                 <p>You'll receive the latest insights on AI, machine learning, and data science directly to your inbox.</p>
                 <div style="margin: 20px 0; padding: 20px; background-color: #f9fafb; border-radius: 8px;">
                   <h3 style="color: #374151; margin-top: 0;">Your Preferences:</h3>
@@ -95,12 +95,12 @@ export async function POST(request: NextRequest) {
     // Send welcome email
     try {
       await resend.emails.send({
-        from: process.env.FROM_EMAIL || 'noreply@vidibemus.com',
+        from: process.env.FROM_EMAIL || 'noreply@videbimus.com',
         to: [data.email],
-        subject: 'Welcome to Vidibemus AI Newsletter',
+        subject: 'Welcome to Videbimus AI Newsletter',
         html: `
           <div style="font-family: Arial, sans-serif; max-width: 600px; margin: 0 auto;">
-            <h1 style="color: #1f2937; text-align: center;">Welcome to Vidibemus AI!</h1>
+            <h1 style="color: #1f2937; text-align: center;">Welcome to Videbimus AI!</h1>
             <p>Thank you for subscribing to our newsletter. You've taken the first step to stay updated with the latest in AI and data science.</p>
             
             <div style="margin: 20px 0; padding: 20px; background-color: #f0f9ff; border-radius: 8px; border-left: 4px solid #0ea5e9;">

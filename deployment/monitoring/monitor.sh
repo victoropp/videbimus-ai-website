@@ -5,7 +5,7 @@
 
 # Configuration
 DOMAIN="vidibemus.ai"
-ALERT_EMAIL="admin@vidibemus.ai"
+ALERT_EMAIL="admin@videbimusai.com"
 SLACK_WEBHOOK="YOUR_SLACK_WEBHOOK_URL"
 LOG_FILE="/var/log/vidibemus/monitor.log"
 

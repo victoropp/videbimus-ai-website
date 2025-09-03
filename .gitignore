@@ -20,6 +20,7 @@ dist/
 .env.development.local
 
 # SSH Keys and Secrets
+config/secrets/
 github_actions_key
 github_actions_key.pub
 SECRETS_FOR_GITHUB.txt
@@ -27,6 +28,9 @@ SECRETS_FOR_GITHUB.txt
 *.pem
 .env.test.local
 .env.production.local
+ngrok_recovery_codes.txt
+ssh_config.txt
+setup_remote.txt
 
 # Debug
 npm-debug.log*

@@ -111,7 +111,7 @@ export const knowledgeBase: KnowledgeItem[] = [
     id: "contact",
     category: "Contact",
     question: "How can I contact Videbimus AI?",
-    answer: "You can reach us via: Email: consulting@videbimus.ai, Phone: +44 7442 852 675, WhatsApp: +233 248 769 377. We're available Monday-Friday, 9 AM - 6 PM GMT. You can also schedule a free 30-minute consultation.",
+    answer: "You can reach us via: Email: consulting@videbimusai.com, Phone: +44 7442 852 675, WhatsApp: +233 248 769 377. We're available Monday-Friday, 9 AM - 6 PM GMT. You can also schedule a free 30-minute consultation.",
     keywords: ["contact", "reach", "phone", "email", "get in touch"],
     tags: ["contact", "information"]
   },
@@ -159,7 +159,7 @@ export const quickQuestions = [
 
 // Fallback responses for unmatched queries
 export const fallbackResponses = [
-  "I'd be happy to help you with that! For detailed information about your specific needs, I recommend scheduling a free 30-minute consultation with our AI experts. You can contact us at consulting@videbimus.ai or +44 7442 852 675.",
+  "I'd be happy to help you with that! For detailed information about your specific needs, I recommend scheduling a free 30-minute consultation with our AI experts. You can contact us at consulting@videbimusai.com or +44 7442 852 675.",
   "That's a great question! While I don't have a specific answer for that, our team of AI experts would love to discuss your requirements in detail. Please reach out for a personalized consultation.",
-  "I want to make sure I give you the most accurate information. For questions beyond my knowledge base, please contact our team directly at consulting@videbimus.ai or schedule a free consultation to speak with our AI specialists."
+  "I want to make sure I give you the most accurate information. For questions beyond my knowledge base, please contact our team directly at consulting@videbimusai.com or schedule a free consultation to speak with our AI specialists."
 ];

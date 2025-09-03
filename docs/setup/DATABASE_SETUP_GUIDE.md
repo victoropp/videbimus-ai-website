@@ -114,12 +114,12 @@ The system supports multiple authentication methods:
 
 #### Users (All passwords: see respective sections below)
 1. **Admin User**
-   - Email: `admin@vidibemus.ai`
+   - Email: `admin@videbimusai.com`
    - Password: `AdminPass123!`
    - Role: ADMIN
 
 2. **Consultant User**
-   - Email: `consultant@vidibemus.ai`
+   - Email: `consultant@videbimusai.com`
    - Password: `ConsultantPass123!`
    - Role: CONSULTANT
 

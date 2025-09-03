@@ -46,7 +46,7 @@ export const customerCareResponses = {
   // Support responses
   support: {
     technical: "I can help with technical questions! Please describe the issue you're experiencing, and I'll either provide a solution or connect you with our technical team for immediate assistance.",
-    billing: "For billing inquiries, I can connect you directly with our finance team. Would you prefer to discuss this via email at consulting@videbimus.ai or schedule a call?",
+    billing: "For billing inquiries, I can connect you directly with our finance team. Would you prefer to discuss this via email at consulting@videbimusai.com or schedule a call?",
     general: "I'm here to help! Please describe what you need assistance with, and I'll make sure you get the right support quickly."
   },
 

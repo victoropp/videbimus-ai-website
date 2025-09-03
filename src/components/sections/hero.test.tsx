@@ -104,7 +104,7 @@ describe('Hero', () => {
     render(<Hero />)
     
     // Check for brand name or company name
-    const brandElement = screen.getByText(/vidibemus/i) || screen.getByText(/ai/i)
+    const brandElement = screen.getByText(/videbimus/i) || screen.getByText(/ai/i)
     expect(brandElement).toBeInTheDocument()
   })
 })

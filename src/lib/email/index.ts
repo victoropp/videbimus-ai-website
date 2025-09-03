@@ -35,8 +35,8 @@ export async function sendContactNotificationEmail(data: ContactNotificationData
     }))
 
     const result = await resend.emails.send({
-      from: process.env.EMAIL_FROM || "noreply@vidibemus.ai",
-      to: process.env.ADMIN_EMAIL || "admin@vidibemus.ai",
+      from: process.env.EMAIL_FROM || "noreply@videbimusai.com",
+      to: process.env.ADMIN_EMAIL || "admin@videbimusai.com",
       subject: `New Contact Form Submission: ${subject}`,
       html: emailHtml,
       replyTo: email,
@@ -60,9 +60,9 @@ export async function sendWelcomeEmail(data: WelcomeEmailData) {
     }))
 
     const result = await resend.emails.send({
-      from: process.env.EMAIL_FROM || "noreply@vidibemus.ai",
+      from: process.env.EMAIL_FROM || "noreply@videbimusai.com",
       to: email,
-      subject: "Welcome to Vidibemus AI Newsletter!",
+      subject: "Welcome to Videbimus AI Newsletter!",
       html: emailHtml,
     })
 
@@ -79,9 +79,9 @@ export async function sendPasswordResetEmail(email: string, resetToken: string) 
     const resetUrl = `${process.env.APP_URL}/auth/reset-password?token=${resetToken}`
 
     const result = await resend.emails.send({
-      from: process.env.EMAIL_FROM || "noreply@vidibemus.ai",
+      from: process.env.EMAIL_FROM || "noreply@videbimusai.com",
       to: email,
-      subject: "Reset Your Password - Vidibemus AI",
+      subject: "Reset Your Password - Videbimus AI",
       html: `
         <div style="font-family: Arial, sans-serif; max-width: 600px; margin: 0 auto;">
           <h2>Reset Your Password</h2>
@@ -93,7 +93,7 @@ export async function sendPasswordResetEmail(email: string, resetToken: string) 
           <p>This link will expire in 1 hour.</p>
           <hr style="margin: 24px 0; border: none; border-top: 1px solid #eee;">
           <p style="color: #666; font-size: 14px;">
-            Vidibemus AI - Your AI Consulting Partner
+            Videbimus AI - Your AI Consulting Partner
           </p>
         </div>
       `,
@@ -115,7 +115,7 @@ export async function sendProjectUpdateEmail(
 ) {
   try {
     const result = await resend.emails.send({
-      from: process.env.EMAIL_FROM || "noreply@vidibemus.ai",
+      from: process.env.EMAIL_FROM || "noreply@videbimusai.com",
       to: userEmail,
       subject: `Project Update: ${projectTitle}`,
       html: `
@@ -132,7 +132,7 @@ export async function sendProjectUpdateEmail(
           </a>
           <hr style="margin: 24px 0; border: none; border-top: 1px solid #eee;">
           <p style="color: #666; font-size: 14px;">
-            Vidibemus AI - Your AI Consulting Partner
+            Videbimus AI - Your AI Consulting Partner
           </p>
         </div>
       `,

@@ -112,7 +112,7 @@ sudo apt install certbot python3-certbot-nginx -y
 
 # Obtain SSL certificate
 sudo certbot --nginx -d vidibemus.ai -d www.vidibemus.ai \
-  --non-interactive --agree-tos --email admin@vidibemus.ai
+  --non-interactive --agree-tos --email admin@videbimusai.com
 
 # Test auto-renewal
 sudo certbot renew --dry-run
@@ -289,4 +289,4 @@ sudo dpkg-reconfigure unattended-upgrades
 If you encounter issues:
 - UK: +44 7442 852675 (Call or WhatsApp)
 - Ghana: +233 248769377 (Call or WhatsApp)
-- Email: support@vidibemus.ai
+- Email: support@videbimusai.com

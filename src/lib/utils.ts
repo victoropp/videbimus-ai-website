@@ -6,10 +6,7 @@
 import { type ClassValue, clsx } from 'clsx';
 import { twMerge } from 'tailwind-merge';
 
-// Re-export utility functions from dedicated modules
-export * from '@/utils/format';
-export * from '@/utils/validation';
-export * from '@/utils/helpers';
+// All utility functions are defined in this file
 
 /**
  * Combines and merges Tailwind CSS classes with clsx

@@ -93,7 +93,7 @@ export const config = {
   
   // Application
   app: {
-    name: 'Vidibemus AI',
+    name: 'Videbimus AI',
     url: env.NEXT_PUBLIC_APP_URL,
     description: 'Expert AI and Data Science consulting services',
     version: process.env.npm_package_version || '1.0.0',
@@ -140,7 +140,7 @@ export const config = {
     pinecone: {
       apiKey: env.PINECONE_API_KEY,
       environment: env.PINECONE_ENVIRONMENT,
-      indexName: env.PINECONE_INDEX_NAME || 'vidibemus-ai',
+      indexName: env.PINECONE_INDEX_NAME || 'videbimus-ai',
     },
   },
   
@@ -148,8 +148,8 @@ export const config = {
   email: {
     resend: {
       apiKey: env.RESEND_API_KEY,
-      fromAddress: 'hello@vidibemus.ai',
-      replyToAddress: 'hello@vidibemus.ai',
+      fromAddress: 'hello@videbimusai.com',
+      replyToAddress: 'hello@videbimusai.com',
     },
     smtp: {
       host: env.SMTP_HOST,

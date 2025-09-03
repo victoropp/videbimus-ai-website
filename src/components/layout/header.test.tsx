@@ -25,7 +25,7 @@ describe('Header', () => {
     render(<Header />)
     
     // Check logo
-    expect(screen.getByText('Vidibemus AI')).toBeInTheDocument()
+    expect(screen.getByText('Videbimus AI')).toBeInTheDocument()
     expect(screen.getByText('V')).toBeInTheDocument()
     
     // Check main navigation items
@@ -42,7 +42,7 @@ describe('Header', () => {
   it('has correct logo link to home page', () => {
     render(<Header />)
     
-    const logoLink = screen.getByRole('link', { name: /vidibemus ai/i })
+    const logoLink = screen.getByRole('link', { name: /videbimus ai/i })
     expect(logoLink).toHaveAttribute('href', '/')
   })
 

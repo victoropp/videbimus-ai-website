@@ -614,7 +614,7 @@ export default function CaseStudyPage({ params }: CaseStudyPageProps) {
 //   }
 
 //   return {
-//     title: `${caseStudy.title} - ${caseStudy.client} Case Study | Vidibemus AI`,
+//     title: `${caseStudy.title} - ${caseStudy.client} Case Study | Videbimus AI`,
 //     description: caseStudy.description,
 //     keywords: [
 //       'AI case study',

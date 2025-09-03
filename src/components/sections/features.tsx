@@ -84,7 +84,7 @@ export function Features() {
           className="text-center mb-16"
         >
           <h2 className="font-display text-3xl font-bold tracking-tight text-gray-900 dark:text-white sm:text-4xl mb-4">
-            Why Choose Vidibemus AI?
+            Why Choose Videbimus AI?
           </h2>
           <p className="mx-auto max-w-2xl text-lg text-gray-600 dark:text-gray-300">
             We combine cutting-edge AI technology with proven business expertise to deliver 

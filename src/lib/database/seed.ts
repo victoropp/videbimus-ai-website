@@ -8,10 +8,10 @@ async function main() {
 
   // Create admin user
   const adminUser = await prisma.user.upsert({
-    where: { email: 'admin@vidibemus.ai' },
+    where: { email: 'admin@videbimusai.com' },
     update: {},
     create: {
-      email: 'admin@vidibemus.ai',
+      email: 'admin@videbimusai.com',
       name: 'Admin User',
       password: await hash('admin123', 12),
       role: 'ADMIN',
@@ -23,10 +23,10 @@ async function main() {
 
   // Create consultant user
   const consultantUser = await prisma.user.upsert({
-    where: { email: 'consultant@vidibemus.ai' },
+    where: { email: 'consultant@videbimusai.com' },
     update: {},
     create: {
-      email: 'consultant@vidibemus.ai',
+      email: 'consultant@videbimusai.com',
       name: 'Senior AI Consultant',
       password: await hash('consultant123', 12),
       role: 'CONSULTANT',
@@ -54,13 +54,13 @@ async function main() {
   // Create team members
   const teamMembers = await Promise.all([
     prisma.teamMember.upsert({
-      where: { email: 'john.smith@vidibemus.ai' },
+      where: { email: 'john.smith@videbimusai.com' },
       update: {},
       create: {
         name: 'John Smith',
         role: 'AI/ML Engineering Lead',
         bio: 'John leads our AI/ML engineering team with over 10 years of experience in machine learning, deep learning, and MLOps. He specializes in building scalable AI systems and has worked with Fortune 500 companies to implement production-ready AI solutions.',
-        email: 'john.smith@vidibemus.ai',
+        email: 'john.smith@videbimusai.com',
         linkedin: 'https://linkedin.com/in/johnsmith-ai',
         github: 'https://github.com/johnsmith-ai',
         skills: ['Python', 'TensorFlow', 'PyTorch', 'MLOps', 'Kubernetes', 'AWS', 'Data Engineering'],
@@ -70,13 +70,13 @@ async function main() {
       },
     }),
     prisma.teamMember.upsert({
-      where: { email: 'sarah.johnson@vidibemus.ai' },
+      where: { email: 'sarah.johnson@videbimusai.com' },
       update: {},
       create: {
         name: 'Sarah Johnson',
         role: 'Data Science Director',
         bio: 'Sarah brings 12+ years of data science expertise, specializing in predictive analytics, statistical modeling, and business intelligence. She has led data transformation initiatives for companies across healthcare, finance, and e-commerce sectors.',
-        email: 'sarah.johnson@vidibemus.ai',
+        email: 'sarah.johnson@videbimusai.com',
         linkedin: 'https://linkedin.com/in/sarah-johnson-ds',
         skills: ['R', 'Python', 'SQL', 'Tableau', 'Statistical Modeling', 'A/B Testing', 'Business Intelligence'],
         experience: 12,
@@ -85,13 +85,13 @@ async function main() {
       },
     }),
     prisma.teamMember.upsert({
-      where: { email: 'michael.chen@vidibemus.ai' },
+      where: { email: 'michael.chen@videbimusai.com' },
       update: {},
       create: {
         name: 'Michael Chen',
         role: 'AI Ethics & Strategy Consultant',
         bio: 'Michael focuses on responsible AI implementation, bias detection, and AI governance frameworks. He holds a PhD in Computer Science and has published extensively on AI ethics and fairness in machine learning systems.',
-        email: 'michael.chen@vidibemus.ai',
+        email: 'michael.chen@videbimusai.com',
         linkedin: 'https://linkedin.com/in/michael-chen-ai-ethics',
         skills: ['AI Ethics', 'Fairness in ML', 'AI Governance', 'Strategy', 'Research', 'Policy Development'],
         experience: 8,
@@ -113,7 +113,7 @@ async function main() {
         name: 'Jennifer Rodriguez',
         role: 'Chief Technology Officer',
         company: 'TechCorp Solutions',
-        content: 'Vidibemus AI transformed our data strategy completely. Their team implemented a predictive analytics system that increased our operational efficiency by 40% and reduced costs by $2.3M annually. The ROI was evident within the first quarter.',
+        content: 'Videbimus AI transformed our data strategy completely. Their team implemented a predictive analytics system that increased our operational efficiency by 40% and reduced costs by $2.3M annually. The ROI was evident within the first quarter.',
         rating: 5,
         isActive: true,
         sortOrder: 1,
@@ -127,7 +127,7 @@ async function main() {
         name: 'David Kim',
         role: 'Head of Data Science',
         company: 'FinanceFirst Bank',
-        content: 'Working with Vidibemus AI was a game-changer for our fraud detection capabilities. Their ML models reduced false positives by 65% while maintaining 99.7% accuracy. The team\'s expertise in financial AI is unmatched.',
+        content: 'Working with Videbimus AI was a game-changer for our fraud detection capabilities. Their ML models reduced false positives by 65% while maintaining 99.7% accuracy. The team\'s expertise in financial AI is unmatched.',
         rating: 5,
         isActive: true,
         sortOrder: 2,
@@ -141,7 +141,7 @@ async function main() {
         name: 'Lisa Thompson',
         role: 'VP of Operations',
         company: 'HealthcarePlus',
-        content: 'The AI-powered patient diagnosis assistant developed by Vidibemus AI has revolutionized our healthcare delivery. We\'ve seen 30% faster diagnosis times and improved patient outcomes. Their understanding of healthcare AI compliance is exceptional.',
+        content: 'The AI-powered patient diagnosis assistant developed by Videbimus AI has revolutionized our healthcare delivery. We\'ve seen 30% faster diagnosis times and improved patient outcomes. Their understanding of healthcare AI compliance is exceptional.',
         rating: 5,
         isActive: true,
         sortOrder: 3,

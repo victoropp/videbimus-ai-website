@@ -319,7 +319,7 @@ Vidibemus AI provides comprehensive AI and Data Science consulting services desi
 ## Contact Information
 
 **Schedule a Consultation**: [Book Now]  
-**Email**: consulting@vidibemus.ai  
+**Email**: consulting@videbimusai.com  
 **Phone**: 1-800-VIDI-AI  
 **Office Hours**: Monday-Friday, 9 AM - 6 PM EST
 

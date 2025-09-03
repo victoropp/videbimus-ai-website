@@ -116,7 +116,7 @@ export function ContactNotificationEmail({
             <p>Contact ID: {contactId}</p>
             <p>Submitted at: {new Date().toLocaleString()}</p>
             <hr style={{ margin: "20px 0", border: "none", borderTop: "1px solid #eee" }} />
-            <p>Vidibemus AI - Your AI Consulting Partner</p>
+            <p>Videbimus AI - Your AI Consulting Partner</p>
           </div>
         </div>
       </body>

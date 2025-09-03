@@ -9,9 +9,9 @@ export const stripe = new Stripe(process.env.STRIPE_SECRET_KEY, {
   apiVersion: '2024-06-20',
   typescript: true,
   appInfo: {
-    name: 'Vidibemus AI Platform',
+    name: 'Videbimus AI Platform',
     version: '1.0.0',
-    url: process.env.NEXT_PUBLIC_APP_URL || 'https://vidibemus.ai',
+    url: process.env.NEXT_PUBLIC_APP_URL || 'https://videbimus.ai',
   },
 })
 

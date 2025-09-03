@@ -37,11 +37,11 @@ NEXTAUTH_SECRET="your-secret-key-here-make-it-long-and-random"
 
 # Email Service (Resend)
 RESEND_API_KEY="re_your_resend_api_key"
-EMAIL_FROM="noreply@vidibemus.ai"
+EMAIL_FROM="noreply@videbimusai.com"
 
 # Application Settings
 APP_URL="http://localhost:3000"
-ADMIN_EMAIL="admin@vidibemus.ai"
+ADMIN_EMAIL="admin@videbimusai.com"
 ```
 
 ### 3. Database Setup
@@ -186,13 +186,13 @@ All business logic is handled through tRPC at `/api/trpc`:
 ## Default Users (After Seeding)
 
 ### Admin User
-- **Email**: admin@vidibemus.ai (or your ADMIN_EMAIL)
+- **Email**: admin@videbimusai.com (or your ADMIN_EMAIL)
 - **Password**: AdminPass123!
 - **Role**: Admin
 - **Access**: Full system access
 
 ### Consultant User
-- **Email**: consultant@vidibemus.ai
+- **Email**: consultant@videbimusai.com
 - **Password**: ConsultantPass123!
 - **Role**: Consultant
 - **Access**: Project management, consultations

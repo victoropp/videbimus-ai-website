@@ -85,7 +85,7 @@ class Logger {
   private buildConfig(config?: Partial<LoggerConfig>): LoggerConfig {
     return {
       level: (process.env.LOG_LEVEL as LogLevel) || 'info',
-      service: process.env.APP_NAME || 'vidibemus-ai',
+      service: process.env.APP_NAME || 'videbimus-ai',
       version: process.env.APP_VERSION || '1.0.0',
       environment: process.env.NODE_ENV || 'development',
       enableConsole: true,

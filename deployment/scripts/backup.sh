@@ -13,7 +13,7 @@ DB_USER="vidibemus"
 DB_PASS="CHANGE_THIS_PASSWORD"
 RETENTION_DAYS=30
 S3_BUCKET="s3://vidibemus-backups"  # Optional: for S3 backups
-ALERT_EMAIL="admin@vidibemus.ai"
+ALERT_EMAIL="admin@videbimusai.com"
 
 # Create backup directory
 mkdir -p $BACKUP_DIR

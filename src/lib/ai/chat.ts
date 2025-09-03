@@ -110,7 +110,7 @@ export class ChatService {
             .map(doc => `Context: ${doc.content}`)
             .join('\n\n');
           
-          const ragSystemPrompt = `You are an AI assistant for Vidibemus AI. Use the following context to answer questions accurately and helpfully. If the context doesn't contain relevant information, use your general knowledge but mention that the information isn't from the knowledge base.
+          const ragSystemPrompt = `You are an AI assistant for Videbimus AI. Use the following context to answer questions accurately and helpfully. If the context doesn't contain relevant information, use your general knowledge but mention that the information isn't from the knowledge base.
 
 Context:
 ${context}
@@ -247,7 +247,7 @@ Instructions:
             .map(doc => `Context: ${doc.content}`)
             .join('\n\n');
           
-          const ragSystemPrompt = `You are an AI assistant for Vidibemus AI. Use the following context to answer questions accurately.
+          const ragSystemPrompt = `You are an AI assistant for Videbimus AI. Use the following context to answer questions accurately.
 
 Context:
 ${context}`;

@@ -51,7 +51,7 @@ export const serviceConfigSchema = z.object({
   pinecone: z.object({
     apiKey: z.string(),
     environment: z.string(),
-    index: z.string().default('vidibemus-knowledge'),
+    index: z.string().default('videbimus-knowledge'),
     timeout: z.number().default(30000),
     maxRetries: z.number().default(3),
   }),
@@ -240,7 +240,7 @@ export function loadServiceConfig(): ServiceConfig {
     pinecone: {
       apiKey: process.env.PINECONE_API_KEY!,
       environment: process.env.PINECONE_ENVIRONMENT!,
-      index: process.env.PINECONE_INDEX || 'vidibemus-knowledge',
+      index: process.env.PINECONE_INDEX || 'videbimus-knowledge',
       timeout: parseInt(process.env.PINECONE_TIMEOUT || '30000'),
       maxRetries: parseInt(process.env.PINECONE_MAX_RETRIES || '3'),
     },
@@ -248,7 +248,7 @@ export function loadServiceConfig(): ServiceConfig {
     email: {
       resend: {
         apiKey: process.env.RESEND_API_KEY!,
-        fromEmail: process.env.FROM_EMAIL || 'noreply@vidibemus.ai',
+        fromEmail: process.env.FROM_EMAIL || 'noreply@videbimusai.com',
         timeout: parseInt(process.env.RESEND_TIMEOUT || '30000'),
         maxRetries: parseInt(process.env.RESEND_MAX_RETRIES || '3'),
       },

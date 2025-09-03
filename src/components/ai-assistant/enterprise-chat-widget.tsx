@@ -62,7 +62,7 @@ export function EnterpriseChatWidget() {
         setSessionId(newSessionId)
         
         // Add welcome message
-        addMessage('assistant', `👋 Welcome to Vidibemus AI! I'm your enterprise AI assistant, powered by state-of-the-art technology including:
+        addMessage('assistant', `👋 Welcome to Videbimus AI! I'm your enterprise AI assistant, powered by state-of-the-art technology including:
 
 • **Multi-provider AI orchestration** for 99.9% uptime
 • **Semantic caching** for instant responses
@@ -268,7 +268,7 @@ How can I help transform your business with AI today?`, {
                     )} />
                   </div>
                   <div>
-                    <h3 className="font-semibold text-sm">Vidibemus AI Assistant</h3>
+                    <h3 className="font-semibold text-sm">Videbimus AI Assistant</h3>
                     <p className="text-xs opacity-90">
                       {connectionStatus === 'connected' && 'Enterprise AI at your service'}
                       {connectionStatus === 'connecting' && 'Connecting...'}

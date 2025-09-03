@@ -1,9 +1,9 @@
 {
-  "name": "vidibemus-ai",
+  "name": "videbimus-ai",
   "version": "1.0.0",
   "private": true,
   "description": "Enterprise AI Solutions Platform",
-  "author": "Vidibemus AI",
+  "author": "Videbimus AI",
   "license": "PROPRIETARY",
   "scripts": {
     "dev": "next dev",
@@ -110,7 +110,7 @@
     "d3": "^7.9.0",
     "date-fns": "^4.1.0",
     "decimal.js": "^10.6.0",
-    "fabric": "^6.7.1",
+    "fabric": "^5.3.0",
     "framer-motion": "^11.18.2",
     "groq-sdk": "^0.30.0",
     "ioredis": "^5.7.0",

@@ -32,7 +32,7 @@ TXT  | @         | "v=spf1 ip4:YOUR_VPS_IP include:_spf.google.com ~all"
 TXT  | mail._domainkey | "v=DKIM1; k=rsa; p=YOUR_DKIM_PUBLIC_KEY"
 
 # DMARC Record
-TXT  | _dmarc    | "v=DMARC1; p=quarantine; rua=mailto:admin@vidibemus.ai"
+TXT  | _dmarc    | "v=DMARC1; p=quarantine; rua=mailto:admin@videbimusai.com"
 ```
 
 ## Step 3: Update Nameservers
@@ -270,6 +270,6 @@ Add these to your server firewall:
 ## Support
 
 - Cloudflare Support: https://support.cloudflare.com
-- Vidibemus AI Support: support@vidibemus.ai
+- Vidibemus AI Support: support@videbimusai.com
 - UK: +44 7442 852675
 - Ghana: +233 248769377

@@ -306,9 +306,9 @@ export class EnterpriseChatService {
 
   private generateWelcomeMessage(context: ConversationContext): string {
     const welcomeMessages = [
-      "Hello! I'm Vidibemus AI's enterprise assistant. I can help you explore our AI consulting services, discuss technical solutions, provide pricing information, and answer questions about our capabilities. How can I assist you today?",
-      "Welcome to Vidibemus AI! I'm here to help you discover how our AI solutions can transform your business. Whether you're interested in custom AI development, data science consulting, or process automation, I'm ready to assist. What would you like to know?",
-      "Greetings! I'm your AI consultant from Vidibemus AI. I can provide insights into our machine learning services, discuss implementation strategies, explain our methodologies, and help you understand how AI can drive your business forward. What brings you here today?"
+      "Hello! I'm Videbimus AI's enterprise assistant. I can help you explore our AI consulting services, discuss technical solutions, provide pricing information, and answer questions about our capabilities. How can I assist you today?",
+      "Welcome to Videbimus AI! I'm here to help you discover how our AI solutions can transform your business. Whether you're interested in custom AI development, data science consulting, or process automation, I'm ready to assist. What would you like to know?",
+      "Greetings! I'm your AI consultant from Videbimus AI. I can provide insights into our machine learning services, discuss implementation strategies, explain our methodologies, and help you understand how AI can drive your business forward. What brings you here today?"
     ];
 
     return welcomeMessages[Math.floor(Math.random() * welcomeMessages.length)];
@@ -531,7 +531,7 @@ export class EnterpriseChatService {
       ],
       'general': [
         'Tell me about your AI consulting services',
-        'What makes Vidibemus AI different?',
+        'What makes Videbimus AI different?',
         'Can you help with my specific use case?'
       ]
     };

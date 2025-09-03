@@ -16,7 +16,7 @@ PORT: 22
 #### How to generate SSH Key:
 ```bash
 # On your local machine
-ssh-keygen -t rsa -b 4096 -C "github-actions@vidibemus.ai"
+ssh-keygen -t rsa -b 4096 -C "github-actions@videbimusai.com"
 # Save as: github_actions_key (no passphrase)
 
 # Copy the private key content
@@ -87,10 +87,10 @@ REDIS_PASSWORD: your_redis_password
 ### 8. Email Configuration
 
 ```yaml
-EMAIL_FROM: noreply@vidibemus.ai
+EMAIL_FROM: noreply@videbimusai.com
 EMAIL_SERVER_HOST: localhost
 EMAIL_SERVER_PORT: 587
-EMAIL_SERVER_USER: noreply@vidibemus.ai
+EMAIL_SERVER_USER: noreply@videbimusai.com
 EMAIL_SERVER_PASSWORD: your_email_password
 ```
 

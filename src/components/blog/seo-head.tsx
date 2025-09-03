@@ -22,9 +22,9 @@ export default function SEOHead({
   image,
   url
 }: SEOHeadProps) {
-  const siteUrl = process.env.NEXT_PUBLIC_SITE_URL || 'https://vidibemus.com'
-  const siteName = 'Vidibemus AI'
-  const defaultDescription = 'Latest insights on AI, machine learning, and data science from Vidibemus AI experts'
+  const siteUrl = process.env.NEXT_PUBLIC_SITE_URL || 'https://videbimus.com'
+  const siteName = 'Videbimus AI'
+  const defaultDescription = 'Latest insights on AI, machine learning, and data science from Videbimus AI experts'
   const defaultImage = `${siteUrl}/og-image.jpg`
 
   // Generate page-specific metadata
@@ -32,7 +32,7 @@ export default function SEOHead({
   let pageDescription = defaultDescription
   let pageImage = image || defaultImage
   let pageUrl = url || siteUrl
-  let pageKeywords = [...keywords, 'AI', 'Machine Learning', 'Data Science', 'Vidibemus']
+  let pageKeywords = [...keywords, 'AI', 'Machine Learning', 'Data Science', 'Videbimus']
 
   if (post) {
     pageTitle = post.seoTitle || `${post.title} | ${siteName}`
@@ -85,8 +85,8 @@ export default function SEOHead({
           caption: siteName
         },
         sameAs: [
-          'https://twitter.com/vidibemusai',
-          'https://linkedin.com/company/vidibemus'
+          'https://twitter.com/videbimusai',
+          'https://linkedin.com/company/videbimus'
         ]
       }
     ]
@@ -166,7 +166,7 @@ export default function SEOHead({
 
       {/* Twitter Card Tags */}
       <meta name="twitter:card" content="summary_large_image" />
-      <meta name="twitter:site" content="@vidibemusai" />
+      <meta name="twitter:site" content="@videbimusai" />
       <meta name="twitter:title" content={pageTitle} />
       <meta name="twitter:description" content={pageDescription} />
       <meta name="twitter:image" content={pageImage} />

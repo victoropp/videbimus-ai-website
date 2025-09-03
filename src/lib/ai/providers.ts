@@ -575,7 +575,7 @@ export class UniversalAIClient {
     
     // Greeting responses
     if (lowerMessage.includes('hello') || lowerMessage.includes('hi') || lowerMessage.includes('hey')) {
-      return "Hello! Welcome to Vidibemus AI. I'm here to help you explore how AI and data science can transform your business. Whether you need predictive analytics, process automation, or custom AI solutions, we're here to help. What brings you here today?";
+      return "Hello! Welcome to Videbimus AI. I'm here to help you explore how AI and data science can transform your business. Whether you need predictive analytics, process automation, or custom AI solutions, we're here to help. What brings you here today?";
     }
     
     // Help or information requests
@@ -594,7 +594,7 @@ export class UniversalAIClient {
     }
     
     // Default intelligent response
-    return "Thank you for your interest in Vidibemus AI. We specialize in transforming businesses through intelligent automation, predictive analytics, and custom AI solutions. I'm here to help you explore how these technologies can benefit your organization. Could you tell me more about your specific needs or challenges?";
+    return "Thank you for your interest in Videbimus AI. We specialize in transforming businesses through intelligent automation, predictive analytics, and custom AI solutions. I'm here to help you explore how these technologies can benefit your organization. Could you tell me more about your specific needs or challenges?";
   }
 
   private formatMessagesForHF(messages: ChatMessage[]): string {

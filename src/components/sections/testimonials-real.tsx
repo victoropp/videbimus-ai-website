@@ -62,7 +62,7 @@ export function TestimonialsReal({ limit = 6, className = '' }: TestimonialsProp
       name: 'Sarah Chen',
       role: 'Chief Technology Officer',
       company: 'TechCorp Industries',
-      content: 'Vidibemus AI transformed our entire data infrastructure. Their team delivered a comprehensive ML platform that increased our operational efficiency by 40% and reduced costs by $2M annually.',
+      content: 'Videbimus AI transformed our entire data infrastructure. Their team delivered a comprehensive ML platform that increased our operational efficiency by 40% and reduced costs by $2M annually.',
       image: '/testimonials/sarah-chen.jpg',
       rating: 5,
       isActive: true,

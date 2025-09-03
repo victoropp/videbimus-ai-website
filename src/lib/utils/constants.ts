@@ -1,5 +1,5 @@
 // Application constants
-export const APP_NAME = "Vidibemus AI"
+export const APP_NAME = "Videbimus AI"
 export const APP_DESCRIPTION = "Your AI Consulting Partner"
 export const APP_URL = process.env.APP_URL || "http://localhost:3000"
 
@@ -197,9 +197,9 @@ export const FEATURES = {
 
 // External service URLs
 export const EXTERNAL_URLS = {
-  LINKEDIN: "https://linkedin.com/company/vidibemus-ai",
-  TWITTER: "https://twitter.com/vidibemus_ai",
-  GITHUB: "https://github.com/vidibemus-ai",
+  LINKEDIN: "https://linkedin.com/company/videbimus-ai",
+  TWITTER: "https://twitter.com/videbimus_ai",
+  GITHUB: "https://github.com/videbimus-ai",
   PRIVACY_POLICY: "/privacy",
   TERMS_OF_SERVICE: "/terms",
   COOKIE_POLICY: "/cookies",
@@ -207,11 +207,11 @@ export const EXTERNAL_URLS = {
 
 // SEO constants
 export const SEO_DEFAULTS = {
-  TITLE: "Vidibemus AI - Your AI Consulting Partner",
+  TITLE: "Videbimus AI - Your AI Consulting Partner",
   DESCRIPTION: "Transform your business with AI. Expert consulting, custom solutions, and strategic guidance for successful AI implementation.",
   KEYWORDS: "AI consulting, artificial intelligence, machine learning, business transformation, AI strategy",
-  AUTHOR: "Vidibemus AI",
+  AUTHOR: "Videbimus AI",
   TYPE: "website",
   LOCALE: "en_US",
-  SITE_NAME: "Vidibemus AI",
+  SITE_NAME: "Videbimus AI",
 }

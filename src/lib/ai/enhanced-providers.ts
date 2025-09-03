@@ -196,13 +196,13 @@ export class EnhancedAIProviders {
 
   private initializeFallbackResponses() {
     this.fallbackResponses.set('greeting', [
-      "Hello! I'm Vidibemus AI's intelligent assistant. I'm here to help you learn about our AI consulting services and how we can transform your business with cutting-edge artificial intelligence solutions.",
-      "Welcome to Vidibemus AI! I can provide information about our AI consulting services, data science solutions, and how we help businesses implement successful AI strategies.",
-      "Greetings! I'm your AI assistant from Vidibemus AI. I'm ready to discuss our enterprise AI solutions, custom development services, and how we can help accelerate your AI transformation."
+      "Hello! I'm Videbimus AI's intelligent assistant. I'm here to help you learn about our AI consulting services and how we can transform your business with cutting-edge artificial intelligence solutions.",
+      "Welcome to Videbimus AI! I can provide information about our AI consulting services, data science solutions, and how we help businesses implement successful AI strategies.",
+      "Greetings! I'm your AI assistant from Videbimus AI. I'm ready to discuss our enterprise AI solutions, custom development services, and how we can help accelerate your AI transformation."
     ]);
 
     this.fallbackResponses.set('services', [
-      "Vidibemus AI offers comprehensive AI consulting services including custom machine learning development, data science analytics, process automation, and AI strategy consulting. We specialize in transforming businesses through intelligent automation and predictive analytics.",
+      "Videbimus AI offers comprehensive AI consulting services including custom machine learning development, data science analytics, process automation, and AI strategy consulting. We specialize in transforming businesses through intelligent automation and predictive analytics.",
       "Our core services include: AI strategy development, custom machine learning models, natural language processing solutions, computer vision applications, predictive analytics, and intelligent process automation. We work across industries to deliver measurable business value.",
       "We provide end-to-end AI solutions: from initial strategy and feasibility analysis to custom model development and production deployment. Our expertise spans machine learning, deep learning, NLP, computer vision, and MLOps."
     ]);
@@ -220,8 +220,8 @@ export class EnhancedAIProviders {
     ]);
 
     this.fallbackResponses.set('support', [
-      "I'm here to help! For technical support, project inquiries, or general questions about our AI services, you can reach our team at contact@vidibemusai.com or schedule a consultation call. What specific challenge can I assist you with today?",
-      "Our support team is ready to assist with any questions about AI implementation, project requirements, or technical challenges. Feel free to ask me anything about our services, or contact us directly at contact@vidibemusai.com for detailed discussions.",
+      "I'm here to help! For technical support, project inquiries, or general questions about our AI services, you can reach our team at contact@videbimusai.com or schedule a consultation call. What specific challenge can I assist you with today?",
+      "Our support team is ready to assist with any questions about AI implementation, project requirements, or technical challenges. Feel free to ask me anything about our services, or contact us directly at contact@videbimusai.com for detailed discussions.",
       "I'm available to help with information about our AI solutions, technical capabilities, pricing, or project planning. For complex technical support or custom requirements, our expert team is available for consultation calls and detailed discussions."
     ]);
   }

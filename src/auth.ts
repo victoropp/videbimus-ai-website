@@ -10,32 +10,40 @@ import { UserRole } from "@prisma/client"
 export const authConfig = {
   adapter: PrismaAdapter(prisma),
   providers: [
-    GoogleProvider({
-      clientId: process.env.GOOGLE_CLIENT_ID!,
-      clientSecret: process.env.GOOGLE_CLIENT_SECRET!,
-      profile(profile) {
-        return {
-          id: profile.sub,
-          name: profile.name,
-          email: profile.email,
-          image: profile.picture,
-          role: UserRole.CLIENT,
-        }
-      },
-    }),
-    GitHubProvider({
-      clientId: process.env.GITHUB_CLIENT_ID!,
-      clientSecret: process.env.GITHUB_CLIENT_SECRET!,
-      profile(profile) {
-        return {
-          id: profile.id.toString(),
-          name: profile.name || profile.login,
-          email: profile.email,
-          image: profile.avatar_url,
-          role: UserRole.CLIENT,
-        }
-      },
-    }),
+    // Only add OAuth providers if credentials are configured
+    ...(process.env.GOOGLE_CLIENT_ID && process.env.GOOGLE_CLIENT_SECRET && 
+        !process.env.GOOGLE_CLIENT_ID.includes('your-google-client-id') ? [
+      GoogleProvider({
+        clientId: process.env.GOOGLE_CLIENT_ID,
+        clientSecret: process.env.GOOGLE_CLIENT_SECRET,
+        profile(profile) {
+          return {
+            id: profile.sub,
+            name: profile.name,
+            email: profile.email,
+            image: profile.picture,
+            role: UserRole.CLIENT,
+          }
+        },
+      })
+    ] : []),
+    
+    ...(process.env.GITHUB_CLIENT_ID && process.env.GITHUB_CLIENT_SECRET && 
+        !process.env.GITHUB_CLIENT_ID.includes('your-github-client-id') ? [
+      GitHubProvider({
+        clientId: process.env.GITHUB_CLIENT_ID,
+        clientSecret: process.env.GITHUB_CLIENT_SECRET,
+        profile(profile) {
+          return {
+            id: profile.id.toString(),
+            name: profile.name || profile.login,
+            email: profile.email,
+            image: profile.avatar_url,
+            role: UserRole.CLIENT,
+          }
+        },
+      })
+    ] : []),
     CredentialsProvider({
       name: "credentials",
       credentials: {

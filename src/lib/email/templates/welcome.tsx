@@ -11,7 +11,7 @@ export function WelcomeEmail({ email, name }: WelcomeEmailProps) {
   return (
     <html>
       <head>
-        <title>Welcome to Vidibemus AI Newsletter</title>
+        <title>Welcome to Videbimus AI Newsletter</title>
         <meta charSet="utf-8" />
         <meta name="viewport" content="width=device-width, initial-scale=1.0" />
       </head>
@@ -20,7 +20,7 @@ export function WelcomeEmail({ email, name }: WelcomeEmailProps) {
           {/* Header */}
           <div style={{ backgroundColor: "#0066cc", padding: "40px 20px", textAlign: "center" }}>
             <h1 style={{ color: "white", margin: 0, fontSize: "28px", fontWeight: "300" }}>
-              Welcome to Vidibemus AI
+              Welcome to Videbimus AI
             </h1>
             <p style={{ color: "#cce7ff", margin: "10px 0 0 0", fontSize: "16px" }}>
               Your AI Consulting Partner
@@ -129,7 +129,7 @@ export function WelcomeEmail({ email, name }: WelcomeEmailProps) {
             </div>
 
             <p style={{ color: "#666", fontSize: "14px", lineHeight: "1.5", margin: "0 0 10px 0" }}>
-              You're receiving this because you subscribed to our newsletter at vidibemus.ai
+              You're receiving this because you subscribed to our newsletter at videbimus.ai
             </p>
             <p style={{ color: "#666", fontSize: "14px", lineHeight: "1.5", margin: "0 0 20px 0" }}>
               <a 
@@ -149,7 +149,7 @@ export function WelcomeEmail({ email, name }: WelcomeEmailProps) {
             
             <hr style={{ margin: "20px 0", border: "none", borderTop: "1px solid #e9ecef" }} />
             <p style={{ color: "#666", fontSize: "14px", margin: 0 }}>
-              © 2024 Vidibemus AI. All rights reserved.
+              © 2024 Videbimus AI. All rights reserved.
             </p>
           </div>
         </div>

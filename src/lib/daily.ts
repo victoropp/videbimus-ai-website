@@ -1,4 +1,8 @@
-import DailyIframe from '@daily-co/daily-js';
+/**
+ * Daily.co Video Service - Replaced with Jitsi Meet
+ * This file is kept as a placeholder to prevent import errors
+ * The actual video functionality is now handled by Jitsi Meet embed in video-conference.tsx
+ */
 
 export interface DailyConfig {
   roomUrl: string;
@@ -21,199 +25,84 @@ export interface ParticipantData {
   screen?: boolean;
 }
 
+// Placeholder service to prevent import errors
+// Actual video conferencing is handled by Jitsi Meet iframe
 export class DailyService {
-  private callObject: any;
   private isInitialized = false;
 
-  constructor() {
-    this.callObject = null;
-  }
-
   async initialize(config: DailyConfig) {
-    if (this.isInitialized) {
-      return this.callObject;
-    }
-
-    try {
-      this.callObject = DailyIframe.createCallObject({
-        url: config.roomUrl,
-        token: config.token,
-        userName: config.userName,
-        userData: config.userData,
-      });
-
-      this.isInitialized = true;
-      return this.callObject;
-    } catch (error) {
-      console.error('Failed to initialize Daily:', error);
-      throw error;
-    }
+    console.log('Daily.co has been replaced with Jitsi Meet');
+    this.isInitialized = true;
+    return null;
   }
 
   async joinRoom(): Promise<void> {
-    if (!this.callObject) {
-      throw new Error('Daily not initialized');
-    }
-
-    try {
-      await this.callObject.join();
-    } catch (error) {
-      console.error('Failed to join room:', error);
-      throw error;
-    }
+    console.log('Join room - handled by Jitsi Meet iframe');
   }
 
   async leaveRoom(): Promise<void> {
-    if (!this.callObject) {
-      return;
-    }
-
-    try {
-      await this.callObject.leave();
-    } catch (error) {
-      console.error('Failed to leave room:', error);
-    }
+    console.log('Leave room - handled by Jitsi Meet iframe');
   }
 
   async startRecording(): Promise<void> {
-    if (!this.callObject) {
-      throw new Error('Daily not initialized');
-    }
-
-    try {
-      await this.callObject.startRecording();
-    } catch (error) {
-      console.error('Failed to start recording:', error);
-      throw error;
-    }
+    console.log('Recording - handled by Jitsi Meet controls');
   }
 
   async stopRecording(): Promise<void> {
-    if (!this.callObject) {
-      throw new Error('Daily not initialized');
-    }
-
-    try {
-      await this.callObject.stopRecording();
-    } catch (error) {
-      console.error('Failed to stop recording:', error);
-      throw error;
-    }
+    console.log('Recording - handled by Jitsi Meet controls');
   }
 
   async startScreenShare(): Promise<void> {
-    if (!this.callObject) {
-      throw new Error('Daily not initialized');
-    }
-
-    try {
-      await this.callObject.startScreenShare();
-    } catch (error) {
-      console.error('Failed to start screen share:', error);
-      throw error;
-    }
+    console.log('Screen share - handled by Jitsi Meet controls');
   }
 
   async stopScreenShare(): Promise<void> {
-    if (!this.callObject) {
-      throw new Error('Daily not initialized');
-    }
-
-    try {
-      await this.callObject.stopScreenShare();
-    } catch (error) {
-      console.error('Failed to stop screen share:', error);
-      throw error;
-    }
+    console.log('Screen share - handled by Jitsi Meet controls');
   }
 
   async toggleAudio(): Promise<void> {
-    if (!this.callObject) {
-      throw new Error('Daily not initialized');
-    }
-
-    try {
-      const localAudio = this.callObject.localAudio();
-      await this.callObject.setLocalAudio(!localAudio);
-    } catch (error) {
-      console.error('Failed to toggle audio:', error);
-      throw error;
-    }
+    console.log('Audio - handled by Jitsi Meet controls');
   }
 
   async toggleVideo(): Promise<void> {
-    if (!this.callObject) {
-      throw new Error('Daily not initialized');
-    }
-
-    try {
-      const localVideo = this.callObject.localVideo();
-      await this.callObject.setLocalVideo(!localVideo);
-    } catch (error) {
-      console.error('Failed to toggle video:', error);
-      throw error;
-    }
+    console.log('Video - handled by Jitsi Meet controls');
   }
 
   getParticipants(): { [id: string]: ParticipantData } {
-    if (!this.callObject) {
-      return {};
-    }
-
-    return this.callObject.participants();
+    return {};
   }
 
   getLocalParticipant(): ParticipantData | null {
-    if (!this.callObject) {
-      return null;
-    }
-
-    const participants = this.callObject.participants();
-    return participants.local || null;
+    return null;
   }
 
   onParticipantJoined(callback: (participant: ParticipantData) => void) {
-    if (this.callObject) {
-      this.callObject.on('participant-joined', callback);
-    }
+    // Placeholder - Jitsi handles participants internally
   }
 
   onParticipantLeft(callback: (participant: ParticipantData) => void) {
-    if (this.callObject) {
-      this.callObject.on('participant-left', callback);
-    }
+    // Placeholder - Jitsi handles participants internally
   }
 
   onParticipantUpdated(callback: (participant: ParticipantData) => void) {
-    if (this.callObject) {
-      this.callObject.on('participant-updated', callback);
-    }
+    // Placeholder - Jitsi handles participants internally
   }
 
   onRecordingStarted(callback: () => void) {
-    if (this.callObject) {
-      this.callObject.on('recording-started', callback);
-    }
+    // Placeholder - Jitsi handles recording internally
   }
 
   onRecordingStopped(callback: () => void) {
-    if (this.callObject) {
-      this.callObject.on('recording-stopped', callback);
-    }
+    // Placeholder - Jitsi handles recording internally
   }
 
   onError(callback: (error: any) => void) {
-    if (this.callObject) {
-      this.callObject.on('error', callback);
-    }
+    // Placeholder - Jitsi handles errors internally
   }
 
   destroy() {
-    if (this.callObject) {
-      this.callObject.destroy();
-      this.callObject = null;
-      this.isInitialized = false;
-    }
+    console.log('Cleanup - Jitsi Meet iframe handles its own cleanup');
+    this.isInitialized = false;
   }
 }
 

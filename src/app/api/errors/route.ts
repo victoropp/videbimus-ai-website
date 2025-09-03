@@ -84,7 +84,7 @@ const categorizeError = (error: ErrorReport): string => {
 const determineErrorSeverity = (error: ErrorReport): 'low' | 'medium' | 'high' | 'critical' => {
   const { message, url, stack } = error
   const lowerMessage = message.toLowerCase()
-  const isProductionUrl = url?.includes('vidibemus.ai') || process.env.NODE_ENV === 'production'
+  const isProductionUrl = url?.includes('videbimus.ai') || process.env.NODE_ENV === 'production'
   
   // Critical errors
   if (

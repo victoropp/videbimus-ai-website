@@ -215,7 +215,7 @@ export function EnterpriseAIChat() {
             'Content-Type': 'application/json',
           },
           body: JSON.stringify({
-            message: 'Hello, I would like to learn about Vidibemus AI services.',
+            message: 'Hello, I would like to learn about Videbimus AI services.',
             enableAnalytics: true,
           }),
         })
@@ -247,7 +247,7 @@ export function EnterpriseAIChat() {
         const fallbackMessage: EnhancedMessage = {
           id: Date.now().toString(),
           role: 'assistant',
-          content: "Welcome to Vidibemus AI! I'm your enterprise AI assistant, ready to help you explore our world-class AI consulting services, discuss technical solutions, and provide expert guidance on AI implementation strategies. How can I assist you today?",
+          content: "Welcome to Videbimus AI! I'm your enterprise AI assistant, ready to help you explore our world-class AI consulting services, discuss technical solutions, and provide expert guidance on AI implementation strategies. How can I assist you today?",
           timestamp: new Date(),
           metadata: {
             automated: true,
@@ -590,7 +590,7 @@ export function EnterpriseAIChat() {
                     <div className="absolute -bottom-1 -right-1 h-4 w-4 bg-green-400 rounded-full border-2 border-white"></div>
                   </div>
                   <div>
-                    <h3 className="font-semibold text-sm">Vidibemus AI Enterprise</h3>
+                    <h3 className="font-semibold text-sm">Videbimus AI Enterprise</h3>
                     <div className="flex items-center space-x-2">
                       <ConnectionStatus />
                     </div>

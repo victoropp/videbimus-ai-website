@@ -119,7 +119,7 @@ GITHUB_CLIENT_SECRET="your-github-client-secret"
 
 # Email Service
 RESEND_API_KEY="re_your_resend_api_key"
-ADMIN_EMAIL="admin@vidibemus.ai"
+ADMIN_EMAIL="admin@videbimusai.com"
 
 # Video Conferencing
 DAILY_API_KEY="your-daily-api-key"
@@ -418,8 +418,8 @@ After running `npm run db:seed`, you'll have these accounts:
 
 | Role | Email | Password | Description |
 |------|-------|----------|-------------|
-| **Admin** | admin@vidibemus.ai | AdminPass123! | Full system access |
-| **Consultant** | consultant@vidibemus.ai | ConsultantPass123! | Service delivery |
+| **Admin** | admin@videbimusai.com | AdminPass123! | Full system access |
+| **Consultant** | consultant@videbimusai.com | ConsultantPass123! | Service delivery |
 | **Client** | client1@example.com | ClientPass123! | Sample client |
 
 ---

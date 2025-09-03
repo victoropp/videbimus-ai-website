@@ -3,7 +3,7 @@ import { prisma } from '@/lib/prisma'
 
 export async function GET() {
   try {
-    const baseUrl = process.env.NEXTAUTH_URL || 'https://vidibemus.com'
+    const baseUrl = process.env.NEXTAUTH_URL || 'https://videbimus.com'
     
     // Get published blog posts
     const posts = await prisma.blogPost.findMany({
@@ -60,22 +60,22 @@ export async function GET() {
     const rss = `<?xml version="1.0" encoding="UTF-8"?>
 <rss version="2.0" xmlns:content="http://purl.org/rss/1.0/modules/content/" xmlns:wfw="http://wellformedweb.org/CommentAPI/" xmlns:dc="http://purl.org/dc/elements/1.1/" xmlns:atom="http://www.w3.org/2005/Atom/">
   <channel>
-    <title>Vidibemus AI - Blog</title>
+    <title>Videbimus AI - Blog</title>
     <link>${baseUrl}/blog</link>
-    <description>Latest insights on AI, machine learning, and data science from Vidibemus AI experts</description>
+    <description>Latest insights on AI, machine learning, and data science from Videbimus AI experts</description>
     <lastBuildDate>${new Date().toUTCString()}</lastBuildDate>
     <language>en-US</language>
     <sy:updatePeriod xmlns:sy="http://purl.org/rss/1.0/modules/syndication/">hourly</sy:updatePeriod>
     <sy:updateFrequency xmlns:sy="http://purl.org/rss/1.0/modules/syndication/">1</sy:updateFrequency>
-    <generator>Vidibemus AI Blog System</generator>
+    <generator>Videbimus AI Blog System</generator>
     <atom:link href="${baseUrl}/rss.xml" rel="self" type="application/rss+xml" />
     <image>
-      <title>Vidibemus AI</title>
+      <title>Videbimus AI</title>
       <url>${baseUrl}/logo.png</url>
       <link>${baseUrl}</link>
       <width>144</width>
       <height>144</height>
-      <description>Vidibemus AI Logo</description>
+      <description>Videbimus AI Logo</description>
     </image>
     ${rssItems}
   </channel>

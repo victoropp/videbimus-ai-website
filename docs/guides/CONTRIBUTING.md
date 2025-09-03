@@ -138,7 +138,7 @@ npm run test:e2e
 ## Questions?
 
 - Open an issue for bugs or feature requests
-- Contact the team at dev@vidibemus.ai
+- Contact the team at dev@videbimusai.com
 
 ## License
 

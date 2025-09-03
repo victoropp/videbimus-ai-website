@@ -36,7 +36,7 @@ export class EnterpriseKnowledgeBase {
       {
         id: 'services-ai-consulting',
         title: 'AI Consulting Services',
-        content: 'Vidibemus AI provides comprehensive AI consulting services including custom machine learning model development, natural language processing solutions, computer vision applications, predictive analytics, and AI strategy development. We help businesses identify AI opportunities, develop implementation roadmaps, and deliver scalable AI solutions.',
+        content: 'Videbimus AI provides comprehensive AI consulting services including custom machine learning model development, natural language processing solutions, computer vision applications, predictive analytics, and AI strategy development. We help businesses identify AI opportunities, develop implementation roadmaps, and deliver scalable AI solutions.',
         category: 'services',
         keywords: ['ai consulting', 'machine learning', 'ai strategy', 'nlp', 'computer vision', 'predictive analytics'],
         priority: 10,
@@ -104,8 +104,8 @@ export class EnterpriseKnowledgeBase {
       // Company & Team
       {
         id: 'company-about',
-        title: 'About Vidibemus AI',
-        content: 'Vidibemus AI is a leading artificial intelligence consulting firm specializing in enterprise AI solutions. Founded by experienced data scientists and AI researchers, we combine deep technical expertise with business acumen to deliver transformative AI solutions that drive real business value.',
+        title: 'About Videbimus AI',
+        content: 'Videbimus AI is a leading artificial intelligence consulting firm specializing in enterprise AI solutions. Founded by experienced data scientists and AI researchers, we combine deep technical expertise with business acumen to deliver transformative AI solutions that drive real business value.',
         category: 'company',
         keywords: ['about', 'company', 'team', 'expertise', 'ai consulting firm'],
         priority: 7,
@@ -207,14 +207,14 @@ export class EnterpriseKnowledgeBase {
   }
 
   private initializeBusinessContext() {
-    this.businessContext.set('company_name', 'Vidibemus AI');
+    this.businessContext.set('company_name', 'Videbimus AI');
     this.businessContext.set('industry', 'Artificial Intelligence & Machine Learning Consulting');
     this.businessContext.set('specialties', 'Custom AI Development, Data Science, Process Automation');
-    this.businessContext.set('contact_email', 'contact@vidibemusai.com');
+    this.businessContext.set('contact_email', 'contact@videbimusai.com');
     this.businessContext.set('contact_phone_uk', '+44 7442 852675');
     this.businessContext.set('contact_phone_ghana', '+233 248769377');
     this.businessContext.set('contact_whatsapp', 'Available on both numbers');
-    this.businessContext.set('website', 'https://vidibemusai.com');
+    this.businessContext.set('website', 'https://videbimusai.com');
     this.businessContext.set('established', '2023');
     this.businessContext.set('location', 'Global with remote capabilities');
   }
@@ -365,7 +365,7 @@ export class EnterpriseKnowledgeBase {
       `**${doc.title}**\n${doc.content}`
     ).join('\n\n');
 
-    const systemPrompt = `You are Vidibemus AI's enterprise AI assistant. You provide professional, accurate, and helpful responses about AI consulting services, data science solutions, and technology implementations.
+    const systemPrompt = `You are Videbimus AI's enterprise AI assistant. You provide professional, accurate, and helpful responses about AI consulting services, data science solutions, and technology implementations.
 
 Context Information:
 ${context}
@@ -514,7 +514,7 @@ Would you like to see a demonstration with your own data? That's usually the bes
 • If you need global 24/7 infrastructure support
 
 **Why Clients Choose Us:**
-"Vidibemus delivered in 6 weeks what ${competitor === 'McKinsey' ? 'big consultancies' : competitor} quoted 6 months for" - Fortune 500 CTO
+"Videbimus delivered in 6 weeks what ${competitor === 'McKinsey' ? 'big consultancies' : competitor} quoted 6 months for" - Fortune 500 CTO
 
 Want to see a detailed comparison for your specific use case?`;
     }
@@ -565,7 +565,7 @@ We offer flexible engagement models:
       // General pricing inquiry
       return `I appreciate your interest in understanding our pricing! 
 
-At Vidibemus AI, we believe every organization deserves a customized approach rather than one-size-fits-all pricing. Here's why:
+At Videbimus AI, we believe every organization deserves a customized approach rather than one-size-fits-all pricing. Here's why:
 
 ✨ **Every AI journey is unique** - Your data, challenges, and goals are specific to your business
 📈 **ROI-focused pricing** - We structure costs to align with your expected value creation
@@ -717,10 +717,10 @@ Would you like to discuss technical requirements with our solution architects?`;
     
     // Company and team questions
     if (lowerQuery.includes('who are you') || lowerQuery.includes('about') || lowerQuery.includes('company') || lowerQuery.includes('team')) {
-      return `**Welcome to Vidibemus AI** - Your Partner in AI Excellence!
+      return `**Welcome to Videbimus AI** - Your Partner in AI Excellence!
 
 🏢 **Who We Are:**
-Vidibemus AI is a leading artificial intelligence consulting firm founded by experienced data scientists and ML engineers from top tech companies. We specialize in transforming businesses through intelligent automation and data-driven insights.
+Videbimus AI is a leading artificial intelligence consulting firm founded by experienced data scientists and ML engineers from top tech companies. We specialize in transforming businesses through intelligent automation and data-driven insights.
 
 👥 **Our Team:**
 • **50+ AI specialists** including PhDs and industry experts
@@ -1095,7 +1095,7 @@ Would you like detailed case studies for your industry?`;
     
     // Competition and differentiation questions
     if (lowerQuery.includes('why you') || lowerQuery.includes('competitor') || lowerQuery.includes('different') || lowerQuery.includes('choose')) {
-      return `**Why Choose Vidibemus AI?** 🌟
+      return `**Why Choose Videbimus AI?** 🌟
 
 **Our Unique Advantages:**
 
@@ -1134,7 +1134,7 @@ Would you like detailed case studies for your industry?`;
 ⭐⭐⭐⭐⭐ "Exceeded all expectations"
 ⭐⭐⭐⭐⭐ "True AI transformation experts"
 
-Ready to experience the Vidibemus difference?`;
+Ready to experience the Videbimus difference?`;
     }
     
     // Get started questions
@@ -1245,7 +1245,7 @@ What type of data do you currently have?`;
 📞 **Phone**: 
    • UK: +44 7442 852675 (Call or WhatsApp)
    • Ghana: +233 248769377 (Call or WhatsApp)
-📧 **Email**: support@vidibemus.ai
+📧 **Email**: support@videbimusai.com
 💬 **Live Chat**: You're already here!
 
 **Common Topics:**
@@ -1268,7 +1268,7 @@ What specific issue can I help you resolve today?
 • Scheduling consultations
 
 📞 **Direct Support:**
-• Email: support@vidibemusai.com
+• Email: support@videbimusai.com
 • Phone: +44 7442 852675 (UK) or +233 248769377 (Ghana)
 • Live chat: You're already here!
 
@@ -1305,7 +1305,7 @@ Choose your preferred time:
 • Screen sharing available
 
 📧 **Email an Expert**
-experts@vidibemus.ai
+experts@videbimusai.com
 • Detailed response within 4 hours
 • Include your specific requirements
 • Attach any relevant documents
@@ -1348,9 +1348,9 @@ Would you prefer a call now or should I schedule a meeting for you?`;
 📞 **Phone**: 
    • UK: +44 7442 852675 (Call or WhatsApp)
    • Ghana: +233 248769377 (Call or WhatsApp)
-📧 **Email**: hello@vidibemus.ai
+📧 **Email**: hello@videbimusai.com
 💬 **Live Chat**: You're already here!
-🌐 **Website**: www.vidibemus.ai
+🌐 **Website**: www.videbimus.ai
 
 **Office Hours:**
 • Monday-Friday: 8 AM - 8 PM PST
@@ -1368,7 +1368,7 @@ What's the best way to reach you for follow-up?`;
     
     // Job and career questions
     if (lowerQuery.includes('job') || lowerQuery.includes('career') || lowerQuery.includes('hiring') || lowerQuery.includes('work for')) {
-      return `**Join the Vidibemus AI Team!** 🚀
+      return `**Join the Videbimus AI Team!** 🚀
 
 **Current Openings:**
 
@@ -1390,7 +1390,7 @@ What's the best way to reach you for follow-up?`;
 • Marketing Specialists
 • Customer Success Managers
 
-**Why Work at Vidibemus?**
+**Why Work at Videbimus?**
 ✨ **Innovation First**: Work on cutting-edge AI
 💰 **Competitive Package**: Top-tier compensation
 🏖️ **Work-Life Balance**: Flexible schedules
@@ -1413,7 +1413,7 @@ What's the best way to reach you for follow-up?`;
 4. Practical assessment
 5. Offer & onboarding
 
-Visit careers.vidibemus.ai or email jobs@vidibemus.ai
+Visit careers.videbimus.ai or email jobs@videbimusai.com
 
 Are you interested in a specific role?`;
     }
@@ -1465,7 +1465,7 @@ Are you interested in a specific role?`;
 • Oracle
 
 **Become a Partner:**
-Email: partners@vidibemus.ai
+Email: partners@videbimusai.com
 Phone: 1-800-PARTNER
 
 What type of partnership interests you?`;
@@ -1473,7 +1473,7 @@ What type of partnership interests you?`;
     
     // General greeting
     if (lowerQuery.includes('hello') || lowerQuery.includes('hi') || lowerQuery.includes('hey') || lowerQuery.includes('greet')) {
-      return `**Hello! Welcome to Vidibemus AI** 👋
+      return `**Hello! Welcome to Videbimus AI** 👋
 
 I'm your AI consultant, ready to help you explore how artificial intelligence can transform your business!
 
@@ -1492,7 +1492,7 @@ I'm your AI consultant, ready to help you explore how artificial intelligence ca
 • "Can I see a demo?"
 • "How do we get started?"
 
-What brings you to Vidibemus AI today?`;
+What brings you to Videbimus AI today?`;
     }
     
     // Thank you responses
@@ -1518,7 +1518,7 @@ Is there anything else I can help you with today?`;
     
     // Goodbye responses
     if (lowerQuery.includes('bye') || lowerQuery.includes('goodbye') || lowerQuery.includes('see you')) {
-      return `**Thank you for visiting Vidibemus AI!** 👋
+      return `**Thank you for visiting Videbimus AI!** 👋
 
 It was great chatting with you about AI solutions.
 
@@ -1530,7 +1530,7 @@ It was great chatting with you about AI solutions.
 **Remember:**
 • Free consultation available anytime
 • We're here 24/7 to help
-• Email: hello@vidibemus.ai
+• Email: hello@videbimusai.com
 • Phone: +44 7442 852675 (UK) or +233 248769377 (Ghana)
 
 Looking forward to helping you transform your business with AI!
@@ -1755,7 +1755,7 @@ Every project is unique, and we provide detailed cost breakdowns after understan
     const lowerQuery = query.toLowerCase();
 
     if (lowerQuery.includes('automation') || lowerQuery.includes('rpa') || lowerQuery.includes('process')) {
-      return `**🤖 Intelligent Process Automation at Vidibemus AI**
+      return `**🤖 Intelligent Process Automation at Videbimus AI**
 
 We transform business operations through advanced AI-driven automation:
 
@@ -1823,7 +1823,7 @@ Transform your text data and customer interactions with advanced NLP solutions:
     }
 
     // Default services response
-    return `**🎯 Comprehensive AI Solutions at Vidibemus AI**
+    return `**🎯 Comprehensive AI Solutions at Videbimus AI**
 
 We're your strategic partner for complete AI transformation:
 
@@ -1851,7 +1851,7 @@ We're your strategic partner for complete AI transformation:
 - Performance monitoring and optimization
 - Ongoing maintenance and updates
 
-**🏆 Why Choose Vidibemus AI**:
+**🏆 Why Choose Videbimus AI**:
 - ✅ **Proven Track Record**: 100+ successful AI implementations
 - ✅ **Industry Expertise**: Deep knowledge across sectors
 - ✅ **Technical Excellence**: Cutting-edge AI technologies
@@ -1902,7 +1902,7 @@ Our robust deployment strategies ensure your AI solutions perform reliably at sc
     }
 
     // Default technical response
-    return `**🔧 Technical Excellence at Vidibemus AI**
+    return `**🔧 Technical Excellence at Videbimus AI**
 
 Our technology stack represents the cutting-edge of AI development:
 
@@ -1958,7 +1958,7 @@ Our technology stack represents the cutting-edge of AI development:
     }
 
     if (intent.type === 'support') {
-      return `**🚀 Expert AI Support at Vidibemus AI**
+      return `**🚀 Expert AI Support at Videbimus AI**
 
 I'm here to help you navigate your AI journey with confidence:
 
@@ -1969,7 +1969,7 @@ I'm here to help you navigate your AI journey with confidence:
 - Best practices and industry insights
 
 **📞 Direct Expert Access**:
-- **Email**: contact@vidibemusai.com
+- **Email**: contact@videbimusai.com
 - **Consultation**: Schedule a complimentary discovery call
 - **Technical Support**: Priority support for active projects
 - **Strategic Guidance**: C-level AI strategy discussions
@@ -2074,7 +2074,7 @@ See our cutting-edge AI solutions in action with personalized demonstrations tai
     }
 
     // Default general response
-    return `**🌟 Welcome to Vidibemus AI - Your AI Transformation Partner**
+    return `**🌟 Welcome to Videbimus AI - Your AI Transformation Partner**
 
 Thank you for your interest! We're excited to help you explore how artificial intelligence can revolutionize your business operations and drive competitive advantage.
 

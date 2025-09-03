@@ -3,7 +3,7 @@ import { prisma } from '@/lib/prisma'
 
 export async function GET() {
   try {
-    const baseUrl = process.env.NEXTAUTH_URL || 'https://vidibemus.com'
+    const baseUrl = process.env.NEXTAUTH_URL || 'https://videbimus.com'
     
     // Get published blog posts
     const posts = await prisma.blogPost.findMany({

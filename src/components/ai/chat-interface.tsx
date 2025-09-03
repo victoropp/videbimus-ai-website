@@ -415,7 +415,7 @@ export function ChatInterface() {
                 <Bot className="w-12 h-12 mx-auto mb-4 text-muted-foreground" />
                 <h3 className="text-lg font-medium mb-2">Start a conversation</h3>
                 <p className="text-muted-foreground">
-                  Ask me anything about Vidibemus AI or general topics.
+                  Ask me anything about Videbimus AI or general topics.
                 </p>
               </div>
             </div>

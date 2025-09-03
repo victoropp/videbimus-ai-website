@@ -5,12 +5,12 @@
 
 // Application Metadata
 export const APP_CONFIG = {
-  name: 'Vidibemus AI',
+  name: 'Videbimus AI',
   description: 'Expert AI and Data Science consulting services. We help organizations transform through intelligent automation, predictive analytics, and data-driven decision making.',
   version: '1.0.0',
-  author: 'Vidibemus AI',
-  url: 'https://vidibemus.ai',
-  email: 'hello@vidibemus.ai',
+  author: 'Videbimus AI',
+  url: 'https://videbimus.ai',
+  email: 'hello@videbimusai.com',
   phone: '+1 (555) 123-4567',
   address: {
     street: '123 Innovation Drive',
@@ -49,8 +49,8 @@ export const SEO_DEFAULTS = {
   },
   twitter: {
     card: 'summary_large_image' as const,
-    site: '@vidibemusai',
-    creator: '@vidibemusai'
+    site: '@videbimusai',
+    creator: '@videbimusai'
   }
 } as const;
 
@@ -92,10 +92,10 @@ export const NAVIGATION = {
     ]
   },
   social: {
-    twitter: 'https://twitter.com/vidibemusai',
-    linkedin: 'https://linkedin.com/company/vidibemus-ai',
-    github: 'https://github.com/vidibemus-ai',
-    youtube: 'https://youtube.com/vidibemusai'
+    twitter: 'https://twitter.com/videbimusai',
+    linkedin: 'https://linkedin.com/company/videbimus-ai',
+    github: 'https://github.com/videbimus-ai',
+    youtube: 'https://youtube.com/videbimusai'
   }
 } as const;
 

@@ -36,7 +36,7 @@ Content: "v=spf1 ip4:YOUR_HOSTINGER_VPS_IP include:_spf.google.com ~all"
 
 Type: TXT
 Name: _dmarc
-Content: "v=DMARC1; p=quarantine; rua=mailto:admin@vidibemus.ai"
+Content: "v=DMARC1; p=quarantine; rua=mailto:admin@videbimusai.com"
 ```
 
 ## 2. SSL/TLS Settings

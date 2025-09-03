@@ -53,7 +53,7 @@ const values = [
 const timeline = [
   {
     year: 'Q1 2025',
-    title: 'Founded Vidibemus AI',
+    title: 'Founded Videbimus AI',
     description: 'Assembled a team of senior AI experts with decades of combined experience in machine learning, data science, and enterprise solutions.'
   },
   {
@@ -118,7 +118,7 @@ export default function AboutPage() {
             className="text-center"
           >
             <h1 className="font-display text-4xl font-bold tracking-tight text-white sm:text-5xl lg:text-6xl mb-6">
-              About Vidibemus AI
+              About Videbimus AI
             </h1>
             <p className="mx-auto max-w-3xl text-xl text-gray-200 mb-8">
               Founded in 2025, we bring together decades of collective experience from leading tech companies,

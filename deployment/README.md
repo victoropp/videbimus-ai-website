@@ -231,7 +231,7 @@ pm2 restart vidibemus-ai
 ### Contact Information
 - **UK**: +44 7442 852675 (Call or WhatsApp)
 - **Ghana**: +233 248769377 (Call or WhatsApp)
-- **Email**: support@vidibemus.ai
+- **Email**: support@videbimusai.com
 - **Website**: https://vidibemus.ai
 
 ## License

@@ -66,7 +66,21 @@
       "Bash(git branch:*)",
       "Bash(start https://github.com/victoropp/videbimus-ai-website)",
       "Bash(ssh-keygen:*)",
-      "Bash(openssl rand:*)"
+      "Bash(openssl rand:*)",
+      "Bash(ping:*)",
+      "Bash(ssh:*)",
+      "Bash(pip install:*)",
+      "Bash(python:*)",
+      "Bash(rg:*)",
+      "Bash(for:*)",
+      "Bash(do sed -i 's/@videbimus\\.ai/@videbimusai.com/g; s/@vidibemus\\.ai/@videbimusai.com/g' \"$file\")",
+      "Bash(done)",
+      "WebFetch(domain:github.com)",
+      "Bash(start http://localhost:3002)",
+      "Bash(start http://localhost:3002/collaboration)",
+      "Bash(start http://localhost:3002/auth/signin)",
+      "Bash(start http://localhost:3003/collaboration)",
+      "Bash(start http://localhost:3003/collaboration/rooms/test-room-001)"
     ],
     "deny": [],
     "ask": []

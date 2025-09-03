@@ -70,6 +70,16 @@ model User {
   newsletters   Newsletter[]
   contacts      Contact[]
   
+  // Consultation room relations
+  clientRooms              ConsultationRoom[]          @relation("ClientRooms")
+  consultantRooms          ConsultationRoom[]          @relation("ConsultantRooms")
+  sentMessages             ConsultationMessage[]       @relation("SentMessages")
+  uploadedDocuments        ConsultationDocument[]      @relation("UploadedDocuments")
+  updatedWhiteboards       ConsultationWhiteboard[]    @relation("UpdatedWhiteboards")
+  assignedActionItems      ConsultationActionItem[]    @relation("AssignedActionItems")
+  createdActionItems       ConsultationActionItem[]    @relation("CreatedActionItems")
+  consultationParticipation ConsultationParticipant[]  @relation("ConsultationParticipation")
+  
   // Content and business relations
   caseStudies         CaseStudyEntry[]
   invoices            Invoice[]
@@ -147,8 +157,257 @@ model Consultation {
   user    User     @relation(fields: [userId], references: [id], onDelete: Cascade)
   project Project? @relation(fields: [projectId], references: [id], onDelete: SetNull)
   files   ConsultationFile[]
+  room    ConsultationRoom? // One-to-one with consultation room
 
   @@map("consultations")
+}
+
+// Enhanced consultation room for collaboration features
+model ConsultationRoom {
+  id            String            @id @default(cuid())
+  name          String
+  description   String?
+  roomType      String            @default("consultation") // consultation, training, review
+  
+  // Participants
+  clientId      String
+  consultantId  String
+  
+  // Scheduling
+  scheduledAt   DateTime?
+  durationMinutes Int?            @default(60)
+  
+  // Status management
+  status        ConsultationRoomStatus @default(SCHEDULED)
+  
+  // Settings and configuration
+  settings      Json              @default("{}")
+  
+  // Optional consultation link
+  consultationId String?          @unique
+  
+  // Timestamps
+  createdAt     DateTime          @default(now())
+  updatedAt     DateTime          @updatedAt
+  completedAt   DateTime?
+  
+  // Relations
+  client        User              @relation("ClientRooms", fields: [clientId], references: [id], onDelete: Cascade)
+  consultant    User              @relation("ConsultantRooms", fields: [consultantId], references: [id], onDelete: Cascade)
+  consultation  Consultation?     @relation(fields: [consultationId], references: [id], onDelete: SetNull)
+  messages      ConsultationMessage[]
+  documents     ConsultationDocument[]
+  whiteboards   ConsultationWhiteboard[]
+  actionItems   ConsultationActionItem[]
+  participants  ConsultationParticipant[]
+  analytics     ConsultationAnalytics?
+  
+  @@index([clientId])
+  @@index([consultantId])
+  @@index([status])
+  @@index([scheduledAt])
+  @@map("consultation_rooms")
+}
+
+enum ConsultationRoomStatus {
+  SCHEDULED
+  ACTIVE
+  COMPLETED
+  CANCELLED
+}
+
+// Chat messages for consultation rooms
+model ConsultationMessage {
+  id          String   @id @default(cuid())
+  roomId      String
+  senderId    String
+  content     String
+  messageType String   @default("text") // text, file, system, action_item
+  metadata    Json     @default("{}")
+  
+  // Status tracking
+  isEdited    Boolean  @default(false)
+  editedAt    DateTime?
+  isDeleted   Boolean  @default(false)
+  deletedAt   DateTime?
+  
+  createdAt   DateTime @default(now())
+  
+  // Relations
+  room        ConsultationRoom @relation(fields: [roomId], references: [id], onDelete: Cascade)
+  sender      User             @relation("SentMessages", fields: [senderId], references: [id], onDelete: Cascade)
+  
+  @@index([roomId])
+  @@index([senderId])
+  @@index([createdAt])
+  @@index([messageType])
+  @@map("consultation_messages")
+}
+
+// Documents and files for consultation rooms
+model ConsultationDocument {
+  id           String   @id @default(cuid())
+  roomId       String
+  title        String
+  description  String?
+  documentType String   @default("document") // document, template, attachment
+  
+  // Content
+  content      String?  // For text documents
+  filePath     String?  // For uploaded files
+  fileName     String?
+  fileSize     Int?
+  mimeType     String?
+  
+  // Access control
+  uploadedBy   String?
+  isTemplate   Boolean  @default(false)
+  isShared     Boolean  @default(true)
+  
+  createdAt    DateTime @default(now())
+  updatedAt    DateTime @updatedAt
+  
+  // Relations
+  room         ConsultationRoom @relation(fields: [roomId], references: [id], onDelete: Cascade)
+  uploader     User?            @relation("UploadedDocuments", fields: [uploadedBy], references: [id], onDelete: SetNull)
+  
+  @@index([roomId])
+  @@index([documentType])
+  @@index([uploadedBy])
+  @@index([isTemplate])
+  @@map("consultation_documents")
+}
+
+// Whiteboard data for consultation rooms
+model ConsultationWhiteboard {
+  id              String   @id @default(cuid())
+  roomId          String
+  canvasData      Json     // Fabric.js or Excalidraw JSON
+  thumbnailUrl    String?
+  
+  // Versioning
+  version         Int      @default(1)
+  parentVersionId String?
+  
+  // Metadata
+  title           String   @default("Whiteboard")
+  updatedBy       String?
+  
+  createdAt       DateTime @default(now())
+  updatedAt       DateTime @updatedAt
+  
+  // Relations
+  room            ConsultationRoom @relation(fields: [roomId], references: [id], onDelete: Cascade)
+  updater         User?            @relation("UpdatedWhiteboards", fields: [updatedBy], references: [id], onDelete: SetNull)
+  parentVersion   ConsultationWhiteboard? @relation("WhiteboardVersions", fields: [parentVersionId], references: [id])
+  childVersions   ConsultationWhiteboard[] @relation("WhiteboardVersions")
+  
+  @@index([roomId])
+  @@index([updatedBy])
+  @@index([version])
+  @@map("consultation_whiteboards")
+}
+
+// Action items and follow-ups for consultation rooms
+model ConsultationActionItem {
+  id              String   @id @default(cuid())
+  roomId          String
+  title           String
+  description     String?
+  priority        String   @default("medium") // low, medium, high, urgent
+  
+  // Assignment
+  assignedTo      String?
+  createdBy       String?
+  
+  // Status tracking
+  status          String   @default("pending") // pending, in_progress, completed, cancelled
+  dueDate         DateTime?
+  
+  // Completion
+  completedAt     DateTime?
+  completionNotes String?
+  
+  createdAt       DateTime @default(now())
+  updatedAt       DateTime @updatedAt
+  
+  // Relations
+  room            ConsultationRoom @relation(fields: [roomId], references: [id], onDelete: Cascade)
+  assignee        User?            @relation("AssignedActionItems", fields: [assignedTo], references: [id], onDelete: SetNull)
+  creator         User?            @relation("CreatedActionItems", fields: [createdBy], references: [id], onDelete: SetNull)
+  
+  @@index([roomId])
+  @@index([assignedTo])
+  @@index([status])
+  @@index([dueDate])
+  @@map("consultation_action_items")
+}
+
+// Room participants for group consultations
+model ConsultationParticipant {
+  id              String   @id @default(cuid())
+  roomId          String
+  userId          String
+  
+  // Role and permissions
+  role            String   @default("participant") // host, consultant, client, participant, observer
+  permissions     Json     @default("{\"canEdit\": false, \"canShare\": false}")
+  
+  // Participation tracking
+  joinedAt        DateTime @default(now())
+  leftAt          DateTime?
+  isActive        Boolean  @default(true)
+  
+  // Activity metrics
+  totalTimeMinutes Int     @default(0)
+  messagesSent     Int     @default(0)
+  documentsViewed  Int     @default(0)
+  
+  // Relations
+  room            ConsultationRoom @relation(fields: [roomId], references: [id], onDelete: Cascade)
+  user            User             @relation("ConsultationParticipation", fields: [userId], references: [id], onDelete: Cascade)
+  
+  @@unique([roomId, userId])
+  @@index([roomId])
+  @@index([userId])
+  @@index([role])
+  @@map("consultation_participants")
+}
+
+// Session analytics for consultation rooms
+model ConsultationAnalytics {
+  id                      String   @id @default(cuid())
+  roomId                  String   @unique
+  
+  // Session metrics
+  actualDurationMinutes   Int?
+  participantCount        Int?
+  messagesCount           Int?
+  documentsShared         Int?
+  actionItemsCreated      Int?
+  
+  // Engagement metrics
+  avgResponseTimeSeconds  Int?
+  toolUsage               Json?    // Usage time per tool
+  clientSatisfactionScore Float?   // 1.00 to 5.00
+  
+  // Technical metrics
+  connectionIssues        Int      @default(0)
+  featureErrors           Int      @default(0)
+  
+  // Business metrics
+  followUpScheduled       Boolean  @default(false)
+  projectProposed         Boolean  @default(false)
+  contractSigned          Boolean  @default(false)
+  projectValue            Float?
+  
+  recordedAt              DateTime @default(now())
+  
+  // Relations
+  room                    ConsultationRoom @relation(fields: [roomId], references: [id], onDelete: Cascade)
+  
+  @@index([recordedAt])
+  @@map("consultation_analytics")
 }
 
 enum ConsultationStatus {

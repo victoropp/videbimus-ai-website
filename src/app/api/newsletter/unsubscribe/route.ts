@@ -107,7 +107,7 @@ export async function GET(request: NextRequest) {
       <head>
         <meta charset="UTF-8">
         <meta name="viewport" content="width=device-width, initial-scale=1.0">
-        <title>Unsubscribed - Vidibemus AI</title>
+        <title>Unsubscribed - Videbimus AI</title>
         <style>
           body {
             font-family: Arial, sans-serif;
@@ -165,7 +165,7 @@ export async function GET(request: NextRequest) {
         <div class="container">
           <h1>You've Been Unsubscribed</h1>
           <div class="success">✓ You have successfully unsubscribed from our newsletter</div>
-          <p>We're sorry to see you go! You will no longer receive emails from Vidibemus AI.</p>
+          <p>We're sorry to see you go! You will no longer receive emails from Videbimus AI.</p>
           
           <div class="actions">
             <a href="/" class="btn btn-primary">Visit Our Website</a>
@@ -207,7 +207,7 @@ export async function GET(request: NextRequest) {
       <!DOCTYPE html>
       <html>
       <head>
-        <title>Error - Vidibemus AI</title>
+        <title>Error - Videbimus AI</title>
         <style>body { font-family: Arial, sans-serif; text-align: center; padding: 50px; }</style>
       </head>
       <body>

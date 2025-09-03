@@ -304,7 +304,7 @@ class EmailService {
           html,
         },
         {
-          to: { email: process.env.ADMIN_EMAIL || 'admin@vidibemus.ai' },
+          to: { email: process.env.ADMIN_EMAIL || 'admin@videbimusai.com' },
           replyTo: data.email,
           tags: ['contact-form'],
         }
@@ -328,7 +328,7 @@ class EmailService {
       
       return await this.sendEmail(
         {
-          subject: 'Welcome to Vidibemus AI!',
+          subject: 'Welcome to Videbimus AI!',
           html,
         },
         {
@@ -368,7 +368,7 @@ class EmailService {
           ` : ''}
           <hr style="margin: 24px 0; border: none; border-top: 1px solid #eee;">
           <p style="color: #666; font-size: 14px;">
-            Vidibemus AI - Your AI Consulting Partner
+            Videbimus AI - Your AI Consulting Partner
           </p>
         </div>
       `,
@@ -382,7 +382,7 @@ class EmailService {
 
   async sendPasswordResetEmail(data: PasswordResetData): Promise<EmailSendResult> {
     const template = {
-      subject: 'Reset Your Password - Vidibemus AI',
+      subject: 'Reset Your Password - Videbimus AI',
       html: `
         <div style="font-family: Arial, sans-serif; max-width: 600px; margin: 0 auto;">
           <h2>Reset Your Password</h2>
@@ -394,7 +394,7 @@ class EmailService {
           <p>This link will expire at ${data.expiresAt.toLocaleString()}.</p>
           <hr style="margin: 24px 0; border: none; border-top: 1px solid #eee;">
           <p style="color: #666; font-size: 14px;">
-            Vidibemus AI - Your AI Consulting Partner
+            Videbimus AI - Your AI Consulting Partner
           </p>
         </div>
       `,
@@ -408,7 +408,7 @@ class EmailService {
 
   async sendInvoiceEmail(data: InvoiceData): Promise<EmailSendResult> {
     const template = {
-      subject: `Invoice ${data.invoiceNumber} - Vidibemus AI`,
+      subject: `Invoice ${data.invoiceNumber} - Videbimus AI`,
       html: `
         <div style="font-family: Arial, sans-serif; max-width: 600px; margin: 0 auto;">
           <h2>New Invoice</h2>
@@ -425,7 +425,7 @@ class EmailService {
           <p>If you have any questions about this invoice, please don't hesitate to contact us.</p>
           <hr style="margin: 24px 0; border: none; border-top: 1px solid #eee;">
           <p style="color: #666; font-size: 14px;">
-            Vidibemus AI - Your AI Consulting Partner
+            Videbimus AI - Your AI Consulting Partner
           </p>
         </div>
       `,
@@ -456,7 +456,7 @@ class EmailService {
             <a href="${data.unsubscribeUrl}" style="color: #0066cc;">Unsubscribe</a>
           </p>
           <p style="color: #666; font-size: 12px;">
-            Vidibemus AI - Your AI Consulting Partner
+            Videbimus AI - Your AI Consulting Partner
           </p>
         </div>
       `,
@@ -470,7 +470,7 @@ class EmailService {
   // Email verification
   async sendEmailVerification(email: string, verificationUrl: string): Promise<EmailSendResult> {
     const template = {
-      subject: 'Verify Your Email - Vidibemus AI',
+      subject: 'Verify Your Email - Videbimus AI',
       html: `
         <div style="font-family: Arial, sans-serif; max-width: 600px; margin: 0 auto;">
           <h2>Verify Your Email Address</h2>
@@ -482,7 +482,7 @@ class EmailService {
           <p>This link will expire in 24 hours.</p>
           <hr style="margin: 24px 0; border: none; border-top: 1px solid #eee;">
           <p style="color: #666; font-size: 14px;">
-            Vidibemus AI - Your AI Consulting Partner
+            Videbimus AI - Your AI Consulting Partner
           </p>
         </div>
       `,

@@ -104,7 +104,7 @@ export class AIAssistantQueryProcessor {
       ).join('\n');
 
       return {
-        answer: `I found some related information that might help:\n\n${suggestedAnswers}\n\nFor specific details about your question, please contact our team at consulting@videbimus.ai for a personalized consultation.`,
+        answer: `I found some related information that might help:\n\n${suggestedAnswers}\n\nFor specific details about your question, please contact our team at consulting@videbimusai.com for a personalized consultation.`,
         confidence: 0.6,
         source: "partial_match"
       };

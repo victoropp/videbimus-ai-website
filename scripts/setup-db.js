@@ -48,8 +48,8 @@ try {
 
   console.log('🎉 Database setup completed successfully!\n')
   console.log('📋 Default users created:')
-  console.log('   👤 Admin: admin@vidibemus.ai / AdminPass123!')
-  console.log('   👨‍💼 Consultant: consultant@vidibemus.ai / ConsultantPass123!')
+  console.log('   👤 Admin: admin@videbimusai.com / AdminPass123!')
+  console.log('   👨‍💼 Consultant: consultant@videbimusai.com / ConsultantPass123!')
   console.log('   👥 Clients: client1@example.com, client2@example.com, client3@example.com / ClientPass123!')
   console.log('\n🚀 You can now start the development server with: npm run dev')
   console.log('🔍 View your database with: npm run db:studio')

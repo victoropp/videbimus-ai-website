@@ -140,7 +140,7 @@ export function Team() {
                       </Link>
                     )}
                     <Link
-                      href={`mailto:${member.name.toLowerCase().replace(' ', '.')}@videbimus.ai`}
+                      href={`mailto:${member.name.toLowerCase().replace(' ', '.')}@videbimusai.com`}
                       className="text-gray-400 hover:text-cyan-500 transition-colors"
                       aria-label={`Email ${member.name}`}
                     >

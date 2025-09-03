@@ -561,7 +561,7 @@ class CalendarService {
     // Generate meeting URL based on provider
     if (videoProvider === 'daily') {
       // Integration with Daily.co would go here
-      meetingUrl = `https://vidibemus.daily.co/${crypto.randomUUID()}`;
+      meetingUrl = `https://videbimus.daily.co/${crypto.randomUUID()}`;
     } else if (videoProvider === 'meet') {
       // Google Meet integration
       meetingUrl = 'https://meet.google.com/new';

@@ -7,7 +7,7 @@ async function main() {
   console.log('🌱 Starting database seed...')
 
   // Create admin user
-  const adminEmail = process.env.ADMIN_EMAIL || 'admin@vidibemus.ai'
+  const adminEmail = process.env.ADMIN_EMAIL || 'admin@videbimusai.com'
   const adminPassword = await hash('AdminPass123!', 12)
 
   const admin = await prisma.user.upsert({
@@ -26,10 +26,10 @@ async function main() {
 
   // Create consultant user
   const consultant = await prisma.user.upsert({
-    where: { email: 'consultant@vidibemus.ai' },
+    where: { email: 'consultant@videbimusai.com' },
     update: {},
     create: {
-      email: 'consultant@vidibemus.ai',
+      email: 'consultant@videbimusai.com',
       name: 'AI Consultant',
       password: await hash('ConsultantPass123!', 12),
       role: UserRole.CONSULTANT,
@@ -367,7 +367,7 @@ Quality data is the foundation of successful ML projects:
   const settings = [
     { key: 'site_name', value: 'Vidibemus AI', category: 'general', isPublic: true },
     { key: 'site_description', value: 'Your AI Consulting Partner', category: 'general', isPublic: true },
-    { key: 'contact_email', value: process.env.ADMIN_EMAIL || 'contact@vidibemus.ai', category: 'general', isPublic: true },
+    { key: 'contact_email', value: process.env.ADMIN_EMAIL || 'contact@videbimusai.com', category: 'general', isPublic: true },
     { key: 'max_upload_size', value: '10485760', category: 'files', isPublic: false },
     { key: 'allowed_file_types', value: 'image/jpeg,image/png,image/webp,application/pdf', category: 'files', isPublic: false },
     { key: 'enable_analytics', value: 'true', category: 'features', isPublic: false },
@@ -420,7 +420,7 @@ Quality data is the foundation of successful ML projects:
   console.log('\n📋 Seed Summary:')
   console.log(`👤 Admin user: ${adminEmail}`)
   console.log(`🔒 Admin password: AdminPass123!`)
-  console.log(`👨‍💼 Consultant user: consultant@vidibemus.ai`)
+  console.log(`👨‍💼 Consultant user: consultant@videbimusai.com`)
   console.log(`🔒 Consultant password: ConsultantPass123!`)
   console.log(`👥 Client users: client1@example.com, client2@example.com, client3@example.com`)
   console.log(`🔒 Client password: ClientPass123!`)

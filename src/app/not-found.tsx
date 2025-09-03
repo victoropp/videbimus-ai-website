@@ -124,7 +124,7 @@ export default function NotFound() {
 
 // Add metadata for SEO
 export const metadata = {
-  title: '404 - Page Not Found | Vidibemus AI',
+  title: '404 - Page Not Found | Videbimus AI',
   description: 'The page you are looking for could not be found.',
   robots: 'noindex, nofollow'
 }

@@ -36,9 +36,9 @@ import { Badge } from '@/components/ui/badge'
 import { ScrollArea } from '@/components/ui/scroll-area'
 import { cn } from '@/lib/utils'
 
-// Business context from Vidibemus AI
+// Business context from Videbimus AI
 const BUSINESS_CONTEXT = {
-  company: 'Vidibemus AI',
+  company: 'Videbimus AI',
   tagline: 'Transforming Business with AI & Data Science',
   services: {
     discovery: {
@@ -167,7 +167,7 @@ export function CustomerServiceBot() {
     const pageType = ctx.pageUrl.includes('services') ? 'services' : 
                      ctx.pageUrl.includes('pricing') ? 'pricing options' : 
                      'AI solutions';
-    return `👋 Welcome to Vidibemus AI! I'm Alex, your AI consultant. I see you're exploring our ${pageType}. Can I help you find what you're looking for?`;
+    return `👋 Welcome to Videbimus AI! I'm Alex, your AI consultant. I see you're exploring our ${pageType}. Can I help you find what you're looking for?`;
   };
 
   // Proactive engagement triggers
@@ -293,7 +293,7 @@ export function CustomerServiceBot() {
     }
 
     // Check for returning visitor
-    const lastVisit = localStorage.getItem('vidibemus_last_visit')
+    const lastVisit = localStorage.getItem('videbimus_last_visit')
     if (lastVisit) {
       setUserContext(prev => ({
         ...prev,
@@ -301,7 +301,7 @@ export function CustomerServiceBot() {
         lastVisit: new Date(lastVisit)
       }))
     }
-    localStorage.setItem('vidibemus_last_visit', new Date().toISOString())
+    localStorage.setItem('videbimus_last_visit', new Date().toISOString())
 
     window.addEventListener('scroll', handleScroll)
     window.addEventListener('mousemove', resetInactivityTimer)
@@ -350,7 +350,7 @@ export function CustomerServiceBot() {
   // Initialize welcome message
   useEffect(() => {
     if (isOpen && messages.length === 0) {
-      const welcomeMessage = `👋 Hi! I'm Alex, your AI consultant at Vidibemus AI. 
+      const welcomeMessage = `👋 Hi! I'm Alex, your AI consultant at Videbimus AI. 
 
 I'm here to help you:
 • 🎯 Discover how AI can transform your business
@@ -505,7 +505,7 @@ What brings you here today?`
 
   // Generate contextual system prompt
   const generateSystemPrompt = () => {
-    return `You are Alex, a senior AI consultant at Vidibemus AI. You are professional, knowledgeable, and focused on helping businesses transform with AI.
+    return `You are Alex, a senior AI consultant at Videbimus AI. You are professional, knowledgeable, and focused on helping businesses transform with AI.
 
 Current conversation stage: ${conversationStage}
 Lead score: ${leadScore}/100
@@ -698,7 +698,7 @@ Which service interests you most?`
                     <p className="text-xs opacity-90">
                       {leadScore > 50 ? '🔥 High Intent' : 
                        leadScore > 20 ? '⭐ Qualified Lead' : 
-                       'Vidibemus AI'}
+                       'Videbimus AI'}
                     </p>
                   </div>
                 </div>
