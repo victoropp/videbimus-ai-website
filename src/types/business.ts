@@ -139,6 +139,8 @@ export interface Industry {
 }
 
 // Blog Types
+export type PostStatus = 'DRAFT' | 'PUBLISHED' | 'SCHEDULED' | 'ARCHIVED' | 'DELETED';
+
 export interface BlogPost extends BaseEntity, WithImage, WithSEO {
   title: string;
   excerpt: string;
@@ -154,6 +156,13 @@ export interface BlogPost extends BaseEntity, WithImage, WithSEO {
   views?: number;
   likes?: number;
   comments?: BlogComment[];
+}
+
+export interface BlogSearchResult {
+  posts: BlogPost[];
+  total: number;
+  page: number;
+  totalPages: number;
 }
 
 export interface BlogCategory {

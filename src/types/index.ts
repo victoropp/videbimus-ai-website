@@ -58,6 +58,8 @@ export type {
   Testimonial,
   CaseStudy,
   BlogPost,
+  BlogSearchResult,
+  PostStatus,
   ContactFormData,
   Lead,
   Client,
