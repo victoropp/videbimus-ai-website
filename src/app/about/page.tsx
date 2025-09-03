@@ -137,7 +137,7 @@ export default function AboutPage() {
             viewport={{ once: true }}
             className="grid grid-cols-2 md:grid-cols-4 gap-8"
           >
-            {stats.map((stat, index) => {
+            {stats.map((stat) => {
               const Icon = stat.icon
               return (
                 <motion.div key={stat.label} variants={itemVariants} className="text-center">
