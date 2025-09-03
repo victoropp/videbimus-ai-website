@@ -5,7 +5,7 @@
 
 import { NextRequest, NextResponse } from 'next/server'
 import { z } from 'zod'
-import { rateLimit } from '@/lib/rate-limit'
+import { apiRateLimit } from '@/lib/rate-limit'
 
 // Error report schema
 const ErrorReportSchema = z.object({
@@ -24,12 +24,8 @@ const ErrorReportSchema = z.object({
 
 type ErrorReport = z.infer<typeof ErrorReportSchema>
 
-// Rate limiting for error reports (prevent spam)
-const errorReportLimit = rateLimit({
-  windowMs: 60 * 1000, // 1 minute
-  max: 10, // 10 error reports per minute per IP
-  message: 'Too many error reports, please try again later',
-})
+// Use the apiRateLimit for error reports
+const errorReportLimit = apiRateLimit
 
 // Enhanced error categorization
 const categorizeError = (error: ErrorReport): string => {

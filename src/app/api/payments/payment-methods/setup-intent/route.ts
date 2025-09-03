@@ -1,5 +1,5 @@
 import { NextRequest, NextResponse } from 'next/server'
-import { getServerSession } from 'next-auth/next'
+import { getServerSession } from '@/auth'
 import { authConfig } from '@/auth'
 import { createSetupIntent } from '@/lib/payments/payment-methods'
 import { getCustomerByUserId } from '@/lib/payments/customer'
