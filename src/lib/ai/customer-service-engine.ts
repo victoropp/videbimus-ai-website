@@ -290,7 +290,7 @@ export class CustomerServiceEngine {
       ],
       interest: [
         `Based on your interest in ${profile.interests[0] || 'our services'}, I'd recommend checking out our case study on similar implementations.`,
-        'You've been researching our solutions thoroughly. Ready for a personalized demo?'
+        `You've been researching our solutions thoroughly. Ready for a personalized demo?`
       ],
       consideration: [
         'I can help you build a business case for AI implementation. What metrics matter most to your team?',

@@ -203,7 +203,7 @@ export function AdvancedAIChat() {
           className="w-full bg-gradient-to-r from-cyan-500 to-purple-500"
           onClick={() => {
             setShowAppointmentForm(false)
-            addMessage('system', '✅ Appointment request submitted! We'll confirm within 24 hours via email.')
+            addMessage('system', 'Appointment request submitted! We\'ll confirm within 24 hours via email.')
           }}
         >
           Confirm Appointment

@@ -16,7 +16,7 @@ export default defineConfig({
       // Test environment variables
       NODE_ENV: 'test',
     },
-    setupNodeEvents(on, config) {
+    setupNodeEvents(on, _config) {
       // implement node event listeners here
       on('task', {
         log(message) {
