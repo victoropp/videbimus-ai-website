@@ -11,7 +11,6 @@ import {
   TrendingUp, 
   Globe,
   ArrowRight,
-  CheckCircle,
   Lightbulb,
   Shield,
   Zap
