@@ -362,10 +362,10 @@ export default function BlogAdminPage() {
 
                             {post.tags.length > 0 && (
                               <div className="flex flex-wrap gap-1 mt-3">
-                                {post.tags.slice(0, 3).map(tag => (
-                                  <Badge key={tag.id} variant="outline" className="text-xs">
+                                {post.tags.slice(0, 3).map((tag, index) => (
+                                  <Badge key={index} variant="outline" className="text-xs">
                                     <Tag className="h-2 w-2 mr-1" />
-                                    {tag.name}
+                                    {typeof tag === 'string' ? tag : tag.name}
                                   </Badge>
                                 ))}
                                 {post.tags.length > 3 && (
