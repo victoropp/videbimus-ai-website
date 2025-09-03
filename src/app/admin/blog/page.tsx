@@ -40,13 +40,14 @@ import {
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs'
 import type { BlogPost, BlogCategory, BlogTag, BlogSearchResult, PostStatus } from '@/types'
 
-const statusColors = {
-  DRAFT: 'gray',
-  PUBLISHED: 'green',
-  SCHEDULED: 'blue',
-  ARCHIVED: 'yellow',
-  DELETED: 'red'
-}
+// Status colors - can be used for visual indicators
+// const statusColors = {
+//   DRAFT: 'gray',
+//   PUBLISHED: 'green',
+//   SCHEDULED: 'blue',
+//   ARCHIVED: 'yellow',
+//   DELETED: 'red'
+// }
 
 export default function BlogAdminPage() {
   const { data: session, status } = useSession()
