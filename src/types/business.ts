@@ -164,6 +164,12 @@ export interface BlogCategory {
   color?: string;
 }
 
+export interface BlogTag {
+  id: ID;
+  name: string;
+  slug: Slug;
+}
+
 export interface BlogComment extends BaseEntity {
   content: string;
   author: {

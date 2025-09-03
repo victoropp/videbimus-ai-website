@@ -24,7 +24,8 @@ import type {
   TeamMember, 
   Testimonial, 
   CaseStudy, 
-  BlogPost, 
+  BlogPost,
+  BlogTag, 
   ContactFormData 
 } from './business';
 
