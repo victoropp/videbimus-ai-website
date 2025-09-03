@@ -150,12 +150,13 @@ export interface BlogPost extends BaseEntity, WithImage, WithSEO {
   readTime: number;
   tags: string[];
   category: BlogCategory;
-  status: 'draft' | 'published' | 'archived';
+  status: PostStatus | 'draft' | 'published' | 'archived'; // Support both formats
   featured: boolean;
   publishedAt?: Timestamp;
   views?: number;
   likes?: number;
   comments?: BlogComment[];
+  published?: boolean; // Add published field
 }
 
 export interface BlogSearchResult {
