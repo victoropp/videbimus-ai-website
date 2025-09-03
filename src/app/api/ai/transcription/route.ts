@@ -1,8 +1,7 @@
 import { NextRequest, NextResponse } from 'next/server';
 import { z } from 'zod';
 import { transcriptionService } from '@/lib/ai/transcription';
-import { getServerSession } from 'next-auth/next';
-import { authOptions } from '@/auth';
+import { getServerSession, authOptions } from '@/auth';
 
 const transcriptionOptionsSchema = z.object({
   language: z.string().optional(),

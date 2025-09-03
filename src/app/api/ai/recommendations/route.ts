@@ -1,8 +1,7 @@
 import { NextRequest, NextResponse } from 'next/server';
 import { z } from 'zod';
 import { recommendationEngine } from '@/lib/ai/recommendations';
-import { getServerSession } from 'next-auth/next';
-import { authOptions } from '@/auth';
+import { getServerSession, authOptions } from '@/auth';
 
 const recommendationRequestSchema = z.object({
   userProfile: z.object({

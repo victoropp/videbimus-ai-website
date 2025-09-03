@@ -1,8 +1,7 @@
 import { NextRequest, NextResponse } from 'next/server';
 import { z } from 'zod';
 import { modelShowcase } from '@/lib/ai/model-showcase';
-import { getServerSession } from 'next-auth/next';
-import { authOptions } from '@/auth';
+import { getServerSession, authOptions } from '@/auth';
 
 const predictionSchema = z.object({
   modelId: z.string(),

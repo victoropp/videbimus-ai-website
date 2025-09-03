@@ -1,8 +1,7 @@
 import { NextRequest, NextResponse } from 'next/server';
 import { z } from 'zod';
 import { vectorStore, preprocessDocument } from '@/lib/ai/vector-store';
-import { getServerSession } from 'next-auth/next';
-import { authOptions } from '@/auth';
+import { getServerSession, authOptions } from '@/auth';
 
 const uploadDocumentSchema = z.object({
   content: z.string().min(1),
