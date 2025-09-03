@@ -183,6 +183,7 @@ export interface BlogTag {
   id: ID;
   name: string;
   slug: Slug;
+  description?: string;
 }
 
 export interface BlogComment extends BaseEntity {
