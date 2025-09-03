@@ -1,11 +1,10 @@
 import type { Metadata } from 'next'
 import { Inter, Plus_Jakarta_Sans, JetBrains_Mono } from 'next/font/google'
-import { ThemeProvider } from '@/components/theme-provider'
 import { Header } from '@/components/layout/header'
 import { Footer } from '@/components/layout/footer'
 import { CustomerServiceBot } from '@/components/ai-assistant/customer-service-bot'
 import ClientErrorBoundary from '@/components/client-error-boundary'
-import SessionProvider from '@/components/providers/session-provider'
+import RootProviders from '@/components/providers/root-providers'
 import './globals.css'
 
 const inter = Inter({
@@ -101,27 +100,20 @@ export default function RootLayout({
         className={`${inter.variable} ${jakarta.variable} ${jetbrains.variable} font-sans antialiased`}
         suppressHydrationWarning
       >
-        <SessionProvider>
-          <ThemeProvider
-            attribute="class"
-            defaultTheme="light"
-            enableSystem
-            disableTransitionOnChange
-          >
-            <ClientErrorBoundary>
-              <div className="relative flex min-h-screen flex-col">
-                <Header />
-                <main className="flex-1">
-                  <ClientErrorBoundary isolate>
-                    {children}
-                  </ClientErrorBoundary>
-                </main>
-                <Footer />
-                <CustomerServiceBot />
-              </div>
-            </ClientErrorBoundary>
-          </ThemeProvider>
-        </SessionProvider>
+        <RootProviders>
+          <ClientErrorBoundary>
+            <div className="relative flex min-h-screen flex-col">
+              <Header />
+              <main className="flex-1">
+                <ClientErrorBoundary isolate>
+                  {children}
+                </ClientErrorBoundary>
+              </main>
+              <Footer />
+              <CustomerServiceBot />
+            </div>
+          </ClientErrorBoundary>
+        </RootProviders>
       </body>
     </html>
   )
