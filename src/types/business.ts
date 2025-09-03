@@ -163,6 +163,11 @@ export interface BlogSearchResult {
   total: number;
   page: number;
   totalPages: number;
+  pagination: {
+    page: number;
+    pages: number;
+    total: number;
+  };
 }
 
 export interface BlogCategory {
