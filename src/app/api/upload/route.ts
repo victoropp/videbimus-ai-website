@@ -1,6 +1,5 @@
 import { NextRequest, NextResponse } from "next/server"
-import { getServerSession } from "next-auth"
-import { authConfig } from "@/auth"
+import { getServerSession, authConfig } from "@/auth"
 import { prisma } from "@/lib/prisma"
 import { validateFileType, validateFileSize, generateSecureFilename } from "@/lib/security"
 import { writeFile, mkdir } from "fs/promises"

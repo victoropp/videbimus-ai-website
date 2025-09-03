@@ -198,7 +198,7 @@ export default function EditBlogPostPage({ params }: EditBlogPostPageProps) {
   }
 
   // Check permissions - only author or admin can edit
-  if (post.authorId !== session.user.id && session.user.role !== 'ADMIN') {
+  if (post.author.id !== session.user.id && session.user.role !== 'ADMIN') {
     return (
       <div className="min-h-screen flex items-center justify-center">
         <div className="text-center">

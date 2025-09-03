@@ -9,7 +9,7 @@ import { getAnalyticsConfig, isProduction } from '../config/services';
 import { withErrorHandling, ServiceErrorType, CustomServiceError, performHealthCheck } from './error-handler';
 import { aiService } from './ai';
 import { emailService } from './email';
-import { storageService } from './storage';
+// import { storageService } from './storage'; // Commented out - AWS SDK not installed
 import { videoService } from './video';
 import { vectorStoreService } from './vector-store';
 import { authService } from './auth';
@@ -144,7 +144,7 @@ class MonitoringService {
       { name: 'database', check: () => this.checkDatabase() },
       { name: 'ai', check: () => aiService.healthCheck() },
       { name: 'email', check: () => emailService.healthCheck() },
-      { name: 'storage', check: () => storageService.healthCheck() },
+      // { name: 'storage', check: () => storageService.healthCheck() }, // Commented out - AWS SDK not installed
       { name: 'video', check: () => videoService.healthCheck() },
       { name: 'vector-store', check: () => vectorStoreService.healthCheck() },
       { name: 'auth', check: () => authService.healthCheck() },
