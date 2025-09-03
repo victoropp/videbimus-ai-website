@@ -183,3 +183,11 @@ declare module "next-auth/jwt" {
 }
 
 export const { handlers, auth, signIn, signOut } = NextAuth(authConfig)
+
+// Export authOptions for backward compatibility
+export const authOptions = authConfig
+
+// Helper function for API routes that expect getServerSession
+export async function getServerSession() {
+  return await auth()
+}
