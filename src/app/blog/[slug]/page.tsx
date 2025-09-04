@@ -329,7 +329,7 @@ export default function BlogPostPage() {
 
                   <div className="flex items-center space-x-2 text-sm text-gray-500">
                     <MessageSquare className="h-4 w-4" />
-                    <span>{post.comments?.length || 0} comments</span>
+                    <span>0 comments</span>
                   </div>
                 </motion.div>
 
