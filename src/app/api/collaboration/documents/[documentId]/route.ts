@@ -6,7 +6,7 @@ import { z } from 'zod';
 const updateDocumentSchema = z.object({
   title: z.string().optional(),
   content: z.string().optional(),
-  language: z.string().optional(),
+  documentType: z.string().optional(),
 });
 
 export async function GET(
@@ -98,7 +98,7 @@ export async function PATCH(
     // Only add fields that are defined to avoid exactOptionalPropertyTypes issues
     if (validatedData.title !== undefined) updateData.title = validatedData.title;
     if (validatedData.content !== undefined) updateData.content = validatedData.content;
-    if (validatedData.language !== undefined) updateData.language = validatedData.language;
+    if (validatedData.documentType !== undefined) updateData.documentType = validatedData.documentType;
     
     const updatedDocument = await prisma.consultationDocument.update({
       where: { id: params.documentId },

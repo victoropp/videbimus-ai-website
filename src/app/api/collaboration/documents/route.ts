@@ -6,16 +6,14 @@ import { z } from 'zod';
 const createDocumentSchema = z.object({
   title: z.string().min(1, 'Document title is required'),
   content: z.string().default(''),
-  language: z.string().default('javascript'),
-  type: z.enum(['CODE', 'TEXT', 'MARKDOWN', 'JSON', 'XML', 'HTML', 'CSS']).default('CODE'),
+  documentType: z.string().default('document'),
   roomId: z.string(),
 });
 
 const updateDocumentSchema = z.object({
   title: z.string().optional(),
   content: z.string().optional(),
-  language: z.string().optional(),
-  type: z.enum(['CODE', 'TEXT', 'MARKDOWN', 'JSON', 'XML', 'HTML', 'CSS']).optional(),
+  documentType: z.string().optional(),
 });
 
 export async function GET(request: NextRequest) {
@@ -115,7 +113,10 @@ export async function POST(request: NextRequest) {
 
     const document = await prisma.consultationDocument.create({
       data: {
-        ...validatedData,
+        title: validatedData.title,
+        content: validatedData.content,
+        documentType: validatedData.documentType,
+        roomId: validatedData.roomId,
         uploadedBy: session.user.id,
         version: 1,
       },
