@@ -191,7 +191,7 @@ export async function POST(request: NextRequest) {
       category: categorizeError(errorReport),
       severity: determineErrorSeverity(errorReport),
       reportedAt: new Date().toISOString(),
-      ip: request.ip || request.headers.get('x-forwarded-for') || 'unknown',
+      ip: request.headers.get('x-forwarded-for') || request.headers.get('x-real-ip') || 'unknown',
       serverTimestamp: new Date().toISOString(),
     }
     
