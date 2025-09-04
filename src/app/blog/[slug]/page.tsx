@@ -217,7 +217,7 @@ export default function BlogPostPage() {
                 <div className="flex items-center space-x-2">
                   {post.author.image && (
                     <img
-                      src={post.author.image}
+                      src={typeof post.author.image === 'string' ? post.author.image : '/avatar-placeholder.png'}
                       alt={post.author.name || ''}
                       className="h-8 w-8 rounded-full object-cover"
                     />
