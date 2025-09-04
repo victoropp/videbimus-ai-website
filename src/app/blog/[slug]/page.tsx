@@ -278,8 +278,9 @@ export default function BlogPostPage() {
                 >
                   <ReactMarkdown
                     components={{
-                      code({node, inline, className, children, ...props}) {
+                      code({node, className, children, ...props}: any) {
                         const match = /language-(\w+)/.exec(className || '')
+                        const inline = node?.position ? false : true
                         return !inline && match ? (
                           <SyntaxHighlighter
                             style={tomorrow}
