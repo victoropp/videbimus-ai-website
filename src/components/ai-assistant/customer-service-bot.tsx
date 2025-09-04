@@ -1,6 +1,6 @@
 'use client'
 
-import React, { useState, useRef, useEffect, useCallback } from 'react'
+import React, { useState, useRef, useEffect, useCallback, useMemo } from 'react'
 import { motion, AnimatePresence } from 'framer-motion'
 import { 
   MessageCircle, 
@@ -171,7 +171,7 @@ export function CustomerServiceBot() {
   };
 
   // Proactive engagement triggers
-  const engagementTriggers: EngagementTrigger[] = [
+  const engagementTriggers: EngagementTrigger[] = useMemo(() => [
     {
       id: 'welcome_first_time',
       condition: (ctx) => !ctx.isReturningVisitor && ctx.timeOnPage > 3000 && ctx.interactions === 0,
@@ -228,7 +228,7 @@ export function CustomerServiceBot() {
         { label: 'Download case studies', icon: FileText, action: 'case_studies', style: 'secondary' }
       ]
     }
-  ]
+  ], [])
 
   // Helper functions
   const scrollToBottom = () => {
@@ -262,7 +262,7 @@ export function CustomerServiceBot() {
 
   // Behavioral tracking
   useEffect(() => {
-    if (typeof window === 'undefined') return
+    if (typeof window === 'undefined') return undefined
 
     // Track time on page
     const startTime = Date.now()
@@ -316,7 +316,7 @@ export function CustomerServiceBot() {
 
   // Proactive engagement logic
   useEffect(() => {
-    if (hasEngaged || isOpen) return
+    if (hasEngaged || isOpen) return undefined
 
     const checkTriggers = () => {
       const applicableTriggers = engagementTriggers
@@ -345,7 +345,7 @@ export function CustomerServiceBot() {
 
     const triggerCheckInterval = setInterval(checkTriggers, 2000)
     return () => clearInterval(triggerCheckInterval)
-  }, [userContext, hasEngaged, isOpen, addMessage])
+  }, [userContext, hasEngaged, isOpen, addMessage, engagementTriggers])
 
   // Initialize welcome message
   useEffect(() => {
@@ -782,7 +782,7 @@ Which service interests you most?`
                                     <Button
                                       key={idx}
                                       size="sm"
-                                      variant={button.style === 'primary' ? 'default' : button.style === 'ghost' ? 'ghost' : 'outline'}
+                                      variant={button.style === 'primary' ? 'primary' : button.style === 'ghost' ? 'ghost' : 'outline'}
                                       onClick={() => handleActionButton(button.action)}
                                       className={cn(
                                         "text-xs",

@@ -1,6 +1,6 @@
 'use client'
 
-import React, { useState, useRef, useEffect } from 'react'
+import React, { useState, useRef, useEffect, useCallback } from 'react'
 import { motion, AnimatePresence } from 'framer-motion'
 import { 
   MessageCircle, 
@@ -70,6 +70,15 @@ export function AdvancedChat() {
     }
   }, [isOpen, isMinimized])
 
+  const initializeChat = useCallback(() => {
+    if (messages.length === 0) {
+      const response = customerCareProcessor.generateResponse('', sessionId, true)
+      addMessage('assistant', response.response, {
+        suggestedActions: ['Learn more', 'Get started', 'Contact us']
+      })
+    }
+  }, [messages.length, sessionId])
+
   // Auto-open after delay
   useEffect(() => {
     if (!hasEngaged && !isOpen) {
@@ -79,7 +88,8 @@ export function AdvancedChat() {
       }, 15000)
       return () => clearTimeout(timer)
     }
-  }, [hasEngaged])
+    return undefined
+  }, [hasEngaged, isOpen, initializeChat])
 
   const addMessage = (type: Message['type'], content: string, extra?: Partial<Message>) => {
     const newMessage: Message = {
@@ -135,15 +145,6 @@ export function AdvancedChat() {
       window.open('/case-studies', '_blank')
     } else {
       handleSendMessage(action)
-    }
-  }
-
-  const initializeChat = () => {
-    if (messages.length === 0) {
-      const response = customerCareProcessor.generateResponse('', sessionId, true)
-      addMessage('assistant', response.response, {
-        suggestedActions: ['Learn about our services', 'Schedule consultation', 'See pricing']
-      })
     }
   }
 

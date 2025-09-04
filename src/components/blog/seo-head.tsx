@@ -39,10 +39,10 @@ export default function SEOHead({
     pageDescription = post.seoDescription || post.excerpt || defaultDescription
     pageImage = post.featuredImage ? `${siteUrl}${post.featuredImage}` : defaultImage
     pageUrl = `${siteUrl}/blog/${post.slug}`
-    pageKeywords = [...(post.seoKeywords || []), ...post.tags.map(tag => tag.name), ...pageKeywords]
+    pageKeywords = [...(post.seoKeywords || []), ...post.tags, ...pageKeywords]
   } else if (category) {
-    pageTitle = category.seoTitle || `${category.name} | Blog | ${siteName}`
-    pageDescription = category.seoDescription || category.description || `Latest ${category.name.toLowerCase()} articles from ${siteName}`
+    pageTitle = `${category.name} | Blog | ${siteName}`
+    pageDescription = category.description || `Latest ${category.name.toLowerCase()} articles from ${siteName}`
     pageUrl = `${siteUrl}/blog/category/${category.slug}`
   } else if (title) {
     pageTitle = `${title} | ${siteName}`
@@ -132,7 +132,7 @@ export default function SEOHead({
       articleStructuredData.articleSection = post.category.name
     }
 
-    structuredData['@graph'].push(articleStructuredData)
+    structuredData['@graph'].push(articleStructuredData as any)
   }
 
   return (
@@ -158,8 +158,8 @@ export default function SEOHead({
           <meta property="article:modified_time" content={new Date(post.updatedAt).toISOString()} />
           <meta property="article:author" content={post.author.name} />
           {post.category && <meta property="article:section" content={post.category.name} />}
-          {post.tags.map(tag => (
-            <meta key={tag.id} property="article:tag" content={tag.name} />
+          {post.tags.map((tag, index) => (
+            <meta key={index} property="article:tag" content={tag} />
           ))}
         </>
       )}

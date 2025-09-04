@@ -92,6 +92,10 @@ model User {
   blogComments        BlogComment[]
   blogRevisions       BlogRevision[]
   documentVersions    DocumentVersion[]
+  
+  // Collaboration relations
+  presence            UserPresence?
+  notifications       Notification[]
 
   @@map("users")
 }
@@ -563,6 +567,7 @@ model BlogPost {
   published   Boolean     @default(false)
   publishedAt DateTime?
   featured    Boolean     @default(false)
+  featuredImage String?   // Add optional featured image URL
   authorId    String
   categoryId  String?
   tags        String[]
@@ -816,6 +821,9 @@ enum PaymentMethod {
   WIRE_TRANSFER
   CHECK
   CASH
+  CARD
+  BANK_ACCOUNT
+  SEPA_DEBIT
 }
 
 // Metrics and Analytics Models
@@ -1098,4 +1106,53 @@ model DocumentVersion {
   creator     User                  @relation(fields: [createdBy], references: [id])
   
   @@map("document_versions")
+}
+
+// User presence tracking for collaboration
+model UserPresence {
+  id         String    @id @default(cuid())
+  userId     String    @unique
+  isOnline   Boolean   @default(false)
+  roomId     String?
+  lastSeen   DateTime  @default(now())
+  createdAt  DateTime  @default(now())
+  updatedAt  DateTime  @updatedAt
+  
+  // Relations
+  user       User      @relation(fields: [userId], references: [id], onDelete: Cascade)
+  
+  @@index([userId])
+  @@index([isOnline])
+  @@index([roomId])
+  @@map("user_presence")
+}
+
+// Notifications system
+model Notification {
+  id         String            @id @default(cuid())
+  userId     String
+  title      String
+  content    String
+  type       NotificationType  @default(SYSTEM)
+  isRead     Boolean           @default(false)
+  metadata   Json?
+  createdAt  DateTime          @default(now())
+  readAt     DateTime?
+  
+  // Relations
+  user       User              @relation(fields: [userId], references: [id], onDelete: Cascade)
+  
+  @@index([userId])
+  @@index([isRead])
+  @@index([createdAt])
+  @@map("notifications")
+}
+
+enum NotificationType {
+  SYSTEM
+  MESSAGE
+  DOCUMENT
+  WHITEBOARD
+  ROOM
+  ACTION_ITEM
 }

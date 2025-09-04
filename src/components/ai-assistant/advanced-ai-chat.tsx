@@ -1,6 +1,6 @@
 'use client'
 
-import React, { useState, useRef, useEffect } from 'react'
+import React, { useState, useRef, useEffect, useCallback } from 'react'
 import { motion, AnimatePresence } from 'framer-motion'
 import { 
   MessageCircle, 
@@ -75,6 +75,15 @@ export function AdvancedAIChat() {
     }
   }, [isOpen, isMinimized])
 
+  const initializeChat = useCallback(() => {
+    if (messages.length === 0) {
+      const response = customerCareProcessor.generateResponse('', sessionId, true)
+      addMessage('assistant', response.response, {
+        suggestedActions: ['Learn about our services', 'Schedule consultation', 'See pricing', 'Chat with expert']
+      })
+    }
+  }, [messages.length, sessionId])
+
   // Auto-open after delay with welcome message
   useEffect(() => {
     const timer = setTimeout(() => {
@@ -85,7 +94,7 @@ export function AdvancedAIChat() {
     }, 15000) // Open after 15 seconds
 
     return () => clearTimeout(timer)
-  }, [hasEngaged, isOpen])
+  }, [hasEngaged, isOpen, initializeChat])
 
   const addMessage = (type: Message['type'], content: string, extra?: Partial<Message>) => {
     const newMessage: Message = {
@@ -147,15 +156,6 @@ export function AdvancedAIChat() {
       addMessage('system', 'Please share your contact information:')
     } else {
       handleSendMessage(action)
-    }
-  }
-
-  const initializeChat = () => {
-    if (messages.length === 0) {
-      const response = customerCareProcessor.generateResponse('', sessionId, true)
-      addMessage('assistant', response.response, {
-        suggestedActions: ['Learn about our services', 'Schedule consultation', 'See pricing', 'Chat with expert']
-      })
     }
   }
 

@@ -113,7 +113,7 @@ export default function DocumentEditor({
     return () => {
       cleanup();
     };
-  }, [roomId, documentId, token]);
+  }, [initializeSocket, setupCollaborativeEditing, cleanup]);
 
   const initializeSocket = useCallback(async () => {
     try {

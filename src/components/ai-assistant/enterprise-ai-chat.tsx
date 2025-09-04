@@ -166,7 +166,7 @@ export function EnterpriseAIChat() {
           confidence: result.confidence,
           responseTime: result.responseTime,
           intent: result.intent.type,
-          knowledgeDocuments: result.knowledgeUsed?.length || 0,
+          knowledgeDocuments: 0, // Knowledge documents not available in current response
         }
       }
 

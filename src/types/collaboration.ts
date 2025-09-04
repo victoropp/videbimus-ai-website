@@ -17,7 +17,8 @@ export interface User extends BaseEntity {
   profile?: UserProfile;
 }
 
-export type UserRole = 'admin' | 'member' | 'guest' | 'viewer';
+// Import UserRole from business types to avoid duplication
+// Note: UserRole is defined in business.ts to match Prisma schema
 export type UserStatus = 'online' | 'away' | 'busy' | 'offline';
 
 export interface UserPreferences {
@@ -477,4 +478,106 @@ export interface RealTimeEvent {
   roomId?: ID;
   userId?: ID;
   broadcast: boolean;
+}
+
+// NOTE: Consultation types have been moved to consultation.ts
+// to avoid duplication and maintain clear separation of concerns
+
+// Project Types (from Prisma schema)
+export type ProjectStatus = 'PLANNING' | 'IN_PROGRESS' | 'REVIEW' | 'COMPLETED' | 'CANCELLED';
+export type Priority = 'LOW' | 'MEDIUM' | 'HIGH' | 'URGENT';
+
+export interface Project extends BaseEntity {
+  title: string;
+  description?: string;
+  status: ProjectStatus;
+  priority: Priority;
+  budget?: number; // Decimal in Prisma
+  startDate?: Timestamp;
+  endDate?: Timestamp;
+  userId: ID;
+  
+  // Relations
+  user: User;
+  consultations: Consultation[];
+  files: ProjectFile[];
+  tasks: Task[];
+  invoices: Invoice[];
+}
+
+export interface ProjectFile extends BaseEntity {
+  filename: string;
+  originalName: string;
+  mimeType: string;
+  size: number;
+  url: string;
+  projectId: ID;
+  
+  project: Project;
+}
+
+// Task Types
+export type TaskStatus = 'TODO' | 'IN_PROGRESS' | 'REVIEW' | 'COMPLETED' | 'CANCELLED';
+
+export interface Task extends BaseEntity {
+  title: string;
+  description?: string;
+  status: TaskStatus;
+  priority: Priority;
+  dueDate?: Timestamp;
+  completedAt?: Timestamp;
+  projectId: ID;
+  
+  project: Project;
+}
+
+// Financial Types
+export type InvoiceStatus = 'DRAFT' | 'SENT' | 'PAID' | 'OVERDUE' | 'CANCELLED' | 'REFUNDED';
+export type PaymentStatus = 'PENDING' | 'PROCESSING' | 'COMPLETED' | 'FAILED' | 'CANCELLED' | 'REFUNDED';
+export type PaymentMethod = 'CREDIT_CARD' | 'BANK_TRANSFER' | 'PAYPAL' | 'STRIPE' | 'WIRE_TRANSFER' | 'CHECK' | 'CASH' | 'CARD' | 'BANK_ACCOUNT' | 'SEPA_DEBIT';
+
+export interface Invoice extends BaseEntity {
+  number: string; // Unique
+  amount: number; // Decimal
+  tax?: number; // Decimal
+  total: number; // Decimal
+  currency: string;
+  status: InvoiceStatus;
+  issuedDate?: Timestamp;
+  dueDate?: Timestamp;
+  paidDate?: Timestamp;
+  description?: string;
+  notes?: string;
+  projectId?: ID;
+  clientId: ID;
+  
+  // Relations
+  client: User;
+  project?: Project;
+  items: InvoiceItem[];
+  payments: Payment[];
+}
+
+export interface InvoiceItem extends BaseEntity {
+  description: string;
+  quantity: number; // Decimal
+  rate: number; // Decimal
+  amount: number; // Decimal
+  invoiceId: ID;
+  
+  invoice: Invoice;
+}
+
+export interface Payment extends BaseEntity {
+  amount: number; // Decimal
+  currency: string;
+  status: PaymentStatus;
+  method: PaymentMethod;
+  transactionId?: string; // Unique
+  reference?: string;
+  notes?: string;
+  processedAt?: Timestamp;
+  invoiceId: ID;
+  
+  invoice: Invoice;
 }

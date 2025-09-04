@@ -138,7 +138,7 @@ export function UsageAnalytics({ usage }: UsageAnalyticsProps) {
   }
 
   const formatDate = (date: Date) => {
-    return new Intl.DateFormat('en-US', {
+    return new Intl.DateTimeFormat('en-US', {
       month: 'short',
       day: 'numeric',
       year: 'numeric'
@@ -175,7 +175,7 @@ export function UsageAnalytics({ usage }: UsageAnalyticsProps) {
           {['day', 'week', 'month', 'year'].map((period) => (
             <Button
               key={period}
-              variant={selectedPeriod === period ? 'default' : 'outline'}
+              variant={selectedPeriod === period ? 'primary' : 'outline'}
               size="sm"
               onClick={() => setSelectedPeriod(period)}
             >

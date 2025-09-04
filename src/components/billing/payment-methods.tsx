@@ -5,7 +5,7 @@ import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/com
 import { Button } from '@/components/ui/button'
 import { Badge } from '@/components/ui/badge'
 import { Dialog, DialogContent, DialogDescription, DialogHeader, DialogTitle, DialogTrigger } from '@/components/ui/dialog'
-import { PaymentMethodType } from '@prisma/client'
+import { PaymentMethod as PrismaPaymentMethod } from '@prisma/client'
 import { CreditCard, Plus, MoreHorizontal, Check, X } from 'lucide-react'
 import { 
   DropdownMenu,
@@ -17,7 +17,7 @@ import { AddPaymentMethodForm } from './add-payment-method-form'
 
 interface PaymentMethod {
   id: string
-  type: PaymentMethodType
+  type: PrismaPaymentMethod
   cardBrand?: string
   cardLast4?: string
   cardExpMonth?: number
@@ -59,7 +59,7 @@ export function PaymentMethods({
   const [showAddDialog, setShowAddDialog] = useState(false)
   const [loadingAction, setLoadingAction] = useState<string | null>(null)
 
-  const handleAction = async (action: () => Promise<void>, actionId: string) => {
+  const handleAction = async (action: () => void | Promise<void>, actionId: string) => {
     setLoadingAction(actionId)
     try {
       await action()

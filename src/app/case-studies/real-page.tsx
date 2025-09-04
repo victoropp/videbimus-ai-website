@@ -53,7 +53,11 @@ export default function CaseStudiesRealPage() {
   // Fetch industries and tags
   const { data: industries = [] } = api.caseStudies.getIndustries.useQuery()
   const { data: availableTags = [] } = api.caseStudies.getTags.useQuery()
-  const { data: stats } = api.caseStudies.getStats.useQuery()
+  // Note: getStats requires admin privileges, so we'll handle errors gracefully
+  const { data: stats } = api.caseStudies.getStats.useQuery(undefined, {
+    retry: false,
+    enabled: false, // Disable this query for now since it requires admin privileges
+  })
 
   useEffect(() => {
     if (data) {

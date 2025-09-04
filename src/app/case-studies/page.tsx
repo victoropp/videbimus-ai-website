@@ -176,12 +176,14 @@ export default function CaseStudiesPage() {
                   <div className="h-48 bg-gradient-to-br from-cyan-100 to-purple-100 dark:from-cyan-900/20 dark:to-purple-900/20 relative overflow-hidden">
                     <div className="absolute inset-0 flex items-center justify-center">
                       <div className="text-6xl font-bold text-cyan-500/20">
-                        {study.client.split(' ')[0][0]}
+                        {typeof study.client === 'string' 
+                          ? study.client.split(' ')[0][0] 
+                          : study.client.name.split(' ')[0][0]}
                       </div>
                     </div>
                     <div className="absolute top-4 right-4">
                       <div className="bg-white/90 dark:bg-gray-900/90 px-2 py-1 rounded-full text-xs font-medium text-gray-900 dark:text-white">
-                        {study.industry}
+                        {typeof study.industry === 'string' ? study.industry : study.industry.name}
                       </div>
                     </div>
                   </div>
@@ -196,7 +198,7 @@ export default function CaseStudiesPage() {
                       {study.description}
                     </CardDescription>
                     <div className="text-sm font-medium text-cyan-600 dark:text-cyan-400 mt-2">
-                      {study.client}
+                      {typeof study.client === 'string' ? study.client : study.client.name}
                     </div>
                   </CardHeader>
 

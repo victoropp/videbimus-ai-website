@@ -6,7 +6,26 @@ import { Button } from '@/components/ui/button'
 import { Badge } from '@/components/ui/badge'
 import { Progress } from '@/components/ui/progress'
 import { formatCurrency } from '@/lib/stripe'
-import { SubscriptionPlan, SubscriptionStatus, BillingCycle } from '@prisma/client'
+// Define subscription types locally since they don't exist in the current Prisma schema
+enum SubscriptionPlan {
+  STARTER = 'STARTER',
+  PROFESSIONAL = 'PROFESSIONAL',
+  ENTERPRISE = 'ENTERPRISE'
+}
+
+enum SubscriptionStatus {
+  ACTIVE = 'ACTIVE',
+  CANCELED = 'CANCELED',
+  PAST_DUE = 'PAST_DUE',
+  INCOMPLETE = 'INCOMPLETE',
+  TRIALING = 'TRIALING'
+}
+
+enum BillingCycle {
+  MONTHLY = 'MONTHLY',
+  YEARLY = 'YEARLY',
+  QUARTERLY = 'QUARTERLY'
+}
 import { CalendarDays, CreditCard, AlertTriangle, CheckCircle } from 'lucide-react'
 
 interface SubscriptionCardProps {
@@ -77,7 +96,7 @@ export function SubscriptionCard({
   const canReactivate = subscription.cancelAtPeriodEnd && subscription.status === 'ACTIVE'
 
   const formatDate = (date: Date) => {
-    return new Intl.DateFormat('en-US', {
+    return new Intl.DateTimeFormat('en-US', {
       month: 'short',
       day: 'numeric',
       year: 'numeric'
@@ -231,7 +250,7 @@ export function SubscriptionCard({
           <Button
             onClick={() => handleAction(onReactivate)}
             disabled={loading}
-            variant="default"
+            variant="primary"
           >
             Reactivate
           </Button>

@@ -21,7 +21,7 @@ import {
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card'
 import { Button } from '@/components/ui/button'
 import { Badge } from '@/components/ui/badge'
-import type { Service } from '@/types'
+import type { Service, ServiceFeature, ServiceFeatureInput } from '@/types'
 
 // Create badge component if it doesn't exist
 const ServiceBadge = ({ children, variant = 'default' }: { children: React.ReactNode; variant?: string }) => (
@@ -29,6 +29,19 @@ const ServiceBadge = ({ children, variant = 'default' }: { children: React.React
     {children}
   </span>
 )
+
+// Helper function to convert string features to ServiceFeature objects
+const normalizeFeature = (feature: ServiceFeatureInput, index: number): ServiceFeature => {
+  if (typeof feature === 'string') {
+    return {
+      id: `feature-${index}`,
+      name: feature,
+      included: true,
+      highlight: false
+    }
+  }
+  return feature
+}
 
 const mainServices: Service[] = [
   {
@@ -259,12 +272,15 @@ export default function ServicesPage() {
                       <div className="space-y-3">
                         <h4 className="font-medium text-gray-900 dark:text-white">Key Features:</h4>
                         <div className="space-y-2 max-h-48 overflow-y-auto">
-                          {service.features.slice(0, 6).map((feature, idx) => (
-                            <div key={idx} className="flex items-start text-sm text-gray-600 dark:text-gray-400">
-                              <CheckCircle className="h-4 w-4 text-green-500 mr-2 mt-0.5 flex-shrink-0" />
-                              {feature}
-                            </div>
-                          ))}
+                          {service.features.slice(0, 6).map((feature, idx) => {
+                            const normalizedFeature = normalizeFeature(feature, idx)
+                            return (
+                              <div key={normalizedFeature.id} className="flex items-start text-sm text-gray-600 dark:text-gray-400">
+                                <CheckCircle className="h-4 w-4 text-green-500 mr-2 mt-0.5 flex-shrink-0" />
+                                {normalizedFeature.name}
+                              </div>
+                            )
+                          })}
                           {service.features.length > 6 && (
                             <div className="text-sm text-gray-500 dark:text-gray-400">
                               +{service.features.length - 6} more features

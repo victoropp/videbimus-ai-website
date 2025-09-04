@@ -326,7 +326,7 @@ export default function CaseStudyPage({ params }: CaseStudyPageProps) {
           >
             <div className="flex items-center space-x-4 mb-6">
               <Badge variant="secondary" className="bg-white/20 text-white border-white/30">
-                {caseStudy.industry}
+                {typeof caseStudy.industry === 'string' ? caseStudy.industry : caseStudy.industry.name}
               </Badge>
               <div className="flex items-center text-white/80 text-sm">
                 <Calendar className="mr-1 h-4 w-4" />
@@ -347,7 +347,7 @@ export default function CaseStudyPage({ params }: CaseStudyPageProps) {
             </p>
             
             <div className="text-2xl font-semibold text-cyan-400">
-              {caseStudy.client}
+              {typeof caseStudy.client === 'string' ? caseStudy.client : caseStudy.client.name}
             </div>
           </motion.div>
         </div>
@@ -455,9 +455,9 @@ export default function CaseStudyPage({ params }: CaseStudyPageProps) {
                 Technologies Used
               </h3>
               <div className="flex flex-wrap gap-2">
-                {caseStudy.technologies.map((tech, index) => (
+                {caseStudy.technologies?.map((tech, index) => (
                   <Badge key={index} variant="outline" className="text-sm">
-                    {tech}
+                    {typeof tech === 'string' ? tech : (tech as any).name || tech}
                   </Badge>
                 ))}
               </div>

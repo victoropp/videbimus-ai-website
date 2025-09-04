@@ -1,6 +1,6 @@
 'use client'
 
-import { useState, useEffect } from 'react'
+import { useState, useEffect, useCallback } from 'react'
 import { useSession } from 'next-auth/react'
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card'
 import { Button } from '@/components/ui/button'
@@ -29,13 +29,7 @@ export default function BillingPage() {
   const [loading, setLoading] = useState(true)
   const [activeTab, setActiveTab] = useState('overview')
 
-  useEffect(() => {
-    if (status === 'authenticated') {
-      loadBillingData()
-    }
-  }, [status])
-
-  const loadBillingData = async () => {
+  const loadBillingData = useCallback(async () => {
     try {
       setLoading(true)
       
@@ -63,7 +57,13 @@ export default function BillingPage() {
     } finally {
       setLoading(false)
     }
-  }
+  }, [toast])
+
+  useEffect(() => {
+    if (status === 'authenticated') {
+      loadBillingData()
+    }
+  }, [status, loadBillingData])
 
   const handleCreateCustomer = async () => {
     try {

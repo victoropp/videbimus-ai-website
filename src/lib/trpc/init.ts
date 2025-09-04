@@ -19,6 +19,8 @@ const t = initTRPC.context<Context>().create({
 })
 
 export const createTRPCRouter = t.router
+export const createCallerFactory = t.createCallerFactory
+export const createCaller = createCallerFactory
 export const publicProcedure = t.procedure
 
 // Middleware for authenticated users

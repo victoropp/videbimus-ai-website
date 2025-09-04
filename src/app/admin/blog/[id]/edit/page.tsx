@@ -1,6 +1,6 @@
 'use client'
 
-import { useState, useEffect } from 'react'
+import { useState, useEffect, useCallback } from 'react'
 import { useSession } from 'next-auth/react'
 import { useRouter } from 'next/navigation'
 import BlogEditor from '@/components/blog/blog-editor'
@@ -43,16 +43,7 @@ export default function EditBlogPostPage({ params }: EditBlogPostPageProps) {
     }
   }, [session, status, router])
 
-  // Fetch post, categories and tags
-  useEffect(() => {
-    if (session && ['ADMIN', 'CONSULTANT'].includes(session.user.role)) {
-      fetchPost()
-      fetchCategories()
-      fetchTags()
-    }
-  }, [session, params.id])
-
-  const fetchPost = async () => {
+  const fetchPost = useCallback(async () => {
     try {
       const response = await fetch(`/api/blog/posts/${params.id}`)
       if (response.ok) {
@@ -66,9 +57,9 @@ export default function EditBlogPostPage({ params }: EditBlogPostPageProps) {
     } finally {
       setInitialLoading(false)
     }
-  }
+  }, [params.id, router])
 
-  const fetchCategories = async () => {
+  const fetchCategories = useCallback(async () => {
     try {
       const response = await fetch('/api/blog/categories')
       if (response.ok) {
@@ -78,9 +69,9 @@ export default function EditBlogPostPage({ params }: EditBlogPostPageProps) {
     } catch (error) {
       console.error('Error fetching categories:', error)
     }
-  }
+  }, [])
 
-  const fetchTags = async () => {
+  const fetchTags = useCallback(async () => {
     try {
       const response = await fetch('/api/blog/tags')
       if (response.ok) {
@@ -90,7 +81,16 @@ export default function EditBlogPostPage({ params }: EditBlogPostPageProps) {
     } catch (error) {
       console.error('Error fetching tags:', error)
     }
-  }
+  }, [])
+
+  // Fetch post, categories and tags
+  useEffect(() => {
+    if (session && ['ADMIN', 'CONSULTANT'].includes(session.user.role)) {
+      fetchPost()
+      fetchCategories()
+      fetchTags()
+    }
+  }, [session, fetchPost, fetchCategories, fetchTags])
 
   const handleSave = async (postData: Partial<BlogPost>) => {
     setLoading(true)

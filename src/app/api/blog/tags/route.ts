@@ -1,8 +1,15 @@
 import { NextRequest, NextResponse } from 'next/server'
 import { getServerSession } from '@/auth'
 import { prisma } from '@/lib/prisma'
+import { z } from 'zod'
 
-// GET /api/blog/tags - Get all tags (from BlogPost.tags String[])
+const createTagSchema = z.object({
+  name: z.string().min(1, 'Name is required'),
+  slug: z.string().min(1, 'Slug is required'),
+  description: z.string().optional(),
+})
+
+// GET /api/blog/tags - Get all tags from BlogTag model
 export async function GET(request: NextRequest) {
   try {
     const { searchParams } = new URL(request.url)
@@ -12,40 +19,71 @@ export async function GET(request: NextRequest) {
     const session = await getServerSession()
     const isAdmin = session?.user?.role === 'ADMIN'
 
-    // Get all blog posts with tags
-    const blogPosts = await prisma.blogPost.findMany({
-      where: isAdmin ? {} : { published: true, status: 'PUBLISHED' },
-      select: { tags: true },
-    })
-
-    // Count tag usage
-    const tagCounts = new Map<string, number>()
-    blogPosts.forEach(post => {
-      post.tags.forEach(tag => {
-        tagCounts.set(tag, (tagCounts.get(tag) || 0) + 1)
-      })
-    })
-
-    // Convert to array and sort
-    let tagsArray = Array.from(tagCounts.entries()).map(([name, count]) => ({
-      name,
-      slug: name.toLowerCase().replace(/\s+/g, '-'),
-      count,
-      _count: { blogPosts: count }
-    }))
-
     if (popular) {
-      // Sort by usage count (most popular first)
-      tagsArray.sort((a, b) => b.count - a.count)
+      // Get tags with post count, sorted by popularity
+      const tags = await prisma.blogTag.findMany({
+        include: {
+          posts: {
+            where: isAdmin ? {} : {
+              post: {
+                published: true,
+                status: 'PUBLISHED'
+              }
+            }
+          },
+          _count: {
+            select: {
+              posts: {
+                where: isAdmin ? {} : {
+                  post: {
+                    published: true,
+                    status: 'PUBLISHED'
+                  }
+                }
+              }
+            }
+          }
+        },
+        orderBy: {
+          posts: {
+            _count: 'desc'
+          }
+        },
+        take: limit
+      })
+
+      return NextResponse.json(tags.map(tag => ({
+        ...tag,
+        count: tag._count.posts
+      })))
     } else {
-      // Sort alphabetically by name
-      tagsArray.sort((a, b) => a.name.localeCompare(b.name))
+      // Get all tags sorted alphabetically
+      const tags = await prisma.blogTag.findMany({
+        include: {
+          _count: {
+            select: {
+              posts: {
+                where: isAdmin ? {} : {
+                  post: {
+                    published: true,
+                    status: 'PUBLISHED'
+                  }
+                }
+              }
+            }
+          }
+        },
+        orderBy: {
+          name: 'asc'
+        },
+        take: limit
+      })
+
+      return NextResponse.json(tags.map(tag => ({
+        ...tag,
+        count: tag._count.posts
+      })))
     }
-
-    // Apply limit
-    tagsArray = tagsArray.slice(0, limit)
-
-    return NextResponse.json(tagsArray)
   } catch (error) {
     console.error('Error fetching tags:', error)
     return NextResponse.json(
@@ -55,5 +93,63 @@ export async function GET(request: NextRequest) {
   }
 }
 
-// Tags are managed as String[] in BlogPost model, not as separate entities
-// POST method removed - tags are created/managed when creating/updating blog posts
+// POST /api/blog/tags - Create a new tag
+export async function POST(request: NextRequest) {
+  try {
+    const session = await getServerSession()
+    
+    if (!session?.user?.id) {
+      return NextResponse.json(
+        { error: 'Authentication required' },
+        { status: 401 }
+      )
+    }
+
+    // Only admins and consultants can create tags
+    if (!['ADMIN', 'CONSULTANT'].includes(session.user.role)) {
+      return NextResponse.json(
+        { error: 'Insufficient permissions' },
+        { status: 403 }
+      )
+    }
+
+    const json = await request.json()
+    const data = createTagSchema.parse(json)
+
+    // Check if slug is unique
+    const existingTag = await prisma.blogTag.findUnique({
+      where: { slug: data.slug }
+    })
+
+    if (existingTag) {
+      return NextResponse.json(
+        { error: 'A tag with this slug already exists' },
+        { status: 400 }
+      )
+    }
+
+    const tag = await prisma.blogTag.create({
+      data: {
+        name: data.name,
+        slug: data.slug,
+        description: data.description
+      }
+    })
+
+    return NextResponse.json(tag, { status: 201 })
+  } catch (error) {
+    console.error('Error creating tag:', error)
+    
+    if (error instanceof z.ZodError) {
+      return NextResponse.json(
+        { error: 'Invalid input', details: error.errors },
+        { status: 400 }
+      )
+    }
+
+    return NextResponse.json(
+      { error: 'Failed to create tag' },
+      { status: 500 }
+    )
+  }
+}

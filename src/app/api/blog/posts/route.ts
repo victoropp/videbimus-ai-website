@@ -62,10 +62,12 @@ export async function GET(request: NextRequest) {
     }
 
     if (tags.length > 0) {
-      where.tags = {
+      where.postTags = {
         some: {
-          slug: {
-            in: tags
+          tag: {
+            slug: {
+              in: tags
+            }
           }
         }
       }
@@ -105,7 +107,12 @@ export async function GET(request: NextRequest) {
             role: true
           }
         },
-        category: true
+        category: true,
+        postTags: {
+          include: {
+            tag: true
+          }
+        }
       },
       orderBy: {
         [sortBy]: sortOrder
@@ -114,11 +121,12 @@ export async function GET(request: NextRequest) {
       take: limit
     })
 
-    // Calculate read time for posts that don't have it
+    // Calculate read time for posts that don't have it and format tags
     const postsWithReadTime = posts.map(post => ({
       ...post,
       readTime: post.readTime || Math.ceil(post.content.split(' ').length / 200), // ~200 words per minute
-      commentCount: 0 // Comments not implemented yet
+      commentCount: 0, // Comments not implemented yet
+      tags: post.postTags?.map(pt => pt.tag.name) || [] // Convert tag relations to string array for backwards compatibility
     }))
 
     // Get filter options
@@ -126,7 +134,9 @@ export async function GET(request: NextRequest) {
       orderBy: { name: 'asc' }
     })
 
-    const allTags: any[] = [] // Tags not implemented yet
+    const allTags = await prisma.blogTag.findMany({
+      orderBy: { name: 'asc' }
+    })
 
     const authors = await prisma.user.findMany({
       where: {
@@ -210,7 +220,6 @@ export async function POST(request: NextRequest) {
       published: data.status === 'PUBLISHED',
       featured: data.featured,
       authorId: session.user.id,
-      tags: data.tagIds || [],
       readTime: Math.ceil(data.content.split(' ').length / 200)
     };
     
@@ -233,9 +242,24 @@ export async function POST(request: NextRequest) {
             role: true
           }
         },
-        category: true
+        category: true,
+        postTags: {
+          include: {
+            tag: true
+          }
+        }
       }
     })
+
+    // Handle tag associations if tagIds were provided
+    if (data.tagIds && data.tagIds.length > 0) {
+      await prisma.blogPostTag.createMany({
+        data: data.tagIds.map(tagId => ({
+          postId: post.id,
+          tagId: tagId
+        }))
+      })
+    }
 
     // Revision tracking not implemented yet
     // await prisma.blogRevision.create({

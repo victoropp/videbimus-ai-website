@@ -80,11 +80,11 @@ export default function BlogEditor({
     content: post?.content || '',
     status: post?.status || 'DRAFT' as PostStatus,
     featured: post?.featured || false,
-    categoryId: post?.categoryId || '',
+    categoryId: post?.category?.id || '',
     selectedTags: post?.tags || [], // tags is String[] not objects
     seoTitle: post?.seoTitle || '',
     seoDescription: post?.seoDescription || '',
-    seoKeywords: post?.seoKeywords || [],
+    seoKeywords: [], // Add seoKeywords field as string array
     featuredImage: post?.featuredImage || '',
     publishedAt: post?.publishedAt ? new Date(post.publishedAt).toISOString().slice(0, 16) : ''
   })

@@ -258,27 +258,17 @@ class SocketService {
       }
 
       // Save message to database
-      const message = await prisma.chatMessage.create({
+      const message = await prisma.consultationMessage.create({
         data: {
           content,
-          type,
+          messageType: type,
           roomId,
           senderId: socket.userId!,
-          replyToId,
-          reactions: {}
+          metadata: { replyToId }
         },
         include: {
           sender: {
             select: { id: true, name: true, email: true }
-          },
-          replyTo: {
-            select: {
-              id: true,
-              content: true,
-              sender: {
-                select: { id: true, name: true }
-              }
-            }
           }
         }
       });
@@ -349,24 +339,32 @@ class SocketService {
       }
 
       // Save whiteboard to database
-      await prisma.consultationWhiteboard.upsert({
-        where: {
-          roomId_createdBy: {
-            roomId,
-            createdBy: socket.userId!
-          }
-        },
-        create: {
-          name: `Whiteboard - ${new Date().toLocaleString()}`,
-          data: canvasData,
-          roomId,
-          createdBy: socket.userId!
-        },
-        update: {
-          data: canvasData,
-          updatedAt: new Date()
-        }
+      const existingWhiteboard = await prisma.consultationWhiteboard.findFirst({
+        where: { roomId },
+        orderBy: { updatedAt: 'desc' }
       });
+      
+      if (existingWhiteboard) {
+        await prisma.consultationWhiteboard.update({
+          where: { id: existingWhiteboard.id },
+          data: {
+            canvasData,
+            version: { increment: 1 },
+            updatedBy: socket.userId!,
+            updatedAt: new Date()
+          }
+        });
+      } else {
+        await prisma.consultationWhiteboard.create({
+          data: {
+            roomId,
+            title: `Whiteboard - ${new Date().toLocaleString()}`,
+            canvasData,
+            version: 1,
+            updatedBy: socket.userId!
+          }
+        });
+      }
 
       socket.emit('whiteboard-saved');
     } catch (error) {

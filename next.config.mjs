@@ -27,6 +27,21 @@ const nextConfig = {
       '@aws-sdk/lib-storage': false,
     };
 
+    // Suppress Prisma/OpenTelemetry warnings
+    config.ignoreWarnings = [
+      /Critical dependency: the request of a dependency is an expression/,
+      /Critical dependency: require function is used in a way in which dependencies cannot be statically extracted/,
+    ];
+
+    // Handle OpenTelemetry instrumentation module issues
+    if (isServer) {
+      config.externals = config.externals || [];
+      config.externals.push({
+        '@opentelemetry/instrumentation': 'commonjs @opentelemetry/instrumentation',
+        '@prisma/instrumentation': 'commonjs @prisma/instrumentation',
+      });
+    }
+
     return config;
   },
 };

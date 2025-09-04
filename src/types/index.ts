@@ -6,7 +6,7 @@
 // Re-export all common types
 export * from './common';
 
-// Re-export business domain types
+// Re-export business domain types (includes User, enums, etc.)
 export * from './business';
 
 // Re-export AI and ML types
@@ -14,6 +14,9 @@ export * from './ai';
 
 // Re-export collaboration types
 export * from './collaboration';
+
+// Re-export consultation types
+export * from './consultation';
 
 // Legacy type aliases for backward compatibility
 // These will be deprecated in favor of the more comprehensive types above
@@ -57,6 +60,8 @@ export type {
   Testimonial,
   CaseStudy,
   BlogPost,
+  BlogCategory,
+  BlogTag,
   BlogSearchResult,
   PostStatus,
   ContactFormData,
@@ -73,13 +78,67 @@ export type {
   KnowledgeBase,
   Recommendation,
   
+  // System and monitoring types
+  Contact,
+  Newsletter,
+  Analytics,
+  PerformanceMetric,
+  SystemHealth,
+  UserActivity,
+  FileUpload,
+  DataBackup,
+  CacheEntry,
+  APIKey,
+  Setting,
+  RateLimit,
+  
+  // Blog extended types
+  BlogPostTag,
+  BlogComment,
+  BlogImage,
+  BlogRevision,
+  
+  // Billing and subscription types
+  Subscription,
+  BillingHistory,
+  PaymentMethodDetails,
+} from './business';
+
+export type {
   // Collaboration types
-  User,
   Room,
   Meeting,
   SharedDocument,
   WhiteboardElement,
   CodeSession,
+} from './collaboration';
+
+export type {
+  // Consultation and project types  
+  Consultation,
+  ConsultationRoom,
+  ConsultationMessage,
+  ConsultationDocument,
+  ConsultationWhiteboard,
+  ConsultationActionItem,
+  ConsultationParticipant,
+  ConsultationAnalytics,
+  ConsultationFile,
+  DocumentVersion,
+} from './consultation';
+
+export type {
+  // Business and system types now include User, Project, etc.
+  User,
+  Project,
+  ProjectFile,
+  Task,
+  Invoice,
+  InvoiceItem,
+  Payment,
+  Account,
+  Session,
+  VerificationToken,
 } from './business';
 
 export type {
@@ -90,7 +149,7 @@ export type {
 } from './ai';
 
 export type {
-  UserRole,
+  // Collaboration enum types
   UserStatus,
   RoomType,
   MeetingType,
@@ -99,3 +158,29 @@ export type {
   Tool,
   ActivityType,
 } from './collaboration';
+
+export type {
+  // Consultation enum types
+  ConsultationStatus,
+  ConsultationType,
+  ConsultationRoomStatus,
+} from './consultation';
+
+export type {
+  // Business and system enum types
+  UserRole,
+  Priority,
+  ProjectStatus,
+  TaskStatus,
+  InvoiceStatus,
+  PaymentStatus,
+  PaymentMethod,
+  ContactStatus,
+  NewsletterStatus,
+  MetricType,
+  BackupType,
+  BackupStatus,
+  CaseStudyStatus,
+  SubscriptionStatus,
+  BillingCycle,
+} from './business';

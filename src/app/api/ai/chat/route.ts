@@ -16,8 +16,6 @@ const chatRequestSchema = z.object({
 
 export async function POST(req: NextRequest) {
   try {
-    // Await headers before using auth to fix Next.js warnings
-    await req.headers;
     const session = await auth();
     const body = await req.json();
     const { message, sessionId, systemPrompt, useRAG, temperature, maxTokens, model, stream } = 
@@ -145,8 +143,6 @@ export async function POST(req: NextRequest) {
 
 export async function GET(req: NextRequest) {
   try {
-    // Await headers before using auth to fix Next.js warnings
-    await req.headers;
     const session = await auth();
     
     // For non-authenticated users, return empty sessions
@@ -180,8 +176,6 @@ export async function GET(req: NextRequest) {
 
 export async function DELETE(req: NextRequest) {
   try {
-    // Await headers before using auth to fix Next.js warnings
-    await req.headers;
     const session = await auth();
     
     const { searchParams } = new URL(req.url);

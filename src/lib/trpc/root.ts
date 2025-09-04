@@ -8,6 +8,7 @@ import { teamRouter } from "./routers/team"
 import { caseStudiesRouter } from "./routers/case-studies"
 import { financialRouter } from "./routers/financial"
 import { analyticsRouter } from "./routers/analytics"
+import { consultationRouter } from "./routers/consultation"
 
 export const appRouter = createTRPCRouter({
   auth: authRouter,
@@ -19,6 +20,7 @@ export const appRouter = createTRPCRouter({
   caseStudies: caseStudiesRouter,
   financial: financialRouter,
   analytics: analyticsRouter,
+  consultation: consultationRouter,
 })
 
 export type AppRouter = typeof appRouter

@@ -1,6 +1,6 @@
 'use client'
 
-import { useState, useEffect } from 'react'
+import { useState, useEffect, useCallback } from 'react'
 import { useParams, useRouter } from 'next/navigation'
 import { motion } from 'framer-motion'
 import { Calendar, Clock, User, Eye, Heart, Share2, MessageSquare, Tag, ArrowLeft, ArrowRight } from 'lucide-react'
@@ -23,13 +23,7 @@ export default function BlogPostPage() {
   const [liked, setLiked] = useState(false)
   const [likesCount, setLikesCount] = useState(0)
 
-  useEffect(() => {
-    if (params.slug) {
-      fetchPost(params.slug as string)
-    }
-  }, [params.slug])
-
-  const fetchPost = async (slug: string) => {
+  const fetchPost = useCallback(async (slug: string) => {
     setLoading(true)
     try {
       const response = await fetch(`/api/blog/posts/${slug}`)
@@ -51,7 +45,13 @@ export default function BlogPostPage() {
     } finally {
       setLoading(false)
     }
-  }
+  }, [router])
+
+  useEffect(() => {
+    if (params.slug) {
+      fetchPost(params.slug as string)
+    }
+  }, [params.slug, fetchPost])
 
   const fetchRelatedPosts = async (categorySlug: string, currentPostId: string) => {
     try {
@@ -251,8 +251,8 @@ export default function BlogPostPage() {
         </div>
       </section>
 
-      {/* Featured Image - Commented out as featuredImage field doesn't exist */}
-      {/* {post.featuredImage && (
+      {/* Featured Image */}
+      {post.featuredImage && (
         <div className="relative h-96 overflow-hidden">
           <img
             src={post.featuredImage}
@@ -261,7 +261,7 @@ export default function BlogPostPage() {
           />
           <div className="absolute inset-0 bg-gradient-to-t from-black/20 to-transparent" />
         </div>
-      )} */}
+      )}
 
       {/* Main Content */}
       <section className="py-16 bg-white dark:bg-gray-950">
@@ -456,9 +456,9 @@ export default function BlogPostPage() {
                             {relatedPost.category.name}
                           </Badge>
                         )}
-                        {relatedPost.tags.slice(0, 2).map((tag) => (
-                          <Badge key={tag.id} variant="outline" className="text-xs">
-                            {tag.name}
+                        {relatedPost.tags.slice(0, 2).map((tag, index) => (
+                          <Badge key={index} variant="outline" className="text-xs">
+                            {tag}
                           </Badge>
                         ))}
                       </div>

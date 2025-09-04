@@ -45,7 +45,7 @@ export function InvoiceHistory({ invoices, onLoadMore, hasMore }: InvoiceHistory
   const [expandedInvoice, setExpandedInvoice] = useState<string | null>(null)
 
   const formatDate = (date: Date | string) => {
-    return new Intl.DateFormat('en-US', {
+    return new Intl.DateTimeFormat('en-US', {
       month: 'short',
       day: 'numeric',
       year: 'numeric'

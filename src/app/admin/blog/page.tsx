@@ -1,6 +1,6 @@
 'use client'
 
-import { useState, useEffect } from 'react'
+import { useState, useEffect, useCallback } from 'react'
 import { useSession } from 'next-auth/react'
 import { useRouter } from 'next/navigation'
 import Link from 'next/link'
@@ -85,18 +85,7 @@ export default function BlogAdminPage() {
     }
   }, [session, status, router])
 
-  // Fetch posts
-  useEffect(() => {
-    fetchPosts()
-  }, [searchQuery, selectedStatus, selectedCategory, currentPage])
-
-  // Fetch categories and tags
-  useEffect(() => {
-    fetchCategories()
-    fetchTags()
-  }, [])
-
-  const fetchPosts = async () => {
+  const fetchPosts = useCallback(async () => {
     setLoading(true)
     try {
       const params = new URLSearchParams({
@@ -118,9 +107,9 @@ export default function BlogAdminPage() {
     } finally {
       setLoading(false)
     }
-  }
+  }, [searchQuery, selectedStatus, selectedCategory, currentPage])
 
-  const fetchCategories = async () => {
+  const fetchCategories = useCallback(async () => {
     try {
       const response = await fetch('/api/blog/categories?includeInactive=true')
       if (response.ok) {
@@ -130,9 +119,9 @@ export default function BlogAdminPage() {
     } catch (error) {
       console.error('Error fetching categories:', error)
     }
-  }
+  }, [])
 
-  const fetchTags = async () => {
+  const fetchTags = useCallback(async () => {
     try {
       const response = await fetch('/api/blog/tags')
       if (response.ok) {
@@ -142,7 +131,18 @@ export default function BlogAdminPage() {
     } catch (error) {
       console.error('Error fetching tags:', error)
     }
-  }
+  }, [])
+
+  // Fetch posts
+  useEffect(() => {
+    fetchPosts()
+  }, [fetchPosts])
+
+  // Fetch categories and tags
+  useEffect(() => {
+    fetchCategories()
+    fetchTags()
+  }, [fetchCategories, fetchTags])
 
   const handleDeletePost = async (postId: string) => {
     if (!confirm('Are you sure you want to delete this post?')) return

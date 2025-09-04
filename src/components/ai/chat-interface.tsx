@@ -1,6 +1,6 @@
 'use client';
 
-import React, { useState, useRef, useEffect } from 'react';
+import React, { useState, useRef, useEffect, useCallback } from 'react';
 import { Send, Bot, User, Trash2, Download, Settings, MessageSquare } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
@@ -70,19 +70,7 @@ export function ChatInterface() {
   const scrollRef = useRef<HTMLDivElement>(null);
   const { toast } = useToast();
 
-  // Load sessions on mount
-  useEffect(() => {
-    loadSessions();
-  }, []);
-
-  // Auto-scroll to bottom when new messages arrive
-  useEffect(() => {
-    if (scrollRef.current) {
-      scrollRef.current.scrollTop = scrollRef.current.scrollHeight;
-    }
-  }, [currentSession?.messages]);
-
-  const loadSessions = async () => {
+  const loadSessions = useCallback(async () => {
     try {
       const response = await fetch('/api/ai/chat');
       if (response.ok) {
@@ -95,7 +83,19 @@ export function ChatInterface() {
     } catch (error) {
       console.error('Failed to load sessions:', error);
     }
-  };
+  }, [currentSession]);
+
+  // Load sessions on mount
+  useEffect(() => {
+    loadSessions();
+  }, [loadSessions]);
+
+  // Auto-scroll to bottom when new messages arrive
+  useEffect(() => {
+    if (scrollRef.current) {
+      scrollRef.current.scrollTop = scrollRef.current.scrollHeight;
+    }
+  }, [currentSession?.messages]);
 
   const createNewSession = () => {
     const newSession: ChatSession = {
@@ -447,11 +447,12 @@ export function ChatInterface() {
                         ) : (
                           <ReactMarkdown
                             components={{
-                              code({ node, inline, className, children, ...props }) {
+                              code({ node, className, children, ...props }: any) {
                                 const match = /language-(\w+)/.exec(className || '');
-                                return !inline && match ? (
+                                const isInline = !className;
+                                return !isInline && match ? (
                                   <SyntaxHighlighter
-                                    style={vscDarkPlus}
+                                    style={vscDarkPlus as any}
                                     language={match[1]}
                                     PreTag="div"
                                     {...props}

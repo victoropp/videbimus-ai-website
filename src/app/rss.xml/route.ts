@@ -11,7 +11,16 @@ export async function GET() {
         published: true,
         status: 'PUBLISHED'
       },
-      include: {
+      select: {
+        id: true,
+        title: true,
+        excerpt: true,
+        content: true,
+        slug: true,
+        tags: true,
+        featuredImage: true, // Add featuredImage to the select
+        publishedAt: true,
+        createdAt: true,
         author: {
           select: {
             name: true,
@@ -19,11 +28,6 @@ export async function GET() {
           }
         },
         category: {
-          select: {
-            name: true
-          }
-        },
-        tags: {
           select: {
             name: true
           }
@@ -40,7 +44,7 @@ export async function GET() {
       const pubDate = post.publishedAt || post.createdAt
       const categories = [
         ...(post.category ? [post.category.name] : []),
-        ...post.tags.map(tag => tag.name)
+        ...post.tags
       ]
 
       return `
