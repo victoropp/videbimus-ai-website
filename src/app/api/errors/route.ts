@@ -173,7 +173,7 @@ const sendToMonitoring = async (error: ErrorReport & { category: string; severit
 export async function POST(request: NextRequest) {
   try {
     // Apply rate limiting
-    const rateLimitResult = await errorReportLimit(request)
+    const rateLimitResult = await errorReportLimit.check(request)
     if (rateLimitResult) {
       return rateLimitResult
     }
