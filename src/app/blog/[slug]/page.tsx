@@ -373,7 +373,7 @@ export default function BlogPostPage() {
                       <CardTitle className="flex items-center space-x-3">
                         {post.author.image && (
                           <img
-                            src={post.author.image}
+                            src={typeof post.author.image === 'string' ? post.author.image : '/avatar-placeholder.png'}
                             alt={post.author.name || ''}
                             className="h-12 w-12 rounded-full object-cover"
                           />
