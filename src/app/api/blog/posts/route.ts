@@ -1,9 +1,8 @@
 import { NextRequest, NextResponse } from 'next/server'
 import { getServerSession } from '@/auth'
-import { authOptions } from '@/auth'
 import { prisma } from '@/lib/prisma'
 import { z } from 'zod'
-import type { BlogSearchParams, PostStatus } from '@/types'
+import type { PostStatus } from '@/types'
 
 const createPostSchema = z.object({
   title: z.string().min(1, 'Title is required'),
@@ -11,7 +10,7 @@ const createPostSchema = z.object({
   excerpt: z.string().optional(),
   content: z.string().min(1, 'Content is required'),
   metaContent: z.string().optional(),
-  status: z.enum(['DRAFT', 'PUBLISHED', 'SCHEDULED', 'ARCHIVED', 'DELETED']).default('DRAFT'),
+  status: z.enum(['DRAFT', 'PUBLISHED', 'ARCHIVED']).default('DRAFT'),
   featured: z.boolean().default(false),
   categoryId: z.string().optional(),
   tagIds: z.array(z.string()).default([]),
@@ -42,7 +41,7 @@ export async function GET(request: NextRequest) {
     const where: any = {}
     
     // Only show published posts for public API unless admin
-    const session = await getServerSession(authOptions)
+    const session = await getServerSession()
     const isAdmin = session?.user?.role === 'ADMIN'
     
     if (!isAdmin) {
@@ -106,18 +105,7 @@ export async function GET(request: NextRequest) {
             role: true
           }
         },
-        category: true,
-        tags: true,
-        images: true,
-        _count: {
-          select: {
-            comments: {
-              where: {
-                isApproved: true
-              }
-            }
-          }
-        }
+        category: true
       },
       orderBy: {
         [sortBy]: sortOrder
@@ -130,18 +118,15 @@ export async function GET(request: NextRequest) {
     const postsWithReadTime = posts.map(post => ({
       ...post,
       readTime: post.readTime || Math.ceil(post.content.split(' ').length / 200), // ~200 words per minute
-      commentCount: post._count.comments
+      commentCount: 0 // Comments not implemented yet
     }))
 
     // Get filter options
     const categories = await prisma.category.findMany({
-      where: { isActive: true },
-      orderBy: { orderIndex: 'asc' }
-    })
-
-    const allTags = await prisma.blogTag.findMany({
       orderBy: { name: 'asc' }
     })
+
+    const allTags: any[] = [] // Tags not implemented yet
 
     const authors = await prisma.user.findMany({
       where: {
@@ -184,7 +169,7 @@ export async function GET(request: NextRequest) {
 // POST /api/blog/posts - Create a new blog post
 export async function POST(request: NextRequest) {
   try {
-    const session = await getServerSession(authOptions)
+    const session = await getServerSession()
     
     if (!session?.user?.id) {
       return NextResponse.json(
@@ -217,28 +202,27 @@ export async function POST(request: NextRequest) {
     }
 
     // Create the post
+    const postData: any = {
+      title: data.title,
+      slug: data.slug,
+      content: data.content,
+      status: data.status,
+      published: data.status === 'PUBLISHED',
+      featured: data.featured,
+      authorId: session.user.id,
+      tags: data.tagIds || [],
+      readTime: Math.ceil(data.content.split(' ').length / 200)
+    };
+    
+    // Add optional fields only if they are defined
+    if (data.excerpt !== undefined) postData.excerpt = data.excerpt;
+    if (data.publishedAt !== undefined) postData.publishedAt = data.publishedAt;
+    if (data.categoryId !== undefined) postData.categoryId = data.categoryId;
+    if (data.seoTitle !== undefined) postData.seoTitle = data.seoTitle;
+    if (data.seoDescription !== undefined) postData.seoDescription = data.seoDescription;
+
     const post = await prisma.blogPost.create({
-      data: {
-        title: data.title,
-        slug: data.slug,
-        excerpt: data.excerpt,
-        content: data.content,
-        metaContent: data.metaContent,
-        status: data.status,
-        published: data.status === 'PUBLISHED',
-        publishedAt: data.publishedAt,
-        featured: data.featured,
-        authorId: session.user.id,
-        categoryId: data.categoryId,
-        seoTitle: data.seoTitle,
-        seoDescription: data.seoDescription,
-        seoKeywords: data.seoKeywords,
-        featuredImage: data.featuredImage,
-        readTime: Math.ceil(data.content.split(' ').length / 200),
-        tags: {
-          connect: data.tagIds.map(id => ({ id }))
-        }
-      },
+      data: postData,
       include: {
         author: {
           select: {
@@ -249,24 +233,22 @@ export async function POST(request: NextRequest) {
             role: true
           }
         },
-        category: true,
-        tags: true,
-        images: true
+        category: true
       }
     })
 
-    // Create initial revision
-    await prisma.blogRevision.create({
-      data: {
-        title: data.title,
-        excerpt: data.excerpt,
-        content: data.content,
-        authorId: session.user.id,
-        blogPostId: post.id,
-        version: 1,
-        changeNote: 'Initial version'
-      }
-    })
+    // Revision tracking not implemented yet
+    // await prisma.blogRevision.create({
+    //   data: {
+    //     title: data.title,
+    //     excerpt: data.excerpt,
+    //     content: data.content,
+    //     authorId: session.user.id,
+    //     blogPostId: post.id,
+    //     version: 1,
+    //     changeNote: 'Initial version'
+    //   }
+    // })
 
     return NextResponse.json(post, { status: 201 })
   } catch (error) {

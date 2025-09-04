@@ -21,7 +21,7 @@ export async function GET(request: NextRequest) {
     const { searchParams } = new URL(request.url);
     const projectId = searchParams.get('projectId');
 
-    const rooms = await prisma.room.findMany({
+    const rooms = await prisma.consultationRoom.findMany({
       where: {
         OR: [
           { createdBy: session.user.id },
@@ -100,7 +100,7 @@ export async function POST(request: NextRequest) {
     const dailyRoomName = `videbimus-${Date.now()}-${Math.random().toString(36).substr(2, 9)}`;
     const dailyRoomUrl = `https://videbimus.daily.co/${dailyRoomName}`;
 
-    const room = await prisma.room.create({
+    const room = await prisma.consultationRoom.create({
       data: {
         ...validatedData,
         createdBy: session.user.id,

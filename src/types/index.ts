@@ -25,7 +25,6 @@ import type {
   Testimonial, 
   CaseStudy, 
   BlogPost,
-  BlogTag, 
   ContactFormData 
 } from './business';
 

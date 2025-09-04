@@ -1,6 +1,6 @@
 import { NextRequest } from 'next/server'
 import { getServerSession } from 'next-auth/next'
-import { authConfig } from '@/auth'
+
 import { prisma } from '@/lib/prisma'
 import crypto from 'crypto'
 
@@ -97,7 +97,7 @@ export class PaymentSecurity {
     resourceId: string
   ): Promise<{ authorized: boolean; userId?: string }> {
     try {
-      const session = await getServerSession(authConfig)
+      const session = await getServerSession()
       if (!session?.user?.id) {
         return { authorized: false }
       }

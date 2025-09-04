@@ -24,7 +24,6 @@ export async function GET() {
     // Get categories
     const categories = await prisma.category.findMany({
       where: {
-        isActive: true,
         blogPosts: {
           some: {
             published: true,
@@ -38,21 +37,33 @@ export async function GET() {
       }
     })
 
-    // Get tags
-    const tags = await prisma.blogTag.findMany({
+    // Get unique tags from blog posts (tags are String[] in BlogPost)
+    const blogPostsWithTags = await prisma.blogPost.findMany({
       where: {
-        blogPosts: {
-          some: {
-            published: true,
-            status: 'PUBLISHED'
-          }
-        }
+        published: true,
+        status: 'PUBLISHED'
       },
       select: {
-        slug: true,
+        tags: true,
         updatedAt: true
       }
     })
+
+    // Extract unique tags with their most recent update
+    const tagMap = new Map<string, Date>()
+    blogPostsWithTags.forEach(post => {
+      post.tags.forEach(tag => {
+        const currentDate = tagMap.get(tag)
+        if (!currentDate || post.updatedAt > currentDate) {
+          tagMap.set(tag, post.updatedAt)
+        }
+      })
+    })
+
+    const tags = Array.from(tagMap.entries()).map(([tag, updatedAt]) => ({
+      slug: tag.toLowerCase().replace(/\s+/g, '-'),
+      updatedAt
+    }))
 
     // Generate sitemap entries
     const staticPages = [

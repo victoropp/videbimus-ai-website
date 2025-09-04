@@ -1,7 +1,7 @@
 import { NextRequest, NextResponse } from 'next/server';
 import { z } from 'zod';
 import { vectorStore, preprocessDocument } from '@/lib/ai/vector-store';
-import { getServerSession, authOptions } from '@/auth';
+import { getServerSession } from '@/auth';
 
 const uploadDocumentSchema = z.object({
   content: z.string().min(1),
@@ -18,9 +18,9 @@ const searchSchema = z.object({
 // Upload documents to knowledge base
 export async function POST(req: NextRequest) {
   try {
-    const session = await getServerSession(authOptions);
+    const session = await getServerSession();
     // Only allow admins to upload to knowledge base
-    if (!session?.user || session.user.role !== 'admin') {
+    if (!session?.user || session.user.role !== 'ADMIN') {
       return NextResponse.json({ error: 'Unauthorized' }, { status: 401 });
     }
 
@@ -112,8 +112,8 @@ export async function GET(req: NextRequest) {
 // Delete documents from knowledge base
 export async function DELETE(req: NextRequest) {
   try {
-    const session = await getServerSession(authOptions);
-    if (!session?.user || session.user.role !== 'admin') {
+    const session = await getServerSession();
+    if (!session?.user || session.user.role !== 'ADMIN') {
       return NextResponse.json({ error: 'Unauthorized' }, { status: 401 });
     }
 

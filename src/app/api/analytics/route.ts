@@ -1,7 +1,6 @@
 import { NextRequest, NextResponse } from "next/server"
 import { prisma } from "@/lib/prisma"
 import { getServerSession } from "@/auth"
-import { authConfig } from "@/auth"
 
 export async function POST(request: NextRequest) {
   try {
@@ -13,7 +12,7 @@ export async function POST(request: NextRequest) {
     }
 
     // Get user session (optional for analytics)
-    const session = await getServerSession(authConfig)
+    const session = await getServerSession()
 
     // Extract request information
     const userAgent = request.headers.get("user-agent") || ""
@@ -43,7 +42,7 @@ export async function POST(request: NextRequest) {
     // Create analytics record
     await prisma.analytics.create({
       data: {
-        userId: session?.user?.id,
+        userId: session?.user?.id || null,
         event,
         page,
         referrer: referer,
@@ -68,7 +67,7 @@ export async function POST(request: NextRequest) {
 
 export async function GET(request: NextRequest) {
   try {
-    const session = await getServerSession(authConfig)
+    const session = await getServerSession()
     if (!session?.user || session.user.role !== "ADMIN") {
       return NextResponse.json({ error: "Unauthorized" }, { status: 401 })
     }

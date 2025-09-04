@@ -22,7 +22,7 @@ export async function GET(request: NextRequest, { params }: RouteParams) {
       return NextResponse.json({ error: 'Unauthorized' }, { status: 401 });
     }
 
-    const room = await prisma.room.findFirst({
+    const room = await prisma.consultationRoom.findFirst({
       where: {
         id: params.roomId,
         OR: [
@@ -168,7 +168,7 @@ export async function PATCH(request: NextRequest, { params }: RouteParams) {
     const validatedData = updateRoomSchema.parse(body);
 
     // Check if user has permission to update room
-    const existingRoom = await prisma.room.findFirst({
+    const existingRoom = await prisma.consultationRoom.findFirst({
       where: {
         id: params.roomId,
         OR: [
@@ -189,7 +189,7 @@ export async function PATCH(request: NextRequest, { params }: RouteParams) {
       return NextResponse.json({ error: 'Room not found or insufficient permissions' }, { status: 404 });
     }
 
-    const updatedRoom = await prisma.room.update({
+    const updatedRoom = await prisma.consultationRoom.update({
       where: {
         id: params.roomId,
       },
@@ -230,7 +230,7 @@ export async function DELETE(request: NextRequest, { params }: RouteParams) {
     }
 
     // Check if user is the creator of the room
-    const room = await prisma.room.findFirst({
+    const room = await prisma.consultationRoom.findFirst({
       where: {
         id: params.roomId,
         createdBy: session.user.id,
@@ -242,7 +242,7 @@ export async function DELETE(request: NextRequest, { params }: RouteParams) {
     }
 
     // Soft delete - mark as inactive
-    await prisma.room.update({
+    await prisma.consultationRoom.update({
       where: {
         id: params.roomId,
       },

@@ -1,10 +1,10 @@
 import { NextRequest, NextResponse } from 'next/server';
 import { auth } from '@/auth';
-import { prisma } from '@/lib/prisma';
+// import { prisma } from '@/lib/prisma'; // Unused - versioning not implemented
 
 export async function POST(
-  request: NextRequest,
-  { params }: { params: { documentId: string; versionId: string } }
+  _request: NextRequest,
+  _context: { params: { documentId: string; versionId: string } }
 ) {
   try {
     const session = await auth();
@@ -12,8 +12,15 @@ export async function POST(
       return NextResponse.json({ error: 'Unauthorized' }, { status: 401 });
     }
 
+    // Document versioning not implemented - return error
+    return NextResponse.json(
+      { error: 'Document versioning is not implemented' },
+      { status: 501 }
+    );
+
+    /* Version restore logic would go here
     // Check if user has access to the document
-    const document = await prisma.document.findFirst({
+    const document = await prisma.consultationDocument.findFirst({
       where: {
         id: params.documentId,
         OR: [
@@ -62,7 +69,7 @@ export async function POST(
     });
 
     // Restore the document to the selected version
-    const restoredDocument = await prisma.document.update({
+    const restoredDocument = await prisma.consultationDocument.update({
       where: { id: params.documentId },
       data: {
         content: version.content,
@@ -86,6 +93,7 @@ export async function POST(
       document: restoredDocument,
       restoredFromVersion: version.version
     });
+    */
   } catch (error) {
     console.error('Error restoring document version:', error);
     return NextResponse.json({ error: 'Internal Server Error' }, { status: 500 });

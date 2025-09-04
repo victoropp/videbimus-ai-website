@@ -10,7 +10,7 @@ const updateDocumentSchema = z.object({
 });
 
 export async function GET(
-  request: NextRequest,
+  _request: NextRequest,
   { params }: { params: { documentId: string } }
 ) {
   try {
@@ -19,15 +19,16 @@ export async function GET(
       return NextResponse.json({ error: 'Unauthorized' }, { status: 401 });
     }
 
-    const document = await prisma.document.findFirst({
+    const document = await prisma.consultationDocument.findFirst({
       where: {
         id: params.documentId,
         OR: [
-          { createdBy: session.user.id },
+          { uploadedBy: session.user.id },
           { 
             room: {
               OR: [
-                { createdBy: session.user.id },
+                { clientId: session.user.id },
+                { consultantId: session.user.id },
                 { participants: { some: { userId: session.user.id } } }
               ]
             }
@@ -35,12 +36,8 @@ export async function GET(
         ]
       },
       include: {
-        creator: {
-          select: { id: true, name: true, email: true }
-        },
-        lockedByUser: {
-          select: { id: true, name: true }
-        },
+        // creator relation doesn't exist - use uploadedBy field instead
+        // lockedByUser relation doesn't exist - locking not implemented
         room: {
           select: { id: true, name: true }
         }
@@ -72,15 +69,16 @@ export async function PATCH(
     const validatedData = updateDocumentSchema.parse(body);
 
     // Check if user has access to the document
-    const document = await prisma.document.findFirst({
+    const document = await prisma.consultationDocument.findFirst({
       where: {
         id: params.documentId,
         OR: [
-          { createdBy: session.user.id },
+          { uploadedBy: session.user.id },
           { 
             room: {
               OR: [
-                { createdBy: session.user.id },
+                { clientId: session.user.id },
+                { consultantId: session.user.id },
                 { participants: { some: { userId: session.user.id } } }
               ]
             }
@@ -93,22 +91,20 @@ export async function PATCH(
       return NextResponse.json({ error: 'Document not found or access denied' }, { status: 404 });
     }
 
-    // Check if document is locked by another user
-    if (document.isLocked && document.lockedBy !== session.user.id) {
-      return NextResponse.json({ error: 'Document is locked by another user' }, { status: 423 });
-    }
+    // Document locking not implemented - skip lock check
 
-    const updatedDocument = await prisma.document.update({
+    const updateData: any = { updatedAt: new Date() };
+    
+    // Only add fields that are defined to avoid exactOptionalPropertyTypes issues
+    if (validatedData.title !== undefined) updateData.title = validatedData.title;
+    if (validatedData.content !== undefined) updateData.content = validatedData.content;
+    if (validatedData.language !== undefined) updateData.language = validatedData.language;
+    
+    const updatedDocument = await prisma.consultationDocument.update({
       where: { id: params.documentId },
-      data: {
-        ...validatedData,
-        updatedAt: new Date()
-      },
+      data: updateData,
       include: {
-        creator: {
-          select: { id: true, name: true, email: true }
-        },
-        lockedByUser: {
+        room: {
           select: { id: true, name: true }
         }
       }

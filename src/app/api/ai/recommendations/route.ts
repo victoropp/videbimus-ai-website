@@ -1,7 +1,7 @@
 import { NextRequest, NextResponse } from 'next/server';
 import { z } from 'zod';
-import { recommendationEngine } from '@/lib/ai/recommendations';
-import { getServerSession, authOptions } from '@/auth';
+import { recommendationEngine, UserProfile, ContentItem } from '@/lib/ai/recommendations';
+import { getServerSession } from '@/auth';
 
 const recommendationRequestSchema = z.object({
   userProfile: z.object({
@@ -47,9 +47,43 @@ export async function POST(req: NextRequest) {
     const body = await req.json();
     const { userProfile, availableContent, limit } = recommendationRequestSchema.parse(body);
 
+    // Fix the type compatibility issues
+    const fixedUserProfile: UserProfile = {
+      userId: userProfile.userId,
+      interests: userProfile.interests,
+      behavior: {
+        viewedContent: userProfile.behavior?.viewedContent || [],
+        searchHistory: userProfile.behavior?.searchHistory || [],
+        interactions: userProfile.behavior?.interactions || {}
+      },
+      ...(userProfile.demographics && { 
+        demographics: Object.fromEntries(
+          Object.entries(userProfile.demographics).filter(([_, value]) => value !== undefined)
+        ) as { age?: number; location?: string; profession?: string; }
+      })
+    };
+
+    // Fix the availableContent type compatibility issue with exactOptionalPropertyTypes
+    const fixedAvailableContent: ContentItem[] = availableContent.map(content => ({
+      id: content.id,
+      title: content.title,
+      description: content.description,
+      category: content.category,
+      tags: content.tags,
+      content: content.content,
+      metadata: Object.fromEntries(
+        Object.entries(content.metadata).filter(([_, value]) => value !== undefined)
+      ) as {
+        author?: string;
+        publishDate?: Date;
+        readTime?: number;
+        difficulty?: 'beginner' | 'intermediate' | 'advanced';
+      }
+    }));
+
     const recommendations = await recommendationEngine.generateRecommendations(
-      userProfile,
-      availableContent,
+      fixedUserProfile,
+      fixedAvailableContent,
       limit
     );
 
@@ -81,7 +115,7 @@ export async function POST(req: NextRequest) {
 // Track user interaction
 export async function PUT(req: NextRequest) {
   try {
-    const session = await getServerSession(authOptions);
+    const session = await getServerSession();
     if (!session?.user) {
       return NextResponse.json({ error: 'Unauthorized' }, { status: 401 });
     }

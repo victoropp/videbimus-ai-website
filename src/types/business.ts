@@ -148,14 +148,13 @@ export interface BlogPost extends BaseEntity, WithImage, WithSEO {
   slug: Slug;
   author: TeamMember;
   readTime: number;
-  tags: string[];
+  tags: string[]; // Tags are stored as String[] in the schema
   category: BlogCategory;
   status: PostStatus | 'draft' | 'published' | 'archived'; // Support both formats
   featured: boolean;
   publishedAt?: Timestamp;
   views?: number;
-  likes?: number;
-  comments?: BlogComment[];
+  // likes and comments relations don't exist in the Prisma schema
   published?: boolean; // Add published field
 }
 
@@ -179,25 +178,9 @@ export interface BlogCategory {
   color?: string;
 }
 
-export interface BlogTag {
-  id: ID;
-  name: string;
-  slug: Slug;
-  description?: string;
-}
-
-export interface BlogComment extends BaseEntity {
-  content: string;
-  author: {
-    name: string;
-    email: Email;
-    website?: URL;
-  };
-  postId: ID;
-  parentId?: ID;
-  approved: boolean;
-  replies?: BlogComment[];
-}
+// BlogTag and BlogComment models don't exist in the Prisma schema
+// Tags are stored as String[] directly in BlogPost
+// Comments functionality is not implemented
 
 // Contact and Lead Types
 export interface ContactFormData {

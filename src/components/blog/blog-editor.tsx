@@ -29,7 +29,14 @@ import {
   Plus,
   Hash
 } from 'lucide-react'
-import type { BlogPost, BlogCategory, BlogTag, PostStatus } from '@/types'
+import type { BlogPost, BlogCategory, PostStatus } from '@/types'
+
+// Simple tag interface since BlogTag model doesn't exist
+interface TagInfo {
+  name: string
+  slug: string
+  count: number
+}
 
 // Dynamically import Monaco Editor to avoid SSR issues
 const MonacoEditor = dynamic(
@@ -43,7 +50,7 @@ const MonacoEditor = dynamic(
 interface BlogEditorProps {
   post?: Partial<BlogPost>
   categories: BlogCategory[]
-  tags: BlogTag[]
+  tags: TagInfo[]
   onSave: (post: Partial<BlogPost>) => Promise<void>
   onPublish: (post: Partial<BlogPost>) => Promise<void>
   onDelete?: () => Promise<void>
@@ -74,7 +81,7 @@ export default function BlogEditor({
     status: post?.status || 'DRAFT' as PostStatus,
     featured: post?.featured || false,
     categoryId: post?.categoryId || '',
-    selectedTags: post?.tags?.map(t => t.id) || [],
+    selectedTags: post?.tags || [], // tags is String[] not objects
     seoTitle: post?.seoTitle || '',
     seoDescription: post?.seoDescription || '',
     seoKeywords: post?.seoKeywords || [],
@@ -118,12 +125,12 @@ export default function BlogEditor({
     })
   }
 
-  const handleTagToggle = (tagId: string) => {
+  const handleTagToggle = (tagName: string) => {
     setFormData(prev => ({
       ...prev,
-      selectedTags: prev.selectedTags.includes(tagId)
-        ? prev.selectedTags.filter(id => id !== tagId)
-        : [...prev.selectedTags, tagId]
+      selectedTags: prev.selectedTags.includes(tagName)
+        ? prev.selectedTags.filter(tag => tag !== tagName)
+        : [...prev.selectedTags, tagName]
     }))
   }
 
@@ -191,7 +198,7 @@ export default function BlogEditor({
     try {
       await onSave({
         ...formData,
-        tagIds: formData.selectedTags,
+        tags: formData.selectedTags, // tags is String[] not tagIds
         publishedAt: formData.publishedAt ? new Date(formData.publishedAt) : undefined
       })
     } catch (error) {
@@ -204,7 +211,7 @@ export default function BlogEditor({
       await onPublish({
         ...formData,
         status: 'PUBLISHED',
-        tagIds: formData.selectedTags,
+        tags: formData.selectedTags, // tags is String[] not tagIds
         publishedAt: formData.publishedAt ? new Date(formData.publishedAt) : new Date()
       })
     } catch (error) {
@@ -446,37 +453,37 @@ export default function BlogEditor({
             <CardContent>
               <div className="space-y-3">
                 <div className="flex flex-wrap gap-2">
-                  {formData.selectedTags.map(tagId => {
-                    const tag = tags.find(t => t.id === tagId)
-                    return tag ? (
-                      <Badge
-                        key={tag.id}
-                        variant="secondary"
-                        className="cursor-pointer"
-                        onClick={() => handleTagToggle(tag.id)}
-                      >
-                        {tag.name}
-                        <X className="h-3 w-3 ml-1" />
-                      </Badge>
-                    ) : null
-                  })}
+                  {formData.selectedTags.map(tagName => (
+                    <Badge
+                      key={tagName}
+                      variant="secondary"
+                      className="cursor-pointer"
+                      onClick={() => handleTagToggle(tagName)}
+                    >
+                      {tagName}
+                      <X className="h-3 w-3 ml-1" />
+                    </Badge>
+                  ))}
                 </div>
                 
                 <Separator />
                 
                 <div className="grid grid-cols-1 gap-1 max-h-32 overflow-y-auto">
                   {tags
-                    .filter(tag => !formData.selectedTags.includes(tag.id))
+                    .filter(tag => !formData.selectedTags.includes(tag.name))
                     .map(tag => (
                       <Button
-                        key={tag.id}
+                        key={tag.name}
                         variant="ghost"
                         size="sm"
-                        onClick={() => handleTagToggle(tag.id)}
+                        onClick={() => handleTagToggle(tag.name)}
                         className="justify-start h-8"
                       >
                         <Plus className="h-3 w-3 mr-2" />
                         {tag.name}
+                        <span className="ml-auto text-xs text-gray-500">
+                          ({tag.count})
+                        </span>
                       </Button>
                     ))
                   }

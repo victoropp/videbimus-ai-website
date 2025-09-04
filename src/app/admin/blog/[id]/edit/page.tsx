@@ -4,7 +4,14 @@ import { useState, useEffect } from 'react'
 import { useSession } from 'next-auth/react'
 import { useRouter } from 'next/navigation'
 import BlogEditor from '@/components/blog/blog-editor'
-import type { BlogPost, BlogCategory, BlogTag } from '@/types'
+import type { BlogPost, BlogCategory } from '@/types'
+
+// Simple tag interface since BlogTag model doesn't exist
+interface TagInfo {
+  name: string
+  slug: string
+  count: number
+}
 
 interface EditBlogPostPageProps {
   params: {
@@ -17,7 +24,7 @@ export default function EditBlogPostPage({ params }: EditBlogPostPageProps) {
   const router = useRouter()
   const [post, setPost] = useState<BlogPost | null>(null)
   const [categories, setCategories] = useState<BlogCategory[]>([])
-  const [tags, setTags] = useState<BlogTag[]>([])
+  const [tags, setTags] = useState<TagInfo[]>([])
   const [loading, setLoading] = useState(false)
   const [initialLoading, setInitialLoading] = useState(true)
 

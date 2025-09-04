@@ -30,11 +30,11 @@ export async function GET(request: NextRequest) {
     }
 
     // Check if user has access to the room
-    const room = await prisma.room.findFirst({
+    const room = await prisma.consultationRoom.findFirst({
       where: {
         id: roomId,
         OR: [
-          { createdBy: session.user.id },
+          { clientId: session.user.id }, { consultantId: session.user.id },
           { participants: { some: { userId: session.user.id } } },
         ],
       },
@@ -81,11 +81,11 @@ export async function POST(request: NextRequest) {
     const validatedData = createWhiteboardSchema.parse(body);
 
     // Check if user has access to the room
-    const room = await prisma.room.findFirst({
+    const room = await prisma.consultationRoom.findFirst({
       where: {
         id: validatedData.roomId,
         OR: [
-          { createdBy: session.user.id },
+          { clientId: session.user.id }, { consultantId: session.user.id },
           { participants: { some: { userId: session.user.id } } },
         ],
       },

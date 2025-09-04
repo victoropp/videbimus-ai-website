@@ -33,11 +33,12 @@ export async function GET(request: NextRequest) {
     }
 
     // Check if user has access to the room
-    const room = await prisma.room.findFirst({
+    const room = await prisma.consultationRoom.findFirst({
       where: {
         id: roomId,
         OR: [
-          { createdBy: session.user.id },
+          { clientId: session.user.id },
+          { consultantId: session.user.id },
           { participants: { some: { userId: session.user.id } } },
         ],
       },
@@ -47,19 +48,12 @@ export async function GET(request: NextRequest) {
       return NextResponse.json({ error: 'Room not found or access denied' }, { status: 404 });
     }
 
-    const documents = await prisma.document.findMany({
+    const documents = await prisma.consultationDocument.findMany({
       where: {
         roomId,
       },
       include: {
-        creator: {
-          select: {
-            id: true,
-            name: true,
-            email: true,
-          },
-        },
-        lockedByUser: {
+        uploader: {
           select: {
             id: true,
             name: true,
@@ -104,11 +98,12 @@ export async function POST(request: NextRequest) {
     const validatedData = createDocumentSchema.parse(body);
 
     // Check if user has access to the room
-    const room = await prisma.room.findFirst({
+    const room = await prisma.consultationRoom.findFirst({
       where: {
         id: validatedData.roomId,
         OR: [
-          { createdBy: session.user.id },
+          { clientId: session.user.id },
+          { consultantId: session.user.id },
           { participants: { some: { userId: session.user.id } } },
         ],
       },
@@ -118,14 +113,14 @@ export async function POST(request: NextRequest) {
       return NextResponse.json({ error: 'Room not found or access denied' }, { status: 404 });
     }
 
-    const document = await prisma.document.create({
+    const document = await prisma.consultationDocument.create({
       data: {
         ...validatedData,
-        createdBy: session.user.id,
+        uploadedBy: session.user.id,
         version: 1,
       },
       include: {
-        creator: {
+        uploader: {
           select: {
             id: true,
             name: true,

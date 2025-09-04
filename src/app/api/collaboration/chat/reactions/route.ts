@@ -19,12 +19,13 @@ export async function POST(request: NextRequest) {
     const body = await request.json();
     const validatedData = reactionSchema.parse(body);
 
-    // Verify user has access to the room
-    const room = await prisma.room.findFirst({
+    // Verify user has access to the consultation room
+    const room = await prisma.consultationRoom.findFirst({
       where: {
         id: validatedData.roomId,
         OR: [
-          { createdBy: session.user.id },
+          { clientId: session.user.id },
+          { consultantId: session.user.id },
           { participants: { some: { userId: session.user.id } } },
         ],
       },
@@ -35,7 +36,7 @@ export async function POST(request: NextRequest) {
     }
 
     // Get the message
-    const message = await prisma.chatMessage.findFirst({
+    const message = await prisma.consultationMessage.findFirst({
       where: {
         id: validatedData.messageId,
         roomId: validatedData.roomId,
@@ -46,8 +47,9 @@ export async function POST(request: NextRequest) {
       return NextResponse.json({ error: 'Message not found' }, { status: 404 });
     }
 
-    // Update reactions
-    const reactions = (message.reactions as any) || {};
+    // Update reactions (stored in metadata field)
+    const metadata = (message.metadata as any) || {};
+    const reactions = metadata.reactions || {};
     const userIds = reactions[validatedData.emoji] || [];
     
     let updatedReactions;
@@ -66,10 +68,11 @@ export async function POST(request: NextRequest) {
       updatedReactions = reactions;
     }
 
-    // Update message with new reactions
-    const updatedMessage = await prisma.chatMessage.update({
+    // Update message with new reactions in metadata
+    const updatedMetadata = { ...metadata, reactions: updatedReactions };
+    const updatedMessage = await prisma.consultationMessage.update({
       where: { id: validatedData.messageId },
-      data: { reactions: updatedReactions },
+      data: { metadata: updatedMetadata },
       include: {
         sender: {
           select: {

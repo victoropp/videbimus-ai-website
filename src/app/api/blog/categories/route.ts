@@ -1,6 +1,5 @@
 import { NextRequest, NextResponse } from 'next/server'
 import { getServerSession } from '@/auth'
-import { authOptions } from '@/auth'
 import { prisma } from '@/lib/prisma'
 import { z } from 'zod'
 
@@ -8,92 +7,33 @@ const createCategorySchema = z.object({
   name: z.string().min(1, 'Name is required'),
   slug: z.string().min(1, 'Slug is required'),
   description: z.string().optional(),
-  color: z.string().optional(),
-  parentId: z.string().optional(),
-  orderIndex: z.number().default(0),
-  seoTitle: z.string().optional(),
-  seoDescription: z.string().optional()
+  color: z.string().optional()
 })
 
 // GET /api/blog/categories - Get all categories
-export async function GET(request: NextRequest) {
+export async function GET(_request: NextRequest) {
   try {
-    const { searchParams } = new URL(request.url)
-    const includeInactive = searchParams.get('includeInactive') === 'true'
-    const hierarchical = searchParams.get('hierarchical') === 'true'
-
-    const session = await getServerSession(authOptions)
+    const session = await getServerSession()
     const isAdmin = session?.user?.role === 'ADMIN'
 
-    const where = {
-      ...(!includeInactive && !isAdmin && { isActive: true })
-    }
-
-    if (hierarchical) {
-      // Get categories in hierarchical structure
-      const categories = await prisma.category.findMany({
-        where: {
-          ...where,
-          parentId: null // Root categories only
-        },
-        include: {
-          children: {
-            where,
-            include: {
-              children: {
-                where,
-                orderBy: { orderIndex: 'asc' }
-              },
-              _count: {
-                select: {
-                  blogPosts: isAdmin ? true : {
-                    where: {
-                      published: true,
-                      status: 'PUBLISHED'
-                    }
-                  }
-                }
-              }
-            },
-            orderBy: { orderIndex: 'asc' }
-          },
-          _count: {
-            select: {
-              blogPosts: isAdmin ? true : {
-                where: {
-                  published: true,
-                  status: 'PUBLISHED'
-                }
+    // Get flat list of categories
+    const categories = await prisma.category.findMany({
+      include: {
+        _count: {
+          select: {
+            blogPosts: isAdmin ? true : {
+              where: {
+                published: true,
+                status: 'PUBLISHED'
               }
             }
           }
-        },
-        orderBy: { orderIndex: 'asc' }
-      })
+        }
+      },
+      orderBy: { name: 'asc' }
+    })
 
-      return NextResponse.json(categories)
-    } else {
-      // Get flat list of categories
-      const categories = await prisma.category.findMany({
-        where,
-        include: {
-          parent: true,
-          _count: {
-            select: {
-              blogPosts: isAdmin ? true : {
-                where: {
-                  published: true,
-                  status: 'PUBLISHED'
-                }
-              }
-            }
-          }
-        },
-        orderBy: { orderIndex: 'asc' }
-      })
-
-      return NextResponse.json(categories)
-    }
+    return NextResponse.json(categories)
   } catch (error) {
     console.error('Error fetching categories:', error)
     return NextResponse.json(
@@ -106,7 +46,7 @@ export async function GET(request: NextRequest) {
 // POST /api/blog/categories - Create a new category
 export async function POST(request: NextRequest) {
   try {
-    const session = await getServerSession(authOptions)
+    const session = await getServerSession()
     
     if (!session?.user?.id) {
       return NextResponse.json(
@@ -150,34 +90,20 @@ export async function POST(request: NextRequest) {
       )
     }
 
-    // Verify parent exists if specified
-    if (data.parentId) {
-      const parent = await prisma.category.findUnique({
-        where: { id: data.parentId }
-      })
 
-      if (!parent) {
-        return NextResponse.json(
-          { error: 'Parent category not found' },
-          { status: 400 }
-        )
-      }
-    }
+    // Create the category  
+    const categoryData: any = {
+      name: data.name,
+      slug: data.slug
+    };
+    
+    // Only add optional fields if they are defined
+    if (data.description !== undefined) categoryData.description = data.description;
+    if (data.color !== undefined) categoryData.color = data.color;
 
-    // Create the category
     const category = await prisma.category.create({
-      data: {
-        name: data.name,
-        slug: data.slug,
-        description: data.description,
-        color: data.color,
-        parentId: data.parentId,
-        orderIndex: data.orderIndex,
-        seoTitle: data.seoTitle,
-        seoDescription: data.seoDescription
-      },
+      data: categoryData,
       include: {
-        parent: true,
         _count: {
           select: {
             blogPosts: true

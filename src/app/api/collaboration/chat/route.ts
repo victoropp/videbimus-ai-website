@@ -26,12 +26,13 @@ export async function GET(request: NextRequest) {
       return NextResponse.json({ error: 'Room ID is required' }, { status: 400 });
     }
 
-    // Check if user has access to the room
-    const room = await prisma.room.findFirst({
+    // Check if user has access to the consultation room
+    const room = await prisma.consultationRoom.findFirst({
       where: {
         id: roomId,
         OR: [
-          { createdBy: session.user.id },
+          { clientId: session.user.id },
+          { consultantId: session.user.id },
           { participants: { some: { userId: session.user.id } } },
         ],
       },
@@ -41,7 +42,7 @@ export async function GET(request: NextRequest) {
       return NextResponse.json({ error: 'Room not found or access denied' }, { status: 404 });
     }
 
-    const messages = await prisma.chatMessage.findMany({
+    const messages = await prisma.consultationMessage.findMany({
       where: {
         roomId,
         ...(cursor ? {
@@ -58,19 +59,8 @@ export async function GET(request: NextRequest) {
             email: true,
           },
         },
-        replyTo: {
-          select: {
-            id: true,
-            content: true,
-            sender: {
-              select: {
-                id: true,
-                name: true,
-              },
-            },
-          },
-        },
-        attachments: true,
+        // replyTo relation doesn't exist in ConsultationMessage model
+        // attachments relation doesn't exist in ConsultationMessage model
       },
       orderBy: {
         createdAt: 'desc',
@@ -103,11 +93,12 @@ export async function POST(request: NextRequest) {
     const validatedData = sendMessageSchema.parse(body);
 
     // Check if user has access to the room
-    const room = await prisma.room.findFirst({
+    const room = await prisma.consultationRoom.findFirst({
       where: {
         id: validatedData.roomId,
         OR: [
-          { createdBy: session.user.id },
+          { clientId: session.user.id },
+          { consultantId: session.user.id },
           { participants: { some: { userId: session.user.id } } },
         ],
       },
@@ -119,7 +110,7 @@ export async function POST(request: NextRequest) {
 
     // Validate reply-to message if provided
     if (validatedData.replyToId) {
-      const replyToMessage = await prisma.chatMessage.findFirst({
+      const replyToMessage = await prisma.consultationMessage.findFirst({
         where: {
           id: validatedData.replyToId,
           roomId: validatedData.roomId,
@@ -131,14 +122,15 @@ export async function POST(request: NextRequest) {
       }
     }
 
-    const message = await prisma.chatMessage.create({
+    const message = await prisma.consultationMessage.create({
       data: {
         content: validatedData.content,
-        type: validatedData.type,
+        messageType: validatedData.type,
         roomId: validatedData.roomId,
         senderId: session.user.id,
-        replyToId: validatedData.replyToId,
-        reactions: {},
+        // replyToId field doesn't exist in ConsultationMessage model
+        // reactions stored in metadata field
+        metadata: { reactions: {} },
       },
       include: {
         sender: {
@@ -148,19 +140,8 @@ export async function POST(request: NextRequest) {
             email: true,
           },
         },
-        replyTo: {
-          select: {
-            id: true,
-            content: true,
-            sender: {
-              select: {
-                id: true,
-                name: true,
-              },
-            },
-          },
-        },
-        attachments: true,
+        // replyTo relation doesn't exist in ConsultationMessage model
+        // attachments relation doesn't exist in ConsultationMessage model
       },
     });
 

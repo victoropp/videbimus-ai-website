@@ -1,0 +1,133 @@
+// Additional models needed for full feature compatibility
+// This file documents what's missing and needs to be added
+
+// ============================================
+// BLOG ENHANCEMENTS
+// ============================================
+
+// Blog tags as separate entities (currently String[] in BlogPost)
+model BlogTag {
+  id          String      @id @default(cuid())
+  name        String      @unique
+  slug        String      @unique
+  description String?
+  createdAt   DateTime    @default(now())
+  updatedAt   DateTime    @updatedAt
+  
+  posts       BlogPost[]  @relation("BlogPostTags")
+  
+  @@map("blog_tags")
+}
+
+// Blog comments system
+model BlogComment {
+  id          String      @id @default(cuid())
+  content     String
+  isApproved  Boolean     @default(false)
+  authorId    String
+  postId      String
+  parentId    String?     // For nested comments
+  createdAt   DateTime    @default(now())
+  updatedAt   DateTime    @updatedAt
+  
+  author      User        @relation(fields: [authorId], references: [id], onDelete: Cascade)
+  post        BlogPost    @relation(fields: [postId], references: [id], onDelete: Cascade)
+  parent      BlogComment? @relation("CommentReplies", fields: [parentId], references: [id])
+  replies     BlogComment[] @relation("CommentReplies")
+  
+  @@map("blog_comments")
+}
+
+// Blog images management
+model BlogImage {
+  id          String      @id @default(cuid())
+  url         String
+  alt         String?
+  caption     String?
+  postId      String
+  order       Int         @default(0)
+  createdAt   DateTime    @default(now())
+  
+  post        BlogPost    @relation(fields: [postId], references: [id], onDelete: Cascade)
+  
+  @@map("blog_images")
+}
+
+// Blog revision history
+model BlogRevision {
+  id          String      @id @default(cuid())
+  title       String
+  excerpt     String?
+  content     String
+  version     Int
+  changeNote  String?
+  authorId    String
+  blogPostId  String
+  createdAt   DateTime    @default(now())
+  
+  author      User        @relation(fields: [authorId], references: [id])
+  blogPost    BlogPost    @relation(fields: [blogPostId], references: [id], onDelete: Cascade)
+  
+  @@map("blog_revisions")
+}
+
+// ============================================
+// DOCUMENT VERSIONING SYSTEM
+// ============================================
+
+model DocumentVersion {
+  id          String      @id @default(cuid())
+  documentId  String
+  content     String
+  version     Int
+  changeNote  String?
+  createdBy   String
+  createdAt   DateTime    @default(now())
+  
+  document    ConsultationDocument @relation(fields: [documentId], references: [id], onDelete: Cascade)
+  creator     User        @relation(fields: [createdBy], references: [id])
+  
+  @@map("document_versions")
+}
+
+// ============================================
+// REQUIRED UPDATES TO EXISTING MODELS
+// ============================================
+
+// BlogPost model needs these changes:
+// 1. Remove 'tags String[]' field
+// 2. Add relation to BlogTag through many-to-many
+// 3. Add relations for comments, images, and revisions
+
+// ConsultationDocument needs these fields:
+// - isLocked    Boolean   @default(false)
+// - lockedBy    String?
+// - lockedAt    DateTime?
+// - version     Int       @default(1)
+
+// Category needs these fields:
+// - isActive    Boolean   @default(true)
+// - orderIndex  Int       @default(0)
+// - parentId    String?   // For hierarchical categories
+
+// ============================================
+// MIGRATION STRATEGY
+// ============================================
+
+/*
+1. Create new models in stages:
+   - Stage 1: Add BlogTag model and migrate String[] tags
+   - Stage 2: Add comment system
+   - Stage 3: Add revision tracking
+   - Stage 4: Add document versioning
+
+2. Data migration scripts needed:
+   - Extract unique tags from BlogPost.tags[] and create BlogTag records
+   - Create junction table for many-to-many relationship
+   - Migrate existing tags to new structure
+
+3. Code refactoring phases:
+   - Phase 1: Update API routes to use new models
+   - Phase 2: Update UI components
+   - Phase 3: Remove old fields and cleanup
+*/

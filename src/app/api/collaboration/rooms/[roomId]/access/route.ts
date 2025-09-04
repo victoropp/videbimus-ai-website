@@ -26,7 +26,7 @@ export async function GET(
     }
 
     // Check if user is room creator or has access
-    const room = await prisma.room.findFirst({
+    const room = await prisma.consultationRoom.findFirst({
       where: {
         id: params.roomId,
         OR: [
@@ -110,7 +110,7 @@ export async function POST(
     }
 
     // Check if user has permission to manage room access
-    const room = await prisma.room.findFirst({
+    const room = await prisma.consultationRoom.findFirst({
       where: {
         id: params.roomId,
         OR: [
@@ -321,7 +321,7 @@ export async function DELETE(
     }
 
     // Check if user has permission to remove participants
-    const room = await prisma.room.findFirst({
+    const room = await prisma.consultationRoom.findFirst({
       where: {
         id: params.roomId,
         OR: [

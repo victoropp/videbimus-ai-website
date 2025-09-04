@@ -38,7 +38,14 @@ import {
   SelectValue,
 } from '@/components/ui/select'
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs'
-import type { BlogPost, BlogCategory, BlogTag, BlogSearchResult, PostStatus } from '@/types'
+import type { BlogPost, BlogCategory, BlogSearchResult, PostStatus } from '@/types'
+
+// Simple tag interface since BlogTag model doesn't exist
+interface TagInfo {
+  name: string
+  slug: string
+  count: number
+}
 
 // Status colors - can be used for visual indicators
 // const statusColors = {
@@ -55,7 +62,7 @@ export default function BlogAdminPage() {
   
   const [posts, setPosts] = useState<BlogPost[]>([])
   const [categories, setCategories] = useState<BlogCategory[]>([])
-  const [tags, setTags] = useState<BlogTag[]>([])
+  const [tags, setTags] = useState<TagInfo[]>([])
   const [loading, setLoading] = useState(true)
   const [searchQuery, setSearchQuery] = useState('')
   const [selectedStatus, setSelectedStatus] = useState<string>('all')
@@ -509,23 +516,21 @@ export default function BlogAdminPage() {
                   </Button>
                   
                   <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
-                    {tags.map(tag => (
-                      <Card key={tag.id}>
+                    {tags.map((tag, index) => (
+                      <Card key={tag.slug || index}>
                         <CardContent className="pt-4">
                           <div className="flex items-center justify-between">
                             <Badge variant="outline">
                               <Tag className="h-3 w-3 mr-1" />
                               {tag.name}
                             </Badge>
-                            <Button variant="ghost" size="sm">
-                              <Edit className="h-4 w-4" />
-                            </Button>
+                            <div className="text-sm text-gray-500">
+                              {tag.count} posts
+                            </div>
                           </div>
-                          {tag.description && (
-                            <p className="text-sm text-gray-500 mt-2">
-                              {tag.description}
-                            </p>
-                          )}
+                          <div className="text-xs text-gray-400 mt-2">
+                            Slug: {tag.slug}
+                          </div>
                         </CardContent>
                       </Card>
                     ))}

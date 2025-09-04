@@ -1,5 +1,5 @@
 import { NextRequest, NextResponse } from "next/server"
-import { getServerSession, authConfig } from "@/auth"
+import { getServerSession } from "@/auth"
 import { prisma } from "@/lib/prisma"
 import { validateFileType, validateFileSize, generateSecureFilename } from "@/lib/security"
 import { writeFile, mkdir } from "fs/promises"
@@ -12,7 +12,7 @@ const ALLOWED_TYPES = (process.env.ALLOWED_FILE_TYPES || "image/jpeg,image/png,i
 export async function POST(request: NextRequest) {
   try {
     // Check authentication
-    const session = await getServerSession(authConfig)
+    const session = await getServerSession()
     if (!session?.user) {
       return NextResponse.json({ error: "Unauthorized" }, { status: 401 })
     }
@@ -142,7 +142,7 @@ export async function POST(request: NextRequest) {
 
 export async function GET(request: NextRequest) {
   try {
-    const session = await getServerSession(authConfig)
+    const session = await getServerSession()
     if (!session?.user) {
       return NextResponse.json({ error: "Unauthorized" }, { status: 401 })
     }
@@ -203,7 +203,7 @@ export async function GET(request: NextRequest) {
 
 export async function DELETE(request: NextRequest) {
   try {
-    const session = await getServerSession(authConfig)
+    const session = await getServerSession()
     if (!session?.user) {
       return NextResponse.json({ error: "Unauthorized" }, { status: 401 })
     }

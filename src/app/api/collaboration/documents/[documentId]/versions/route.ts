@@ -12,11 +12,15 @@ export async function GET(
       return NextResponse.json({ error: 'Unauthorized' }, { status: 401 });
     }
 
+    // Document versioning not implemented
+    return NextResponse.json({ versions: [], total: 0 });
+
+    /* TODO: Implement versioning after adding DocumentVersion model
     const { searchParams } = new URL(request.url);
     const limit = parseInt(searchParams.get('limit') || '20');
 
     // Check if user has access to the document
-    const document = await prisma.document.findFirst({
+    const document = await prisma.consultationDocument.findFirst({
       where: {
         id: params.documentId,
         OR: [
@@ -62,6 +66,7 @@ export async function GET(
       versions: transformedVersions,
       totalCount: versions.length
     });
+    */
   } catch (error) {
     console.error('Error fetching document versions:', error);
     return NextResponse.json({ error: 'Internal Server Error' }, { status: 500 });

@@ -1,5 +1,5 @@
 import { NextRequest, NextResponse } from 'next/server'
-import { getServerSession, authOptions } from '@/auth'
+import { getServerSession } from '@/auth'
 import { prisma } from '@/lib/prisma'
 import { z } from 'zod'
 
@@ -23,12 +23,12 @@ const updatePostSchema = z.object({
 
 // GET /api/blog/posts/[id] - Get a specific blog post
 export async function GET(
-  request: NextRequest,
+  _request: NextRequest,
   { params }: { params: { id: string } }
 ) {
   try {
     const { id } = params
-    const session = await getServerSession(authOptions)
+    const session = await getServerSession()
     const isAdmin = session?.user?.role === 'ADMIN'
 
     // Find post by ID or slug
@@ -54,43 +54,7 @@ export async function GET(
             role: true
           }
         },
-        category: true,
-        tags: true,
-        images: true,
-        comments: {
-          where: {
-            isApproved: true,
-            parentId: null // Only top-level comments initially
-          },
-          include: {
-            replies: {
-              where: {
-                isApproved: true
-              },
-              orderBy: {
-                createdAt: 'asc'
-              }
-            }
-          },
-          orderBy: {
-            createdAt: 'desc'
-          }
-        },
-        revisions: isAdmin ? {
-          include: {
-            author: {
-              select: {
-                id: true,
-                name: true,
-                image: true
-              }
-            }
-          },
-          orderBy: {
-            version: 'desc'
-          },
-          take: 10 // Last 10 revisions
-        } : false
+        category: true
       }
     })
 
@@ -116,7 +80,7 @@ export async function GET(
     return NextResponse.json({
       ...post,
       readTime,
-      commentCount: post.comments.length
+      commentCount: 0
     })
   } catch (error) {
     console.error('Error fetching blog post:', error)
@@ -133,7 +97,7 @@ export async function PUT(
   { params }: { params: { id: string } }
 ) {
   try {
-    const session = await getServerSession(authOptions)
+    const session = await getServerSession()
     
     if (!session?.user?.id) {
       return NextResponse.json(
@@ -226,33 +190,9 @@ export async function PUT(
             role: true
           }
         },
-        category: true,
-        tags: true,
-        images: true
+        category: true
       }
     })
-
-    // Create revision if content changed
-    if (data.title || data.excerpt || data.content) {
-      const latestRevision = await prisma.blogRevision.findFirst({
-        where: { blogPostId: id },
-        orderBy: { version: 'desc' }
-      })
-
-      const nextVersion = (latestRevision?.version || 0) + 1
-
-      await prisma.blogRevision.create({
-        data: {
-          title: data.title || existingPost.title,
-          excerpt: data.excerpt || existingPost.excerpt,
-          content: data.content || existingPost.content,
-          authorId: session.user.id,
-          blogPostId: id,
-          version: nextVersion,
-          changeNote: data.changeNote || 'Post updated'
-        }
-      })
-    }
 
     return NextResponse.json(updatedPost)
   } catch (error) {
@@ -274,11 +214,11 @@ export async function PUT(
 
 // DELETE /api/blog/posts/[id] - Delete a blog post
 export async function DELETE(
-  request: NextRequest,
+  _request: NextRequest,
   { params }: { params: { id: string } }
 ) {
   try {
-    const session = await getServerSession(authOptions)
+    const session = await getServerSession()
     
     if (!session?.user?.id) {
       return NextResponse.json(
@@ -309,11 +249,11 @@ export async function DELETE(
       )
     }
 
-    // Soft delete by marking as DELETED
+    // Soft delete by marking as ARCHIVED
     await prisma.blogPost.update({
       where: { id },
       data: {
-        status: 'DELETED',
+        status: 'ARCHIVED',
         published: false
       }
     })

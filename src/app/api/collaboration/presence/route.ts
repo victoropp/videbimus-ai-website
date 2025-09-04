@@ -17,7 +17,7 @@ export async function GET(request: NextRequest) {
     }
 
     // Check if user has access to the room
-    const room = await prisma.room.findFirst({
+    const room = await prisma.consultationRoom.findFirst({
       where: {
         id: roomId,
         OR: [

@@ -1,7 +1,6 @@
 import { NextRequest, NextResponse } from 'next/server';
 import { z } from 'zod';
 import { modelShowcase } from '@/lib/ai/model-showcase';
-import { getServerSession, authOptions } from '@/auth';
 
 const predictionSchema = z.object({
   modelId: z.string(),
@@ -11,16 +10,6 @@ const predictionSchema = z.object({
     confidence: z.boolean().optional(),
     alternativeOutputs: z.number().optional(),
   }).optional(),
-});
-
-const abTestSchema = z.object({
-  name: z.string(),
-  models: z.array(z.object({
-    modelId: z.string(),
-    trafficPercentage: z.number(),
-  })),
-  metric: z.string(),
-  duration: z.number(), // days
 });
 
 // Get all models or make a prediction
@@ -65,11 +54,16 @@ export async function POST(req: NextRequest) {
     const body = await req.json();
     const { modelId, input, options } = predictionSchema.parse(body);
 
-    const result = await modelShowcase.makePrediction({
+    const predictionRequest: any = {
       modelId,
       input,
-      options,
-    });
+    };
+    
+    if (options) {
+      predictionRequest.options = options;
+    }
+
+    const result = await modelShowcase.makePrediction(predictionRequest);
 
     return NextResponse.json(result);
   } catch (error) {

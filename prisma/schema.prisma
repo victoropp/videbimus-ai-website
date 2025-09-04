@@ -87,6 +87,11 @@ model User {
   uploads             FileUpload[]
   backups             DataBackup[]
   apiKeys             APIKey[]
+  
+  // New blog relations
+  blogComments        BlogComment[]
+  blogRevisions       BlogRevision[]
+  documentVersions    DocumentVersion[]
 
   @@map("users")
 }
@@ -264,12 +269,19 @@ model ConsultationDocument {
   isTemplate   Boolean  @default(false)
   isShared     Boolean  @default(true)
   
+  // Version control fields
+  version      Int      @default(1)
+  isLocked     Boolean  @default(false)
+  lockedBy     String?
+  lockedAt     DateTime?
+  
   createdAt    DateTime @default(now())
   updatedAt    DateTime @updatedAt
   
   // Relations
   room         ConsultationRoom @relation(fields: [roomId], references: [id], onDelete: Cascade)
   uploader     User?            @relation("UploadedDocuments", fields: [uploadedBy], references: [id], onDelete: SetNull)
+  versions     DocumentVersion[]
   
   @@index([roomId])
   @@index([documentType])
@@ -564,6 +576,12 @@ model BlogPost {
   // Relations
   author   User      @relation(fields: [authorId], references: [id], onDelete: Cascade)
   category Category? @relation(fields: [categoryId], references: [id], onDelete: SetNull)
+  
+  // New blog relations
+  postTags     BlogPostTag[]
+  comments     BlogComment[]
+  images       BlogImage[]
+  revisions    BlogRevision[]
 
   @@map("blog_posts")
 }
@@ -580,11 +598,16 @@ model Category {
   slug        String     @unique
   description String?
   color       String?
+  isActive    Boolean    @default(true)
+  orderIndex  Int        @default(0)
+  parentId    String?    // For hierarchical categories
   createdAt   DateTime   @default(now())
   updatedAt   DateTime   @updatedAt
 
   // Relations
   blogPosts BlogPost[]
+  parent    Category?  @relation("CategoryHierarchy", fields: [parentId], references: [id])
+  children  Category[] @relation("CategoryHierarchy")
 
   @@map("categories")
 }
@@ -977,4 +1000,102 @@ model RateLimit {
   @@unique([identifier, key])
   @@index([windowStart])
   @@map("rate_limits")
+}
+// ============================================
+// BLOG ENHANCEMENT MODELS - Added for full functionality
+// ============================================
+
+// Blog tags as separate entities (migrating from String[] in BlogPost)
+model BlogTag {
+  id          String      @id @default(cuid())
+  name        String      @unique
+  slug        String      @unique
+  description String?
+  createdAt   DateTime    @default(now())
+  updatedAt   DateTime    @updatedAt
+  
+  posts       BlogPostTag[]
+  
+  @@map("blog_tags")
+}
+
+// Junction table for BlogPost <-> BlogTag many-to-many
+model BlogPostTag {
+  postId    String
+  tagId     String
+  createdAt DateTime @default(now())
+  
+  post      BlogPost @relation(fields: [postId], references: [id], onDelete: Cascade)
+  tag       BlogTag  @relation(fields: [tagId], references: [id], onDelete: Cascade)
+  
+  @@id([postId, tagId])
+  @@map("blog_post_tags")
+}
+
+// Blog comments system
+model BlogComment {
+  id          String        @id @default(cuid())
+  content     String
+  isApproved  Boolean       @default(false)
+  authorId    String
+  postId      String
+  parentId    String?       // For nested comments
+  createdAt   DateTime      @default(now())
+  updatedAt   DateTime      @updatedAt
+  
+  author      User          @relation(fields: [authorId], references: [id], onDelete: Cascade)
+  post        BlogPost      @relation(fields: [postId], references: [id], onDelete: Cascade)
+  parent      BlogComment?  @relation("CommentReplies", fields: [parentId], references: [id])
+  replies     BlogComment[] @relation("CommentReplies")
+  
+  @@map("blog_comments")
+}
+
+// Blog images management
+model BlogImage {
+  id          String      @id @default(cuid())
+  url         String
+  alt         String?
+  caption     String?
+  postId      String
+  order       Int         @default(0)
+  createdAt   DateTime    @default(now())
+  
+  post        BlogPost    @relation(fields: [postId], references: [id], onDelete: Cascade)
+  
+  @@map("blog_images")
+}
+
+// Blog revision history
+model BlogRevision {
+  id          String      @id @default(cuid())
+  title       String
+  excerpt     String?
+  content     String
+  version     Int
+  changeNote  String?
+  authorId    String
+  blogPostId  String
+  createdAt   DateTime    @default(now())
+  
+  author      User        @relation(fields: [authorId], references: [id])
+  blogPost    BlogPost    @relation(fields: [blogPostId], references: [id], onDelete: Cascade)
+  
+  @@map("blog_revisions")
+}
+
+// Document versioning system
+model DocumentVersion {
+  id          String                @id @default(cuid())
+  documentId  String
+  content     String?
+  version     Int
+  changeNote  String?
+  createdBy   String
+  createdAt   DateTime              @default(now())
+  
+  document    ConsultationDocument  @relation(fields: [documentId], references: [id], onDelete: Cascade)
+  creator     User                  @relation(fields: [createdBy], references: [id])
+  
+  @@map("document_versions")
 }

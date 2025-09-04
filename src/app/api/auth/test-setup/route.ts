@@ -6,7 +6,7 @@ import { prisma } from '@/lib/prisma';
  * TEST ENDPOINT: Create test users for development
  * This endpoint should be removed in production
  */
-export async function GET(request: NextRequest) {
+export async function GET(_request: NextRequest) {
   if (process.env.NODE_ENV !== 'development') {
     return NextResponse.json({ error: 'Not available in production' }, { status: 403 });
   }

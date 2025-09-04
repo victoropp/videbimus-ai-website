@@ -1,7 +1,7 @@
 import { NextRequest, NextResponse } from 'next/server';
 import { z } from 'zod';
 import { transcriptionService } from '@/lib/ai/transcription';
-import { getServerSession, authOptions } from '@/auth';
+import { getServerSession } from '@/auth';
 
 const transcriptionOptionsSchema = z.object({
   language: z.string().optional(),
@@ -20,7 +20,7 @@ const summaryOptionsSchema = z.object({
 // Transcribe audio file
 export async function POST(req: NextRequest) {
   try {
-    const session = await getServerSession(authOptions);
+    const session = await getServerSession();
     if (!session?.user) {
       return NextResponse.json({ error: 'Unauthorized' }, { status: 401 });
     }
@@ -76,7 +76,7 @@ export async function POST(req: NextRequest) {
 // Generate summary from transcription
 export async function PUT(req: NextRequest) {
   try {
-    const session = await getServerSession(authOptions);
+    const session = await getServerSession();
     if (!session?.user) {
       return NextResponse.json({ error: 'Unauthorized' }, { status: 401 });
     }
@@ -84,10 +84,12 @@ export async function PUT(req: NextRequest) {
     const body = await req.json();
     const { transcription, style, includeTimestamps } = summaryOptionsSchema.parse(body);
 
-    const summary = await transcriptionService.generateSummary(transcription, {
-      style,
-      includeTimestamps,
-    });
+    // Fix the optional property type compatibility issue with exactOptionalPropertyTypes
+    const options: { style?: "brief" | "detailed" | "action-items"; includeTimestamps?: boolean } = {};
+    if (style !== undefined) options.style = style;
+    if (includeTimestamps !== undefined) options.includeTimestamps = includeTimestamps;
+
+    const summary = await transcriptionService.generateSummary(transcription, options);
 
     return NextResponse.json({
       summary,
@@ -117,7 +119,7 @@ export async function PUT(req: NextRequest) {
 // Extract key points from transcription
 export async function PATCH(req: NextRequest) {
   try {
-    const session = await getServerSession(authOptions);
+    const session = await getServerSession();
     if (!session?.user) {
       return NextResponse.json({ error: 'Unauthorized' }, { status: 401 });
     }

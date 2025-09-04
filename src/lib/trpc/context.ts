@@ -1,6 +1,6 @@
 import { type CreateNextContextOptions } from "@trpc/server/adapters/next"
 import { type Session } from "next-auth"
-import { getServerSession, authConfig } from "@/auth"
+import { getServerSession } from "@/auth"
 import { prisma } from "@/lib/prisma"
 
 type CreateContextOptions = {
@@ -18,7 +18,7 @@ export const createTRPCContext = async (opts: CreateNextContextOptions) => {
   const { req, res } = opts
 
   // Get the session from the server using the getServerSession wrapper function
-  const session = await getServerSession(req, res, authConfig)
+  const session = await getServerSession(req, res)
 
   return createInnerTRPCContext({
     session,

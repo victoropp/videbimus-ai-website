@@ -153,7 +153,7 @@ class SocketService {
   private async handleJoinRoom(socket: AuthenticatedSocket, roomId: string) {
     try {
       // Verify room access
-      const room = await prisma.room.findFirst({
+      const room = await prisma.consultationRoom.findFirst({
         where: {
           id: roomId,
           OR: [

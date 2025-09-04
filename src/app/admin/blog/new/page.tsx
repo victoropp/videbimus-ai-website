@@ -4,13 +4,20 @@ import { useState, useEffect } from 'react'
 import { useSession } from 'next-auth/react'
 import { useRouter } from 'next/navigation'
 import BlogEditor from '@/components/blog/blog-editor'
-import type { BlogPost, BlogCategory, BlogTag } from '@/types'
+import type { BlogPost, BlogCategory } from '@/types'
+
+// Simple tag interface since BlogTag model doesn't exist
+interface TagInfo {
+  name: string
+  slug: string
+  count: number
+}
 
 export default function NewBlogPostPage() {
   const { data: session, status } = useSession()
   const router = useRouter()
   const [categories, setCategories] = useState<BlogCategory[]>([])
-  const [tags, setTags] = useState<BlogTag[]>([])
+  const [tags, setTags] = useState<TagInfo[]>([])
   const [loading, setLoading] = useState(false)
 
   // Redirect if not authenticated or not admin/consultant

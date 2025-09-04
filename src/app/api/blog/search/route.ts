@@ -1,6 +1,5 @@
 import { NextRequest, NextResponse } from 'next/server'
 import { getServerSession } from '@/auth'
-import { authOptions } from '@/auth'
 import { prisma } from '@/lib/prisma'
 
 // GET /api/blog/search - Advanced search for blog posts
@@ -19,7 +18,7 @@ export async function GET(request: NextRequest) {
     const page = parseInt(searchParams.get('page') || '1')
     const limit = Math.min(parseInt(searchParams.get('limit') || '10'), 50)
 
-    const session = await getServerSession(authOptions)
+    const session = await getServerSession()
     const isAdmin = session?.user?.role === 'ADMIN'
 
     // Build base where clause
@@ -62,14 +61,10 @@ export async function GET(request: NextRequest) {
       }
     }
 
-    // Tags filter
+    // Tags filter - tags is String[] not a relation
     if (tags.length > 0) {
       where.tags = {
-        some: {
-          slug: {
-            in: tags
-          }
-        }
+        hasSome: tags
       }
     }
 
@@ -114,9 +109,10 @@ export async function GET(request: NextRequest) {
       case 'views':
         orderBy = { views: 'desc' }
         break
-      case 'likes':
-        orderBy = { likes: 'desc' }
-        break
+      // likes field doesn't exist in schema - removed
+      // case 'likes':
+      //   orderBy = { likes: 'desc' }
+      //   break
       case 'title':
         orderBy = { title: 'asc' }
         break
@@ -149,19 +145,9 @@ export async function GET(request: NextRequest) {
             role: true
           }
         },
-        category: true,
-        tags: true,
-        images: {
-          take: 1,
-          orderBy: { createdAt: 'desc' }
-        },
-        _count: {
-          select: {
-            comments: {
-              where: { isApproved: true }
-            }
-          }
-        }
+        category: true
+        // tags is String[] so no need to include
+        // images, comments relations don't exist in schema
       },
       orderBy,
       skip: (page - 1) * limit,
@@ -204,23 +190,22 @@ export async function GET(request: NextRequest) {
         
         // Boost for popular posts
         score += Math.log(post.views + 1) * 0.1
-        score += Math.log(post.likes + 1) * 0.2
+        // likes field doesn't exist in schema - removed
+        // score += Math.log(post.likes + 1) * 0.2
         
-        return { ...post, relevanceScore: score }
+        return { ...post, relevanceScore: score } as any
       })
       
       if (sortBy === 'relevance') {
-        rankedPosts.sort((a, b) => (b.relevanceScore || 0) - (a.relevanceScore || 0))
+        rankedPosts.sort((a: any, b: any) => (b.relevanceScore || 0) - (a.relevanceScore || 0))
       }
     }
 
     // Add read times and clean up
     const finalPosts = rankedPosts.map(post => ({
       ...post,
-      readTime: post.readTime || Math.ceil(post.content.split(' ').length / 200),
-      commentCount: post._count.comments,
-      // Remove _count from response
-      _count: undefined
+      readTime: post.readTime || Math.ceil(post.content.split(' ').length / 200)
+      // commentCount and _count removed - comments relation doesn't exist
     }))
 
     // Get search suggestions
@@ -228,24 +213,28 @@ export async function GET(request: NextRequest) {
     
     if (query.trim() && total === 0) {
       // Get popular tags and categories as suggestions
-      const popularTags = await prisma.blogTag.findMany({
-        include: {
-          _count: {
-            select: {
-              blogPosts: isAdmin ? true : {
-                where: { published: true, status: 'PUBLISHED' }
-              }
-            }
-          }
-        },
-        orderBy: {
-          blogPosts: { _count: 'desc' }
-        },
-        take: 5
+      // BlogTag model doesn't exist - get unique tags from blog posts instead
+      const blogPostsWithTags = await prisma.blogPost.findMany({
+        where: isAdmin ? {} : { published: true, status: 'PUBLISHED' },
+        select: { tags: true },
+        take: 100 // reasonable limit for tag aggregation
       })
       
+      // Count tag usage
+      const tagCounts = new Map()
+      blogPostsWithTags.forEach(post => {
+        post.tags.forEach(tag => {
+          tagCounts.set(tag, (tagCounts.get(tag) || 0) + 1)
+        })
+      })
+      
+      // Get top tags
+      const popularTags = Array.from(tagCounts.entries())
+        .sort(([,a], [,b]) => b - a)
+        .slice(0, 5)
+        .map(([tag]) => ({ type: 'tag', name: tag, slug: tag.toLowerCase().replace(/\s+/g, '-') }))
+      
       const popularCategories = await prisma.category.findMany({
-        where: { isActive: true },
         include: {
           _count: {
             select: {
@@ -262,7 +251,7 @@ export async function GET(request: NextRequest) {
       })
       
       suggestions.push(
-        ...popularTags.filter(t => t._count.blogPosts > 0).map(t => ({ type: 'tag', name: t.name, slug: t.slug })),
+        ...popularTags,
         ...popularCategories.filter(c => c._count.blogPosts > 0).map(c => ({ type: 'category', name: c.name, slug: c.slug }))
       )
     }

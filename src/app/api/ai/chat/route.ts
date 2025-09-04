@@ -62,13 +62,13 @@ export async function POST(req: NextRequest) {
     if (stream) {
       // Handle streaming response with enterprise chat service
       const messageStream = await enterpriseChatService.streamMessage(message, {
-        sessionId,
-        userId,
-        systemPrompt,
+        sessionId: sessionId || '',
+        userId: userId || '',
+        systemPrompt: systemPrompt || '',
         useKnowledgeBase: useRAG,
-        temperature,
-        maxTokens,
-        model,
+        temperature: temperature || 0.7,
+        maxTokens: maxTokens || 1000,
+        model: model || 'gpt-3.5-turbo',
       });
 
       // Create streaming response
@@ -114,13 +114,13 @@ export async function POST(req: NextRequest) {
     } else {
       // Handle regular response with enterprise chat service
       const result = await enterpriseChatService.sendMessage(message, {
-        sessionId,
-        userId,
-        systemPrompt,
+        sessionId: sessionId || '',
+        userId: userId || '',
+        systemPrompt: systemPrompt || '',
         useKnowledgeBase: useRAG,
-        temperature,
-        maxTokens,
-        model,
+        temperature: temperature || 0.7,
+        maxTokens: maxTokens || 1000,
+        model: model || 'gpt-3.5-turbo',
         enableAnalytics: true,
       });
 

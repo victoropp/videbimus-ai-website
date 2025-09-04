@@ -6,7 +6,7 @@ const nextConfig = {
     domains: ['localhost', 'videbimusai.com', 'images.unsplash.com'],
   },
   typescript: {
-    // Skip TypeScript errors during production build
+    // TEMPORARY: Skip ALL TypeScript errors for immediate deployment
     ignoreBuildErrors: true,
   },
   eslint: {
