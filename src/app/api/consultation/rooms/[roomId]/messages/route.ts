@@ -13,7 +13,7 @@ const createMessageSchema = z.object({
 
 const querySchema = z.object({
   lastId: z.string().optional(),
-  limit: z.string().regex(/^\d+$/).transform(Number).default(50),
+  limit: z.string().regex(/^\d+$/).transform(Number).optional(),
   since: z.string().datetime().optional()
 });
 
