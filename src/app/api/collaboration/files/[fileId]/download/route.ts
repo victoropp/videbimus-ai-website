@@ -13,7 +13,7 @@ export async function POST(
     }
 
     // Check if user has access to the file
-    const file = await prisma.sharedFile.findFirst({
+    const file = await prisma.consultationFile.findFirst({
       where: {
         id: params.fileId,
         room: {
@@ -30,7 +30,7 @@ export async function POST(
     }
 
     // Increment download count
-    await prisma.sharedFile.update({
+    await prisma.consultationFile.update({
       where: { id: params.fileId },
       data: {
         downloadCount: {

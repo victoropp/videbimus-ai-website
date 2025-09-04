@@ -65,7 +65,7 @@ export async function POST(request: NextRequest) {
     const fileUrl = `/uploads/${filename}`;
 
     // Save file info to database
-    const sharedFile = await prisma.sharedFile.create({
+    const sharedFile = await prisma.consultationFile.create({
       data: {
         filename: file.name,
         originalName: file.name,

@@ -33,7 +33,7 @@ export async function GET(request: NextRequest) {
     }
 
     // Get files shared in this room
-    const files = await prisma.sharedFile.findMany({
+    const files = await prisma.consultationFile.findMany({
       where: { roomId },
       include: {
         uploader: {

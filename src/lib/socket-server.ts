@@ -349,7 +349,7 @@ class SocketService {
       }
 
       // Save whiteboard to database
-      await prisma.whiteboard.upsert({
+      await prisma.consultationWhiteboard.upsert({
         where: {
           roomId_createdBy: {
             roomId,

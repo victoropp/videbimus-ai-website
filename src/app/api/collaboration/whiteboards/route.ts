@@ -44,7 +44,7 @@ export async function GET(request: NextRequest) {
       return NextResponse.json({ error: 'Room not found or access denied' }, { status: 404 });
     }
 
-    const whiteboards = await prisma.whiteboard.findMany({
+    const whiteboards = await prisma.consultationWhiteboard.findMany({
       where: {
         roomId,
         isActive: true,
@@ -95,14 +95,14 @@ export async function POST(request: NextRequest) {
       return NextResponse.json({ error: 'Room not found or access denied' }, { status: 404 });
     }
 
-    const whiteboard = await prisma.whiteboard.create({
+    const whiteboard = await prisma.consultationWhiteboard.create({
       data: {
         ...validatedData,
-        createdBy: session.user.id,
+        updatedBy: session.user.id,
         version: 1,
       },
       include: {
-        creator: {
+        updater: {
           select: {
             id: true,
             name: true,

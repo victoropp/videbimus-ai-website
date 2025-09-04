@@ -17,7 +17,7 @@ export async function DELETE(
     }
 
     // Get the file
-    const file = await prisma.sharedFile.findFirst({
+    const file = await prisma.consultationFile.findFirst({
       where: {
         id: params.fileId,
         OR: [
@@ -48,7 +48,7 @@ export async function DELETE(
     }
 
     // Delete from database
-    await prisma.sharedFile.delete({
+    await prisma.consultationFile.delete({
       where: { id: params.fileId }
     });
 
