@@ -25,15 +25,15 @@ export async function POST(
       return NextResponse.json({ error: 'File not found or access denied' }, { status: 404 });
     }
 
-    // Increment download count
-    await prisma.consultationFile.update({
-      where: { id: params.fileId },
-      data: {
-        downloadCount: {
-          increment: 1
-        }
-      }
-    });
+    // TODO: Increment download count - ConsultationFile doesn't have downloadCount field
+    // await prisma.consultationFile.update({
+    //   where: { id: params.fileId },
+    //   data: {
+    //     downloadCount: {
+    //       increment: 1
+    //     }
+    //   }
+    // });
 
     return NextResponse.json({ message: 'Download tracked successfully' });
 

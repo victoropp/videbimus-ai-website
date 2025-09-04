@@ -54,7 +54,7 @@ export async function GET(request: NextRequest) {
       uploadedBy: file.uploadedBy,
       uploadedByName: file.uploader.name || file.uploader.email,
       uploadedAt: file.createdAt,
-      downloadCount: file.downloadCount
+      downloadCount: 0 // ConsultationFile doesn't have downloadCount field
     }));
 
     return NextResponse.json({

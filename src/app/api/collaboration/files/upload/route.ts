@@ -74,7 +74,7 @@ export async function POST(request: NextRequest) {
         url: fileUrl,
         roomId: roomId,
         uploadedBy: session.user.id,
-        downloadCount: 0
+        // downloadCount: 0 // ConsultationFile doesn't have this field
       }
     });
 
