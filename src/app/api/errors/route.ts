@@ -173,9 +173,12 @@ const sendToMonitoring = async (error: ErrorReport & { category: string; severit
 export async function POST(request: NextRequest) {
   try {
     // Apply rate limiting
-    const rateLimitResult = await errorReportLimit.check(request)
-    if (rateLimitResult) {
-      return rateLimitResult
+    const rateLimitCheck = await errorReportLimit.checkRateLimit(request, '/api/errors')
+    if (!rateLimitCheck.allowed) {
+      return NextResponse.json(
+        { error: rateLimitCheck.message },
+        { status: 429 }
+      )
     }
     
     // Parse request body
