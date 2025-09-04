@@ -343,16 +343,16 @@ export default function BlogPostPage() {
                   >
                     <h3 className="font-semibold text-gray-900 dark:text-white mb-3">Tags</h3>
                     <div className="flex flex-wrap gap-2">
-                      {post.tags.map(tag => (
+                      {post.tags.map((tag, index) => (
                         <Button
-                          key={tag.id}
+                          key={index}
                           variant="outline"
                           size="sm"
-                          onClick={() => router.push(`/blog/tag/${tag.slug}`)}
+                          onClick={() => router.push(`/blog/tag/${tag}`)}
                           className="text-xs"
                         >
                           <Tag className="h-3 w-3 mr-1" />
-                          {tag.name}
+                          {tag}
                         </Button>
                       ))}
                     </div>
