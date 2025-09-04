@@ -194,10 +194,10 @@ export default function BlogPostPage() {
                     {post.category.name}
                   </Badge>
                 )}
-                {post.tags.slice(0, 3).map(tag => (
-                  <Badge key={tag.id} variant="outline" className="border-white/20 text-white">
+                {post.tags.slice(0, 3).map((tag, index) => (
+                  <Badge key={index} variant="outline" className="border-white/20 text-white">
                     <Tag className="h-3 w-3 mr-1" />
-                    {tag.name}
+                    {tag}
                   </Badge>
                 ))}
               </div>
