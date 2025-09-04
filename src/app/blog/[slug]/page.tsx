@@ -251,8 +251,8 @@ export default function BlogPostPage() {
         </div>
       </section>
 
-      {/* Featured Image */}
-      {post.featuredImage && (
+      {/* Featured Image - Commented out as featuredImage field doesn't exist */}
+      {/* {post.featuredImage && (
         <div className="relative h-96 overflow-hidden">
           <img
             src={post.featuredImage}
@@ -261,7 +261,7 @@ export default function BlogPostPage() {
           />
           <div className="absolute inset-0 bg-gradient-to-t from-black/20 to-transparent" />
         </div>
-      )}
+      )} */}
 
       {/* Main Content */}
       <section className="py-16 bg-white dark:bg-gray-950">
