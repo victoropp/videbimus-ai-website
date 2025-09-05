@@ -1,4 +1,4 @@
-import { PrismaClient, type Prisma } from '@prisma/client';
+import { PrismaClient, Prisma } from '@prisma/client';
 import { z } from 'zod';
 
 // Type-safe database configuration schema
@@ -68,12 +68,6 @@ class PrismaManager {
       datasources: {
         db: {
           url: config.url,
-        },
-      },
-      __internal: {
-        engine: {
-          connectTimeout: config.connectionTimeout,
-          queryTimeout: config.poolTimeout,
         },
       },
     });
@@ -310,8 +304,8 @@ export const prismaManager = PrismaManager.getInstance();
 // Export the prisma client getter for convenience
 export const getPrismaClient = () => prismaManager.getClient();
 
-// Auto-connect in non-test environments
-if (process.env.NODE_ENV !== 'test') {
+// Auto-connect in non-test and non-build environments
+if (process.env.NODE_ENV !== 'test' && process.env.NEXT_PHASE !== 'phase-production-build') {
   prismaManager.connect().catch(error => {
     console.error('Failed to initialize database connection:', error);
   });

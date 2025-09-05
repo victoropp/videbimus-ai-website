@@ -5,446 +5,327 @@ import Stripe from 'stripe'
 
 export interface CreatePaymentIntentData {
   customerId: string
-  amount: number // in cents
-  currency?: string
+  amount: number
+  currency: string
   description?: string
-  paymentMethodId?: string
-  confirmPayment?: boolean
-  receiptEmail?: string
   metadata?: Record<string, string>
+  paymentMethodTypes?: string[]
+  automaticPaymentMethods?: boolean
+  returnUrl?: string
 }
 
-export interface CreateOneTimeInvoiceData {
-  customerId: string
-  description: string
-  items: Array<{
-    description: string
-    quantity: number
-    unitAmount: number // in cents
-  }>
-  dueDate?: Date
-  currency?: string
+export interface ConfirmPaymentData {
+  paymentIntentId: string
+  paymentMethod: string
+  returnUrl?: string
+}
+
+export interface ProcessRefundData {
+  paymentIntentId: string
+  amount?: number
+  reason?: 'duplicate' | 'fraudulent' | 'requested_by_customer'
   metadata?: Record<string, string>
 }
 
 /**
- * Create a payment intent for one-time payments
+ * Create a new payment intent for one-time payments
  */
 export async function createPaymentIntent(data: CreatePaymentIntentData) {
-  try {
-    const customer = await prisma.customer.findUnique({
-      where: { id: data.customerId }
-    })
+  const customer = await prisma.customer.findUnique({
+    where: { id: data.customerId }
+  })
 
-    if (!customer) {
-      throw new Error('Customer not found')
-    }
+  if (!customer) {
+    throw new Error('Customer not found')
+  }
 
-    const paymentIntentParams: Stripe.PaymentIntentCreateParams = {
-      customer: customer.stripeCustomerId,
+  const paymentIntent = await stripe.paymentIntents.create({
+    customer: customer.stripeCustomerId,
+    amount: data.amount,
+    currency: data.currency,
+    description: data.description,
+    metadata: data.metadata || {},
+    payment_method_types: data.paymentMethodTypes || ['card'],
+    automatic_payment_methods: data.automaticPaymentMethods ? {
+      enabled: true
+    } : undefined
+  })
+
+  // Create a temporary invoice for one-time payments
+  const invoice = await prisma.invoice.create({
+    data: {
+      number: `INV-${Date.now()}`,
+      clientId: customer.userId,
       amount: data.amount,
-      currency: data.currency || 'usd',
-      description: data.description,
-      receipt_email: data.receiptEmail,
-      metadata: {
-        customerId: data.customerId,
-        ...data.metadata
-      }
+      total: data.amount,
+      currency: data.currency.toUpperCase(),
+      status: 'DRAFT',
+      dueDate: new Date(),
+      issuedDate: new Date(),
+      description: data.description || 'One-time payment'
     }
+  })
 
-    // If payment method is specified and we want to confirm immediately
-    if (data.paymentMethodId) {
-      paymentIntentParams.payment_method = data.paymentMethodId
-      if (data.confirmPayment) {
-        paymentIntentParams.confirm = true
-        paymentIntentParams.return_url = process.env.NEXT_PUBLIC_APP_URL + '/billing/payment-result'
-      }
+  // Store payment in our database
+  const payment = await prisma.payment.create({
+    data: {
+      invoiceId: invoice.id,
+      amount: data.amount,
+      currency: data.currency.toUpperCase(),
+      status: paymentIntent.status.toUpperCase() as PaymentStatus,
+      method: 'CARD',
+      transactionId: paymentIntent.id,
+      reference: data.description || ''
     }
+  })
 
-    const paymentIntent = await stripe.paymentIntents.create(paymentIntentParams)
-
-    // Store payment in database
-    const payment = await prisma.payment.create({
-      data: {
-        userId: customer.userId,
-        customerId: data.customerId,
-        stripePaymentIntentId: paymentIntent.id,
-        amount: data.amount,
-        currency: data.currency || 'USD',
-        status: mapPaymentIntentStatus(paymentIntent.status),
-        description: data.description,
-        receiptEmail: data.receiptEmail,
-        metadata: paymentIntent.metadata || {}
-      }
-    })
-
-    return {
-      payment,
-      paymentIntent,
-      clientSecret: paymentIntent.client_secret
-    }
-  } catch (error) {
-    console.error('Error creating payment intent:', error)
-    throw error
+  return {
+    id: paymentIntent.id,
+    client_secret: paymentIntent.client_secret,
+    status: paymentIntent.status,
+    amount: paymentIntent.amount,
+    currency: paymentIntent.currency,
+    payment: payment
   }
 }
 
 /**
  * Confirm a payment intent
  */
-export async function confirmPaymentIntent(
-  paymentIntentId: string, 
-  paymentMethodId?: string
-) {
-  try {
-    const confirmParams: Stripe.PaymentIntentConfirmParams = {
-      return_url: process.env.NEXT_PUBLIC_APP_URL + '/billing/payment-result'
+export async function confirmPayment(data: ConfirmPaymentData) {
+  const paymentIntent = await stripe.paymentIntents.confirm(
+    data.paymentIntentId,
+    {
+      payment_method: data.paymentMethod,
+      return_url: data.returnUrl
     }
+  )
 
-    if (paymentMethodId) {
-      confirmParams.payment_method = paymentMethodId
+  // Update payment status in our database
+  await prisma.payment.updateMany({
+    where: { transactionId: data.paymentIntentId },
+    data: { 
+      status: paymentIntent.status.toUpperCase() as PaymentStatus,
+      processedAt: paymentIntent.status === 'succeeded' ? new Date() : null
     }
+  })
 
-    const paymentIntent = await stripe.paymentIntents.confirm(
-      paymentIntentId,
-      confirmParams
-    )
-
-    // Update payment in database
-    await prisma.payment.update({
-      where: { stripePaymentIntentId: paymentIntentId },
-      data: {
-        status: mapPaymentIntentStatus(paymentIntent.status),
-        processedAt: paymentIntent.status === 'succeeded' ? new Date() : null,
-        failureCode: paymentIntent.last_payment_error?.code,
-        failureMessage: paymentIntent.last_payment_error?.message
-      }
-    })
-
-    return paymentIntent
-  } catch (error) {
-    console.error('Error confirming payment intent:', error)
-    throw error
+  return {
+    id: paymentIntent.id,
+    status: paymentIntent.status,
+    client_secret: paymentIntent.client_secret,
+    next_action: paymentIntent.next_action
   }
 }
 
 /**
- * Get payment intent status
+ * Get payment intent by ID
  */
-export async function getPaymentIntentStatus(paymentIntentId: string) {
-  try {
-    const paymentIntent = await stripe.paymentIntents.retrieve(paymentIntentId)
-
-    // Update payment in database
-    await prisma.payment.update({
-      where: { stripePaymentIntentId: paymentIntentId },
-      data: {
-        status: mapPaymentIntentStatus(paymentIntent.status),
-        amountReceived: paymentIntent.amount_received,
-        processedAt: paymentIntent.status === 'succeeded' ? new Date() : null,
-        failureCode: paymentIntent.last_payment_error?.code,
-        failureMessage: paymentIntent.last_payment_error?.message
-      }
+export async function getPaymentIntent(paymentIntentId: string) {
+  const [paymentIntent, payment] = await Promise.all([
+    stripe.paymentIntents.retrieve(paymentIntentId),
+    prisma.payment.findFirst({
+      where: { transactionId: paymentIntentId },
+      include: { invoice: { include: { client: true } } }
     })
+  ])
 
-    return paymentIntent
-  } catch (error) {
-    console.error('Error getting payment intent status:', error)
-    throw error
+  return {
+    stripe: paymentIntent,
+    payment: payment
   }
 }
 
 /**
- * Create one-time invoice
+ * List customer payment intents
  */
-export async function createOneTimeInvoice(data: CreateOneTimeInvoiceData) {
-  try {
-    const customer = await prisma.customer.findUnique({
-      where: { id: data.customerId }
-    })
-
-    if (!customer) {
-      throw new Error('Customer not found')
-    }
-
-    // Create invoice items in Stripe
-    const invoiceItems = []
-    for (const item of data.items) {
-      const invoiceItem = await stripe.invoiceItems.create({
-        customer: customer.stripeCustomerId,
-        amount: item.unitAmount * item.quantity,
-        currency: data.currency || 'usd',
-        description: item.description,
-        metadata: {
-          quantity: item.quantity.toString(),
-          unitAmount: item.unitAmount.toString()
-        }
-      })
-      invoiceItems.push(invoiceItem)
-    }
-
-    // Create invoice
-    const invoice = await stripe.invoices.create({
-      customer: customer.stripeCustomerId,
-      description: data.description,
-      due_date: data.dueDate ? Math.floor(data.dueDate.getTime() / 1000) : undefined,
-      auto_advance: false, // Don't automatically finalize
-      metadata: {
-        customerId: data.customerId,
-        ...data.metadata
-      }
-    })
-
-    // Calculate totals
-    const subtotal = data.items.reduce((sum, item) => sum + (item.unitAmount * item.quantity), 0)
-
-    // Store invoice in database
-    const dbInvoice = await prisma.invoice.create({
-      data: {
-        customerId: data.customerId,
-        stripeInvoiceId: invoice.id,
-        number: invoice.number!,
-        status: 'DRAFT',
-        description: data.description,
-        currency: data.currency || 'USD',
-        subtotal: subtotal,
-        total: subtotal, // Will be updated when finalized
-        amountDue: subtotal,
-        amountRemaining: subtotal,
-        dueDate: data.dueDate,
-        periodStart: new Date(),
-        periodEnd: new Date(),
-        metadata: invoice.metadata || {}
-      }
-    })
-
-    // Store invoice items
-    for (let i = 0; i < data.items.length; i++) {
-      await prisma.invoiceItem.create({
-        data: {
-          invoiceId: dbInvoice.id,
-          description: data.items[i].description,
-          quantity: data.items[i].quantity,
-          unitAmount: data.items[i].unitAmount,
-          amount: data.items[i].unitAmount * data.items[i].quantity,
-          currency: data.currency || 'USD'
-        }
-      })
-    }
-
-    return {
-      invoice: dbInvoice,
-      stripeInvoice: invoice,
-      invoiceItems
-    }
-  } catch (error) {
-    console.error('Error creating one-time invoice:', error)
-    throw error
-  }
-}
-
-/**
- * Finalize and send invoice
- */
-export async function finalizeAndSendInvoice(invoiceId: string) {
-  try {
-    const invoice = await prisma.invoice.findUnique({
-      where: { id: invoiceId }
-    })
-
-    if (!invoice) {
-      throw new Error('Invoice not found')
-    }
-
-    // Finalize invoice in Stripe
-    const stripeInvoice = await stripe.invoices.finalizeInvoice(invoice.stripeInvoiceId)
-
-    // Send invoice
-    await stripe.invoices.sendInvoice(invoice.stripeInvoiceId)
-
-    // Update invoice in database
-    const updatedInvoice = await prisma.invoice.update({
-      where: { id: invoiceId },
-      data: {
-        status: 'OPEN',
-        total: stripeInvoice.total,
-        tax: stripeInvoice.tax || 0,
-        amountDue: stripeInvoice.amount_due,
-        hostedInvoiceUrl: stripeInvoice.hosted_invoice_url,
-        invoicePdf: stripeInvoice.invoice_pdf
-      }
-    })
-
-    return {
-      invoice: updatedInvoice,
-      stripeInvoice
-    }
-  } catch (error) {
-    console.error('Error finalizing and sending invoice:', error)
-    throw error
-  }
-}
-
-/**
- * Cancel payment intent
- */
-export async function cancelPaymentIntent(paymentIntentId: string) {
-  try {
-    const paymentIntent = await stripe.paymentIntents.cancel(paymentIntentId)
-
-    // Update payment in database
-    await prisma.payment.update({
-      where: { stripePaymentIntentId: paymentIntentId },
-      data: {
-        status: 'CANCELED'
-      }
-    })
-
-    return paymentIntent
-  } catch (error) {
-    console.error('Error canceling payment intent:', error)
-    throw error
-  }
-}
-
-/**
- * Get payment by payment intent ID
- */
-export async function getPaymentByIntentId(paymentIntentId: string) {
-  try {
-    const payment = await prisma.payment.findUnique({
-      where: { stripePaymentIntentId: paymentIntentId },
-      include: {
-        customer: {
-          include: {
-            user: true
-          }
-        }
-      }
-    })
-
-    return payment
-  } catch (error) {
-    console.error('Error getting payment by intent ID:', error)
-    throw error
-  }
-}
-
-/**
- * Process refund
- */
-export async function processRefund(
-  paymentId: string, 
-  amount?: number, 
-  reason?: 'duplicate' | 'fraudulent' | 'requested_by_customer'
-) {
-  try {
-    const payment = await prisma.payment.findUnique({
-      where: { id: paymentId }
-    })
-
-    if (!payment) {
-      throw new Error('Payment not found')
-    }
-
-    if (payment.status !== 'SUCCEEDED') {
-      throw new Error('Can only refund successful payments')
-    }
-
-    // Create refund in Stripe
-    const refund = await stripe.refunds.create({
-      payment_intent: payment.stripePaymentIntentId,
-      amount: amount, // If not specified, refunds full amount
-      reason: reason,
-      metadata: {
-        paymentId: paymentId
-      }
-    })
-
-    // Store refund in database
-    const dbRefund = await prisma.refund.create({
-      data: {
-        userId: payment.userId,
-        paymentId: paymentId,
-        stripeRefundId: refund.id,
-        amount: refund.amount,
-        currency: refund.currency,
-        reason: reason ? mapRefundReason(reason) : null,
-        status: 'PENDING',
-        receiptNumber: refund.receipt_number,
-        metadata: refund.metadata || {}
-      }
-    })
-
-    return {
-      refund: dbRefund,
-      stripeRefund: refund
-    }
-  } catch (error) {
-    console.error('Error processing refund:', error)
-    throw error
-  }
-}
-
-/**
- * Get customer's payment history
- */
-export async function getCustomerPayments(
+export async function getCustomerPaymentIntents(
   customerId: string, 
-  limit: number = 20,
-  offset: number = 0
+  limit: number = 10, 
+  startingAfter?: string
 ) {
-  try {
-    const payments = await prisma.payment.findMany({
-      where: { customerId },
-      include: {
-        paymentMethod: true,
-        refunds: true
+  const customer = await prisma.customer.findUnique({
+    where: { id: customerId }
+  })
+
+  if (!customer) {
+    throw new Error('Customer not found')
+  }
+
+  const [stripePaymentIntents, dbPayments] = await Promise.all([
+    stripe.paymentIntents.list({
+      customer: customer.stripeCustomerId,
+      limit,
+      starting_after: startingAfter
+    }),
+    prisma.payment.findMany({
+      where: { 
+        invoice: { 
+          client: { 
+            customer: { 
+              id: customerId 
+            } 
+          } 
+        } 
       },
       orderBy: { createdAt: 'desc' },
-      take: limit,
-      skip: offset
+      take: limit
     })
+  ])
 
-    const total = await prisma.payment.count({
-      where: { customerId }
-    })
+  return {
+    stripe: stripePaymentIntents,
+    payments: dbPayments
+  }
+}
 
-    return {
-      payments,
-      pagination: {
-        total,
-        limit,
-        offset,
-        hasMore: offset + limit < total
-      }
+/**
+ * Cancel a payment intent
+ */
+export async function cancelPaymentIntent(paymentIntentId: string) {
+  const paymentIntent = await stripe.paymentIntents.cancel(paymentIntentId)
+
+  // Update payment status in our database
+  await prisma.payment.updateMany({
+    where: { transactionId: paymentIntentId },
+    data: { 
+      status: PaymentStatus.CANCELLED
     }
-  } catch (error) {
-    console.error('Error getting customer payments:', error)
-    throw error
+  })
+
+  return {
+    id: paymentIntent.id,
+    status: paymentIntent.status
   }
 }
 
-// Utility functions
-function mapPaymentIntentStatus(status: string): PaymentStatus {
-  const statusMap: Record<string, PaymentStatus> = {
-    'requires_payment_method': 'REQUIRES_PAYMENT_METHOD',
-    'requires_confirmation': 'REQUIRES_CONFIRMATION',
-    'requires_action': 'REQUIRES_ACTION',
-    'processing': 'PROCESSING',
-    'requires_capture': 'REQUIRES_CAPTURE',
-    'canceled': 'CANCELED',
-    'succeeded': 'SUCCEEDED',
-    'failed': 'FAILED'
+/**
+ * Process a refund for a payment
+ */
+export async function processRefund(data: ProcessRefundData) {
+  const payment = await prisma.payment.findFirst({
+    where: { transactionId: data.paymentIntentId },
+    include: { invoice: { include: { client: true } } }
+  })
+
+  if (!payment) {
+    throw new Error('Payment not found')
   }
-  return statusMap[status] || 'PENDING'
+
+  const refund = await stripe.refunds.create({
+    payment_intent: data.paymentIntentId,
+    amount: data.amount,
+    reason: data.reason,
+    metadata: data.metadata || {}
+  })
+
+  // Store refund in our database
+  const dbRefund = await prisma.refund.create({
+    data: {
+      paymentId: payment.id,
+      stripeId: refund.id,
+      amount: refund.amount,
+      currency: refund.currency.toUpperCase(),
+      status: refund.status.toUpperCase() as any,
+      reason: data.reason || 'requested_by_customer'
+    }
+  })
+
+  return {
+    stripe: refund,
+    refund: dbRefund
+  }
 }
 
-function mapRefundReason(reason: string) {
-  const reasonMap: Record<string, any> = {
-    'duplicate': 'DUPLICATE',
-    'fraudulent': 'FRAUDULENT',
-    'requested_by_customer': 'REQUESTED_BY_CUSTOMER'
+/**
+ * Update payment intent
+ */
+export async function updatePaymentIntent(
+  paymentIntentId: string, 
+  updates: Partial<CreatePaymentIntentData>
+) {
+  const updateData: any = {}
+  if (updates.amount !== undefined) updateData.amount = updates.amount
+  if (updates.description !== undefined) updateData.description = updates.description
+  if (updates.metadata !== undefined) updateData.metadata = updates.metadata
+
+  const paymentIntent = await stripe.paymentIntents.update(
+    paymentIntentId,
+    updateData
+  )
+
+  // Update payment in our database
+  const dbUpdates: any = {}
+  if (updates.amount !== undefined) dbUpdates.amount = updates.amount
+  if (updates.description !== undefined) dbUpdates.description = updates.description
+
+  if (Object.keys(dbUpdates).length > 0) {
+    await prisma.payment.updateMany({
+      where: { transactionId: paymentIntentId },
+      data: dbUpdates
+    })
   }
-  return reasonMap[reason] || 'REQUESTED_BY_CUSTOMER'
+
+  return {
+    id: paymentIntent.id,
+    status: paymentIntent.status,
+    amount: paymentIntent.amount,
+    description: paymentIntent.description
+  }
 }
+
+/**
+ * Handle Stripe webhook for payment events
+ */
+export async function handlePaymentWebhook(
+  event: any, // Stripe.Event type
+  signature: string
+) {
+  const paymentIntent = event.data.object as Stripe.PaymentIntent
+
+  switch (event.type) {
+    case 'payment_intent.succeeded':
+      await prisma.payment.updateMany({
+        where: { transactionId: paymentIntent.id },
+        data: {
+          status: PaymentStatus.COMPLETED,
+          processedAt: new Date()
+        }
+      })
+      break
+
+    case 'payment_intent.payment_failed':
+      await prisma.payment.updateMany({
+        where: { transactionId: paymentIntent.id },
+        data: {
+          status: PaymentStatus.FAILED,
+          notes: paymentIntent.last_payment_error?.message || 'Payment failed'
+        }
+      })
+      break
+
+    case 'payment_intent.canceled':
+      await prisma.payment.updateMany({
+        where: { transactionId: paymentIntent.id },
+        data: {
+          status: PaymentStatus.CANCELLED
+        }
+      })
+      break
+
+    case 'payment_intent.requires_action':
+      await prisma.payment.updateMany({
+        where: { transactionId: paymentIntent.id },
+        data: {
+          status: PaymentStatus.PROCESSING
+        }
+      })
+      break
+
+    default:
+      console.log('Unhandled payment webhook:', event.type)
+  }
+
+  return { processed: true, event: event.type }
+}
+

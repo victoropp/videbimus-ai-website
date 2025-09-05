@@ -14,7 +14,7 @@ import { Badge } from '@/components/ui/badge'
 import { useToast } from '@/hooks/use-toast'
 import { api } from '@/lib/trpc/react'
 import { useRouter } from 'next/navigation'
-import { ConsultationType } from '@/types/consultation'
+import { ConsultationType } from '@prisma/client'
 
 interface ConsultationBookingData {
   title: string

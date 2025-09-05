@@ -4,442 +4,450 @@ import { STRIPE_CONFIG } from '@/lib/stripe'
 
 export interface UsageData {
   userId: string
-  customerId?: string
   service: AIService
-  endpoint: string
-  method: string
-  model?: string
-  inputTokens?: number
-  outputTokens?: number
-  totalTokens?: number
-  duration: number // in milliseconds
-  success: boolean
-  errorCode?: string
-  errorMessage?: string
-  ipAddress?: string
-  userAgent?: string
+  amount: number
+  unit: string
+  cost?: number
   metadata?: Record<string, any>
 }
 
-export interface BillableUsage {
-  subscriptionId: string
-  subscriptionItemId: string
+export interface UsageSummary {
   userId: string
-  customerId: string
+  period: {
+    start: Date
+    end: Date
+  }
+  totalUsage: number
+  totalCost: number
+  serviceBreakdown: {
+    service: AIService
+    usage: number
+    cost: number
+  }[]
+}
+
+export interface BillingPeriod {
+  start: Date
+  end: Date
+  status: 'CURRENT' | 'PAST' | 'FUTURE'
+}
+
+/**
+ * Track usage for AI services
+ */
+export async function trackUsage(data: UsageData): Promise<void> {
+  const cost = data.cost || calculateUsageCost(data.service, data.amount, data.unit)
+
+  await prisma.usage.create({
+    data: {
+      userId: data.userId,
+      service: data.service,
+      amount: data.amount,
+      unit: data.unit,
+      cost,
+      billingPeriodStart: new Date(),
+      billingPeriodEnd: new Date(Date.now() + 30 * 24 * 60 * 60 * 1000),
+      metadata: data.metadata || {}
+    }
+  })
+}
+
+/**
+ * Get usage summary for a user in a billing period
+ */
+export async function getUsageSummary(
+  userId: string,
+  period: BillingPeriod
+): Promise<UsageSummary> {
+  const usage = await prisma.usage.findMany({
+    where: {
+      userId: userId,
+      timestamp: {
+        gte: period.start,
+        lte: period.end
+      }
+    }
+  })
+
+  const totalUsage = usage.reduce((sum, u) => sum + u.amount, 0)
+  const totalCost = usage.reduce((sum, u) => sum + Number(u.cost), 0)
+
+  // Group by service
+  const serviceBreakdown = Object.values(AIService).map(service => {
+    const serviceUsage = usage.filter(u => u.service === service)
+    return {
+      service,
+      usage: serviceUsage.reduce((sum, u) => sum + u.amount, 0),
+      cost: serviceUsage.reduce((sum, u) => sum + Number(u.cost), 0)
+    }
+  }).filter(sb => sb.usage > 0)
+
+  return {
+    userId,
+    period: { start: period.start, end: period.end },
+    totalUsage,
+    totalCost,
+    serviceBreakdown
+  }
+}
+
+/**
+ * Get current billing period for a user
+ */
+export async function getCurrentBillingPeriod(userId: string): Promise<BillingPeriod> {
+  const customer = await prisma.customer.findUnique({
+    where: { userId },
+    include: {
+      subscriptions: {
+        where: { status: 'ACTIVE' },
+        orderBy: { createdAt: 'desc' },
+        take: 1
+      }
+    }
+  })
+
+  if (customer && customer.subscriptions.length > 0) {
+    const subscription = customer.subscriptions[0]
+    return {
+      start: subscription.currentPeriodStart,
+      end: subscription.currentPeriodEnd,
+      status: 'CURRENT'
+    }
+  }
+
+  // Fallback to current month if no active subscription
+  const now = new Date()
+  const start = new Date(now.getFullYear(), now.getMonth(), 1)
+  const end = new Date(now.getFullYear(), now.getMonth() + 1, 0)
+  
+  return {
+    start,
+    end,
+    status: 'CURRENT'
+  }
+}
+
+/**
+ * Check if user has exceeded usage limits
+ */
+export async function checkUsageLimits(
+  userId: string,
   service: AIService
-  quantity: number // typically token count
-  model?: string
-  inputTokens?: number
-  outputTokens?: number
-  totalTokens?: number
-  requestDuration?: number
-  metadata?: Record<string, any>
-}
+): Promise<{
+  withinLimits: boolean
+  currentUsage: number
+  limit: number
+  resetDate: Date
+}> {
+  const customer = await prisma.customer.findUnique({
+    where: { userId },
+    include: {
+      subscriptions: {
+        where: { status: 'ACTIVE' },
+        take: 1
+      }
+    }
+  })
 
-/**
- * Log API usage for analytics and billing
- */
-export async function logUsage(data: UsageData) {
-  try {
-    const usageLog = await prisma.usageLog.create({
-      data: {
-        userId: data.userId,
-        customerId: data.customerId,
-        service: data.service,
-        endpoint: data.endpoint,
-        method: data.method,
-        model: data.model,
-        inputTokens: data.inputTokens,
-        outputTokens: data.outputTokens,
-        totalTokens: data.totalTokens,
-        duration: data.duration,
-        success: data.success,
-        errorCode: data.errorCode,
-        errorMessage: data.errorMessage,
-        ipAddress: data.ipAddress,
-        userAgent: data.userAgent,
-        metadata: data.metadata || {}
+  const billingPeriod = await getCurrentBillingPeriod(userId)
+  
+  // Get usage limits for the active subscription
+  let limit = 1000 // Default limit
+  if (customer && customer.subscriptions.length > 0) {
+    const subscription = customer.subscriptions[0]
+    const usageLimit = await prisma.usageLimit.findFirst({
+      where: {
+        userId: customer.userId,
+        service
       }
     })
-
-    // If usage was successful and billable, create usage record for subscription billing
-    if (data.success && data.customerId && data.totalTokens && data.totalTokens > 0) {
-      await createBillableUsageRecord({
-        userId: data.userId,
-        customerId: data.customerId,
-        service: data.service,
-        quantity: data.totalTokens,
-        model: data.model,
-        inputTokens: data.inputTokens,
-        outputTokens: data.outputTokens,
-        totalTokens: data.totalTokens,
-        requestDuration: data.duration,
-        metadata: data.metadata
-      })
+    if (usageLimit) {
+      limit = usageLimit.limitAmount
     }
+  }
 
-    return usageLog
-  } catch (error) {
-    console.error('Error logging usage:', error)
-    throw error
+  // Get current usage in this period  
+  const usage = await prisma.usage.findMany({
+    where: {
+      userId: userId,
+      service,
+      timestamp: {
+        gte: billingPeriod.start,
+        lte: billingPeriod.end
+      }
+    }
+  })
+  const currentUsage = usage.reduce((sum, u) => sum + u.amount, 0)
+  
+  return {
+    withinLimits: currentUsage < limit,
+    currentUsage,
+    limit,
+    resetDate: billingPeriod.end
   }
 }
 
 /**
- * Create a billable usage record for subscription billing
+ * Calculate usage cost based on service and amount
  */
-async function createBillableUsageRecord(data: Omit<BillableUsage, 'subscriptionId' | 'subscriptionItemId'>) {
-  try {
-    // Find active subscription for the customer
-    const subscription = await prisma.subscription.findFirst({
-      where: {
-        customerId: data.customerId,
-        status: { in: ['ACTIVE', 'TRIALING'] }
-      },
-      include: {
-        subscriptionItems: {
-          where: {
-            usageType: 'METERED'
-          }
-        }
-      }
-    })
-
-    if (!subscription) {
-      console.warn('No active subscription found for customer:', data.customerId)
-      return
-    }
-
-    // Find appropriate subscription item for metered billing
-    const meteringItem = subscription.subscriptionItems.find(item => 
-      item.usageType === 'METERED'
-    )
-
-    if (!meteringItem) {
-      console.warn('No metered subscription item found for customer:', data.customerId)
-      return
-    }
-
-    // Create usage record
-    const usageRecord = await prisma.usageRecord.create({
-      data: {
-        subscriptionId: subscription.id,
-        subscriptionItemId: meteringItem.id,
-        userId: data.userId,
-        customerId: data.customerId,
-        quantity: data.quantity,
-        service: data.service,
-        model: data.model,
-        inputTokens: data.inputTokens,
-        outputTokens: data.outputTokens,
-        totalTokens: data.totalTokens,
-        requestDuration: data.requestDuration,
-        metadata: data.metadata || {}
-      }
-    })
-
-    return usageRecord
-  } catch (error) {
-    console.error('Error creating billable usage record:', error)
-    // Don't throw error as this shouldn't break the main API flow
+export function calculateUsageCost(
+  service: AIService,
+  amount: number,
+  unit: string
+): number {
+  // Simplified pricing - in real implementation, this would come from config
+  const pricing: Record<AIService, Record<string, number>> = {
+    [AIService.CHAT]: { 'tokens': 0.002 },
+    [AIService.ANALYSIS]: { 'requests': 0.10 },
+    [AIService.GENERATION]: { 'tokens': 0.005 },
+    [AIService.TRANSCRIPTION]: { 'minutes': 0.20 },
+    [AIService.TRANSLATION]: { 'characters': 0.001 },
+    [AIService.SUMMARIZATION]: { 'tokens': 0.003 },
+    [AIService.CLASSIFICATION]: { 'requests': 0.05 }
   }
+  
+  const rate = pricing[service]?.[unit] || 0
+  return amount * rate
 }
 
 /**
- * Get usage statistics for a user
+ * Get usage history for a user
  */
-export async function getUserUsageStats(userId: string, period: 'day' | 'week' | 'month' | 'year' = 'month') {
-  try {
-    const now = new Date()
-    let startDate: Date
+export async function getUsageHistory(
+  userId: string,
+  limit: number = 100,
+  offset: number = 0
+): Promise<{
+  usage: any[]
+  total: number
+  hasMore: boolean
+}> {
+  const customer = await prisma.customer.findUnique({
+    where: { userId }
+  })
 
-    switch (period) {
-      case 'day':
-        startDate = new Date(now.getFullYear(), now.getMonth(), now.getDate())
-        break
-      case 'week':
-        const dayOfWeek = now.getDay()
-        startDate = new Date(now.getTime() - dayOfWeek * 24 * 60 * 60 * 1000)
-        startDate.setHours(0, 0, 0, 0)
-        break
-      case 'month':
-        startDate = new Date(now.getFullYear(), now.getMonth(), 1)
-        break
-      case 'year':
-        startDate = new Date(now.getFullYear(), 0, 1)
-        break
-    }
-
-    const usageLogs = await prisma.usageLog.findMany({
-      where: {
-        userId,
-        timestamp: {
-          gte: startDate,
-          lte: now
-        }
-      }
-    })
-
-    // Aggregate usage by service
-    const usageByService = usageLogs.reduce((acc, log) => {
-      if (!acc[log.service]) {
-        acc[log.service] = {
-          totalRequests: 0,
-          successfulRequests: 0,
-          totalTokens: 0,
-          totalDuration: 0,
-          totalCost: 0
-        }
-      }
-
-      acc[log.service].totalRequests += 1
-      if (log.success) {
-        acc[log.service].successfulRequests += 1
-      }
-      acc[log.service].totalTokens += log.totalTokens || 0
-      acc[log.service].totalDuration += log.duration || 0
-
-      // Calculate cost based on service rates
-      const rate = STRIPE_CONFIG.usageRates[log.service] || 0
-      acc[log.service].totalCost += (log.totalTokens || 0) * rate / 1000
-
-      return acc
-    }, {} as Record<AIService, {
-      totalRequests: number
-      successfulRequests: number
-      totalTokens: number
-      totalDuration: number
-      totalCost: number
-    }>)
-
-    const totalStats = {
-      totalRequests: usageLogs.length,
-      successfulRequests: usageLogs.filter(log => log.success).length,
-      totalTokens: usageLogs.reduce((sum, log) => sum + (log.totalTokens || 0), 0),
-      totalDuration: usageLogs.reduce((sum, log) => sum + (log.duration || 0), 0),
-      totalCost: Object.values(usageByService).reduce((sum, stats) => sum + stats.totalCost, 0)
-    }
-
+  if (!customer) {
     return {
-      period,
-      startDate,
-      endDate: now,
-      usageByService,
-      totalStats
+      usage: [],
+      total: 0,
+      hasMore: false
     }
-  } catch (error) {
-    console.error('Error getting usage stats:', error)
-    throw error
+  }
+
+  const [usage, total] = await Promise.all([
+    prisma.usage.findMany({
+      where: { userId: customer.userId },
+      orderBy: { timestamp: 'desc' },
+      skip: offset,
+      take: limit
+    }),
+    prisma.usage.count({
+      where: { userId: customer.userId }
+    })
+  ])
+
+  return {
+    usage,
+    total,
+    hasMore: offset + limit < total
   }
 }
 
 /**
- * Check if user has exceeded their usage limits
+ * Generate usage report for billing
  */
-export async function checkUsageLimits(userId: string) {
-  try {
-    // Get user's active subscription
-    const subscription = await prisma.subscription.findFirst({
-      where: {
-        userId,
-        status: { in: ['ACTIVE', 'TRIALING'] }
-      }
-    })
+export async function generateUsageReport(
+  userId: string,
+  period: BillingPeriod
+): Promise<{
+  summary: UsageSummary
+  details: any[]
+  totalBillableAmount: number
+}> {
+  const customer = await prisma.customer.findUnique({
+    where: { userId }
+  })
 
-    if (!subscription) {
-      return { exceeded: true, reason: 'No active subscription' }
+  if (!customer) {
+    const summary = await getUsageSummary(userId, period)
+    return {
+      summary,
+      details: [],
+      totalBillableAmount: 0
     }
+  }
 
-    const planConfig = STRIPE_CONFIG.plans[subscription.plan]
-    
-    // If unlimited plan, no limits to check
-    if (planConfig.limits.tokensPerMonth === -1) {
-      return { exceeded: false }
-    }
-
-    // Get current month usage
-    const startOfMonth = new Date(subscription.currentPeriodStart)
-    const endOfMonth = new Date(subscription.currentPeriodEnd)
-
-    const usageRecords = await prisma.usageRecord.findMany({
-      where: {
-        userId,
-        timestamp: {
-          gte: startOfMonth,
-          lte: endOfMonth
-        }
+  const usage = await prisma.usage.findMany({
+    where: {
+      userId: userId,
+      timestamp: {
+        gte: period.start,
+        lte: period.end
       }
-    })
+    },
+    orderBy: { timestamp: 'desc' }
+  })
 
-    const totalTokensUsed = usageRecords.reduce((sum, record) => sum + (record.totalTokens || 0), 0)
-    const totalRequestsToday = await prisma.usageLog.count({
-      where: {
-        userId,
-        timestamp: {
-          gte: new Date(new Date().setHours(0, 0, 0, 0))
-        }
-      }
-    })
-
-    // Check limits
-    if (totalTokensUsed >= planConfig.limits.tokensPerMonth) {
-      return { 
-        exceeded: true, 
-        reason: 'Monthly token limit exceeded',
-        used: totalTokensUsed,
-        limit: planConfig.limits.tokensPerMonth
-      }
-    }
-
-    if (totalRequestsToday >= planConfig.limits.apiCallsPerDay) {
-      return { 
-        exceeded: true, 
-        reason: 'Daily API call limit exceeded',
-        used: totalRequestsToday,
-        limit: planConfig.limits.apiCallsPerDay
-      }
-    }
-
-    return { 
-      exceeded: false,
-      usage: {
-        tokensUsed: totalTokensUsed,
-        tokenLimit: planConfig.limits.tokensPerMonth,
-        requestsToday: totalRequestsToday,
-        requestLimit: planConfig.limits.apiCallsPerDay
-      }
-    }
-  } catch (error) {
-    console.error('Error checking usage limits:', error)
-    throw error
+  const summary = await getUsageSummary(userId, period)
+  const totalBillableAmount = usage.reduce((sum, u) => sum + Number(u.cost), 0)
+  
+  return {
+    summary,
+    details: usage,
+    totalBillableAmount
   }
 }
 
 /**
- * Get usage analytics for admin dashboard
+ * Reset usage counters (typically called at billing period start)
  */
-export async function getUsageAnalytics(
-  startDate: Date, 
-  endDate: Date, 
+export async function resetUsageCounters(userId: string): Promise<void> {
+  const customer = await prisma.customer.findUnique({
+    where: { userId }
+  })
+
+  if (!customer) {
+    console.warn('Customer not found for user:', userId)
+    return
+  }
+
+  // Archive old usage data (optional)
+  const currentPeriod = await getCurrentBillingPeriod(userId)
+  
+  // In most billing systems, you don't actually delete usage data
+  // Instead, you start a new billing period
+  console.log(`Usage period reset for user: ${userId}, new period starts: ${currentPeriod.start}`)
+}
+
+/**
+ * Get aggregated usage statistics
+ */
+export async function getUsageStatistics(
+  startDate: Date,
+  endDate: Date,
   groupBy: 'day' | 'week' | 'month' = 'day'
-) {
-  try {
-    const usageLogs = await prisma.usageLog.findMany({
-      where: {
-        timestamp: {
-          gte: startDate,
-          lte: endDate
-        }
-      },
-      include: {
-        user: {
-          select: {
-            id: true,
-            email: true,
-            name: true
-          }
-        }
+): Promise<{
+  totalUsers: number
+  totalUsage: number
+  totalCost: number
+  serviceBreakdown: any[]
+  timeSeriesData: any[]
+}> {
+  const usage = await prisma.usage.findMany({
+    where: {
+      timestamp: {
+        gte: startDate,
+        lte: endDate
       }
-    })
+    },
+    include: {
+      user: true
+    }
+  })
 
-    // Group by time period
-    const groupedUsage = usageLogs.reduce((acc, log) => {
-      let key: string
-      const date = new Date(log.timestamp)
+  const uniqueUsers = new Set(usage.map(u => u.userId)).size
+  const totalUsage = usage.reduce((sum, u) => sum + u.amount, 0)
+  const totalCost = usage.reduce((sum, u) => sum + Number(u.cost), 0)
 
-      switch (groupBy) {
-        case 'day':
-          key = date.toISOString().split('T')[0]
-          break
-        case 'week':
-          const weekStart = new Date(date)
-          weekStart.setDate(date.getDate() - date.getDay())
-          key = weekStart.toISOString().split('T')[0]
-          break
-        case 'month':
-          key = `${date.getFullYear()}-${String(date.getMonth() + 1).padStart(2, '0')}`
-          break
-      }
+  // Service breakdown
+  const serviceBreakdown = Object.values(AIService).map(service => {
+    const serviceUsage = usage.filter(u => u.service === service)
+    return {
+      service,
+      usage: serviceUsage.reduce((sum, u) => sum + u.amount, 0),
+      cost: serviceUsage.reduce((sum, u) => sum + Number(u.cost), 0),
+      requests: serviceUsage.length
+    }
+  }).filter(sb => sb.usage > 0)
 
-      if (!acc[key]) {
-        acc[key] = {
-          totalRequests: 0,
-          successfulRequests: 0,
-          totalTokens: 0,
-          totalDuration: 0,
-          uniqueUsers: new Set<string>(),
-          serviceBreakdown: {} as Record<AIService, number>
-        }
-      }
+  // Time series data (simplified - would need more complex grouping in real implementation)
+  const timeSeriesData = usage.reduce((acc, u) => {
+    const date = u.timestamp.toISOString().split('T')[0]
+    if (!acc[date]) {
+      acc[date] = { date, usage: 0, cost: 0, requests: 0 }
+    }
+    acc[date].usage += u.amount
+    acc[date].cost += Number(u.cost)
+    acc[date].requests += 1
+    return acc
+  }, {} as Record<string, any>)
 
-      acc[key].totalRequests += 1
-      if (log.success) {
-        acc[key].successfulRequests += 1
-      }
-      acc[key].totalTokens += log.totalTokens || 0
-      acc[key].totalDuration += log.duration || 0
-      acc[key].uniqueUsers.add(log.userId)
-
-      if (!acc[key].serviceBreakdown[log.service]) {
-        acc[key].serviceBreakdown[log.service] = 0
-      }
-      acc[key].serviceBreakdown[log.service] += 1
-
-      return acc
-    }, {} as Record<string, any>)
-
-    // Convert Set to count for uniqueUsers
-    Object.keys(groupedUsage).forEach(key => {
-      groupedUsage[key].uniqueUsers = groupedUsage[key].uniqueUsers.size
-    })
-
-    return groupedUsage
-  } catch (error) {
-    console.error('Error getting usage analytics:', error)
-    throw error
+  return {
+    totalUsers: uniqueUsers,
+    totalUsage,
+    totalCost,
+    serviceBreakdown,
+    timeSeriesData: Object.values(timeSeriesData)
   }
 }
 
 /**
- * Middleware to track API usage
+ * Apply usage-based billing adjustments
  */
-export function createUsageTrackingMiddleware(service: AIService) {
-  return async function trackUsage(
-    userId: string,
-    customerId: string | undefined,
-    endpoint: string,
-    method: string,
-    options: {
-      model?: string
-      inputTokens?: number
-      outputTokens?: number
-      totalTokens?: number
-      metadata?: Record<string, any>
-    } = {}
-  ) {
-    const startTime = Date.now()
-    
-    return {
-      async complete(success: boolean, error?: { code?: string, message?: string }) {
-        const duration = Date.now() - startTime
-
-        await logUsage({
-          userId,
-          customerId,
-          service,
-          endpoint,
-          method,
-          model: options.model,
-          inputTokens: options.inputTokens,
-          outputTokens: options.outputTokens,
-          totalTokens: options.totalTokens,
-          duration,
-          success,
-          errorCode: error?.code,
-          errorMessage: error?.message,
-          metadata: options.metadata
-        })
+export async function applyUsageBilling(userId: string, period: BillingPeriod): Promise<{
+  baseAmount: number
+  usageAmount: number
+  totalAmount: number
+  adjustments: any[]
+}> {
+  const customer = await prisma.customer.findUnique({
+    where: { userId },
+    include: {
+      subscriptions: {
+        where: { status: 'ACTIVE' },
+        take: 1
       }
     }
+  })
+
+  if (!customer || customer.subscriptions.length === 0) {
+    return {
+      baseAmount: 0,
+      usageAmount: 0,
+      totalAmount: 0,
+      adjustments: []
+    }
+  }
+
+  const subscription = customer.subscriptions[0]
+  const usageReport = await generateUsageReport(userId, period)
+  
+  // Get base subscription amount (would come from subscription plan)
+  const baseAmount = 2900 // $29.00 in cents - would come from subscription plan
+  const usageAmount = Math.round(usageReport.totalBillableAmount * 100) // Convert to cents
+  const totalAmount = baseAmount + usageAmount
+
+  const adjustments = []
+  
+  // Apply any credits
+  const customerForCredits = await prisma.customer.findUnique({
+    where: { userId: userId }
+  })
+  
+  const credits = customerForCredits ? await prisma.credit.findMany({
+    where: {
+      customerId: customerForCredits.id,
+      expiresAt: {
+        gte: new Date()
+      }
+    }
+  }) : []
+
+  let totalCredits = 0
+  for (const credit of credits) {
+    adjustments.push({
+      type: 'CREDIT',
+      amount: -Number(credit.amount),
+      description: credit.description
+    })
+    totalCredits += Number(credit.amount)
+  }
+
+  return {
+    baseAmount,
+    usageAmount,
+    totalAmount: totalAmount - totalCredits,
+    adjustments
   }
 }
+

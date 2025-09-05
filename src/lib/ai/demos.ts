@@ -86,10 +86,10 @@ Please respond with a JSON object in the following format:
       responseContent = response.choices[0]?.message?.content || '';
     } else if ('content' in response) {
       responseContent = Array.isArray(response.content) 
-        ? response.content[0]?.text || ''
+        ? (response.content[0] && 'text' in response.content[0] ? response.content[0].text : '')
         : response.content;
     } else {
-      responseContent = response.generated_text || response.response || '';
+      responseContent = (response as any).generated_text || (response as any).response || '';
     }
 
     try {
@@ -208,10 +208,10 @@ Summary:`;
       responseContent = response.choices[0]?.message?.content || '';
     } else if ('content' in response) {
       responseContent = Array.isArray(response.content) 
-        ? response.content[0]?.text || ''
+        ? (response.content[0] && 'text' in response.content[0] ? response.content[0].text : '')
         : response.content;
     } else {
-      responseContent = response.generated_text || response.response || '';
+      responseContent = (response as any).generated_text || (response as any).response || '';
     }
 
     return responseContent.trim();
@@ -342,10 +342,10 @@ Please respond with a JSON array of entities in the following format:
       responseContent = response.choices[0]?.message?.content || '';
     } else if ('content' in response) {
       responseContent = Array.isArray(response.content) 
-        ? response.content[0]?.text || ''
+        ? (response.content[0] && 'text' in response.content[0] ? response.content[0].text : '')
         : response.content;
     } else {
-      responseContent = response.generated_text || response.response || '';
+      responseContent = (response as any).generated_text || (response as any).response || '';
     }
 
     try {
@@ -389,10 +389,10 @@ Please respond with a JSON object in the following format:
     responseContent = response.choices[0]?.message?.content || '';
   } else if ('content' in response) {
     responseContent = Array.isArray(response.content) 
-      ? response.content[0]?.text || ''
+      ? (response.content[0] && 'text' in response.content[0] ? response.content[0].text : '')
       : response.content;
   } else {
-    responseContent = response.generated_text || response.response || '';
+    responseContent = (response as any).generated_text || (response as any).response || '';
   }
 
   try {
@@ -442,10 +442,10 @@ Please respond with a JSON object in the following format:
     responseContent = response.choices[0]?.message?.content || '';
   } else if ('content' in response) {
     responseContent = Array.isArray(response.content) 
-      ? response.content[0]?.text || ''
+      ? (response.content[0] && 'text' in response.content[0] ? response.content[0].text : '')
       : response.content;
   } else {
-    responseContent = response.generated_text || response.response || '';
+    responseContent = (response as any).generated_text || (response as any).response || '';
   }
 
   try {
@@ -485,10 +485,10 @@ Please respond with a JSON array of keywords:
     responseContent = response.choices[0]?.message?.content || '';
   } else if ('content' in response) {
     responseContent = Array.isArray(response.content) 
-      ? response.content[0]?.text || ''
+      ? (response.content[0] && 'text' in response.content[0] ? response.content[0].text : '')
       : response.content;
   } else {
-    responseContent = response.generated_text || response.response || '';
+    responseContent = (response as any).generated_text || (response as any).response || '';
   }
 
   try {
@@ -549,10 +549,10 @@ Answer:`;
       responseContent = response.choices[0]?.message?.content || '';
     } else if ('content' in response) {
       responseContent = Array.isArray(response.content) 
-        ? response.content[0]?.text || ''
+        ? (response.content[0] && 'text' in response.content[0] ? response.content[0].text : '')
         : response.content;
     } else {
-      responseContent = response.generated_text || response.response || '';
+      responseContent = (response as any).generated_text || (response as any).response || '';
     }
 
     return {
@@ -581,10 +581,10 @@ Translation:`;
     responseContent = response.choices[0]?.message?.content || '';
   } else if ('content' in response) {
     responseContent = Array.isArray(response.content) 
-      ? response.content[0]?.text || ''
+      ? (response.content[0] && 'text' in response.content[0] ? response.content[0].text : '')
       : response.content;
   } else {
-    responseContent = response.generated_text || response.response || '';
+    responseContent = (response as any).generated_text || (response as any).response || '';
   }
 
   return responseContent.trim();

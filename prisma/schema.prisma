@@ -96,6 +96,11 @@ model User {
   // Collaboration relations
   presence            UserPresence?
   notifications       Notification[]
+  
+  // Payment & AI relations
+  customer            Customer?
+  usage               Usage[]
+  usageLimits         UsageLimit[]
 
   @@map("users")
 }
@@ -748,12 +753,14 @@ model Invoice {
   notes       String?
   projectId   String?
   clientId    String
+  subscriptionId String?  // For subscription-based invoices
   createdAt   DateTime      @default(now())
   updatedAt   DateTime      @updatedAt
 
   // Relations
   client      User          @relation(fields: [clientId], references: [id], onDelete: Cascade)
   project     Project?      @relation(fields: [projectId], references: [id], onDelete: SetNull)
+  subscription Subscription? @relation(fields: [subscriptionId], references: [id], onDelete: SetNull)
   items       InvoiceItem[]
   payments    Payment[]
 
@@ -800,6 +807,7 @@ model Payment {
 
   // Relations
   invoice       Invoice       @relation(fields: [invoiceId], references: [id], onDelete: Cascade)
+  refunds       Refund[]
 
   @@map("payments")
 }
@@ -1155,4 +1163,249 @@ enum NotificationType {
   WHITEBOARD
   ROOM
   ACTION_ITEM
+}
+
+// ============================================
+// PAYMENT & BILLING MODELS - Complete System
+// ============================================
+
+model Customer {
+  id                String   @id @default(cuid())
+  userId            String   @unique
+  stripeCustomerId  String   @unique
+  email             String
+  name              String?
+  phone             String?
+  defaultPaymentMethodId String?
+  metadata          Json     @default("{}")
+  createdAt         DateTime @default(now())
+  updatedAt         DateTime @updatedAt
+
+  // Relations
+  user              User     @relation(fields: [userId], references: [id], onDelete: Cascade)
+  subscriptions     Subscription[]
+  paymentMethods    PaymentMethodData[]
+  billingAddress    BillingAddress?
+  credits           Credit[]
+  
+  @@map("customers")
+}
+
+model Subscription {
+  id                String            @id @default(cuid())
+  customerId        String
+  stripeSubscriptionId String         @unique
+  status            SubscriptionStatus @default(ACTIVE)
+  plan              SubscriptionPlan   @default(BASIC)
+  billingCycle      BillingCycle       @default(MONTHLY)
+  
+  // Pricing
+  amount            Decimal
+  currency          String            @default("USD")
+  
+  // Periods
+  currentPeriodStart DateTime
+  currentPeriodEnd   DateTime
+  trialStart        DateTime?
+  trialEnd          DateTime?
+  
+  // Cancellation
+  cancelAtPeriodEnd Boolean           @default(false)
+  canceledAt        DateTime?
+  cancelReason      String?
+  
+  // Metadata
+  metadata          Json              @default("{}")
+  createdAt         DateTime          @default(now())
+  updatedAt         DateTime          @updatedAt
+
+  // Relations
+  customer          Customer          @relation(fields: [customerId], references: [id], onDelete: Cascade)
+  subscriptionItems SubscriptionItem[]
+  invoices          Invoice[]
+  
+  @@map("subscriptions")
+}
+
+model SubscriptionItem {
+  id             String       @id @default(cuid())
+  subscriptionId String
+  stripePriceId  String
+  quantity       Int          @default(1)
+  unitAmount     Decimal
+  createdAt      DateTime     @default(now())
+  updatedAt      DateTime     @updatedAt
+
+  subscription   Subscription @relation(fields: [subscriptionId], references: [id], onDelete: Cascade)
+  
+  @@map("subscription_items")
+}
+
+model PaymentMethodData {
+  id           String   @id @default(cuid())
+  customerId   String
+  stripeId     String   @unique
+  type         String   // card, bank_account, etc.
+  isDefault    Boolean  @default(false)
+  isActive     Boolean  @default(true)
+  
+  // Card details (if applicable)
+  cardBrand    String?
+  cardLast4    String?
+  cardExpMonth Int?
+  cardExpYear  Int?
+  
+  // Billing details
+  billingName  String?
+  billingEmail String?
+  
+  createdAt    DateTime @default(now())
+  updatedAt    DateTime @updatedAt
+
+  customer     Customer @relation(fields: [customerId], references: [id], onDelete: Cascade)
+  
+  @@map("payment_methods")
+}
+
+model BillingAddress {
+  id         String   @id @default(cuid())
+  customerId String   @unique
+  line1      String
+  line2      String?
+  city       String
+  state      String?
+  postalCode String
+  country    String
+  createdAt  DateTime @default(now())
+  updatedAt  DateTime @updatedAt
+
+  customer   Customer @relation(fields: [customerId], references: [id], onDelete: Cascade)
+  
+  @@map("billing_addresses")
+}
+
+model Refund {
+  id           String      @id @default(cuid())
+  stripeId     String      @unique
+  paymentId    String
+  amount       Decimal
+  currency     String      @default("USD")
+  status       RefundStatus @default(PENDING)
+  reason       String?
+  metadata     Json        @default("{}")
+  createdAt    DateTime    @default(now())
+  updatedAt    DateTime    @updatedAt
+
+  payment      Payment     @relation(fields: [paymentId], references: [id], onDelete: Cascade)
+  
+  @@map("refunds")
+}
+
+model Credit {
+  id           String      @id @default(cuid())
+  customerId   String
+  amount       Decimal
+  balance      Decimal
+  currency     String      @default("USD")
+  description  String?
+  type         CreditType  @default(PROMOTIONAL)
+  expiresAt    DateTime?
+  createdAt    DateTime    @default(now())
+  updatedAt    DateTime    @updatedAt
+
+  customer     Customer    @relation(fields: [customerId], references: [id], onDelete: Cascade)
+  
+  @@map("credits")
+}
+
+// ============================================
+// AI SERVICES & USAGE TRACKING MODELS
+// ============================================
+
+model Usage {
+  id          String    @id @default(cuid())
+  userId      String
+  service     AIService
+  amount      Int       // tokens, requests, minutes, etc.
+  unit        String    // "tokens", "requests", "minutes", "characters"
+  cost        Decimal   @default(0)
+  metadata    Json      @default("{}")
+  timestamp   DateTime  @default(now())
+  
+  // Billing period tracking
+  billingPeriodStart DateTime
+  billingPeriodEnd   DateTime
+  
+  user        User      @relation(fields: [userId], references: [id], onDelete: Cascade)
+  
+  @@index([userId, billingPeriodStart])
+  @@index([service, timestamp])
+  @@map("usage")
+}
+
+model UsageLimit {
+  id          String    @id @default(cuid())
+  userId      String
+  service     AIService
+  limitAmount Int       // max usage per period
+  limitUnit   String
+  periodType  String    // "monthly", "weekly", "daily"
+  resetDay    Int?      // day of month for monthly reset
+  createdAt   DateTime  @default(now())
+  updatedAt   DateTime  @updatedAt
+
+  user        User      @relation(fields: [userId], references: [id], onDelete: Cascade)
+  
+  @@unique([userId, service])
+  @@map("usage_limits")
+}
+
+// ============================================
+// ENUMS FOR NEW MODELS
+// ============================================
+
+enum SubscriptionStatus {
+  ACTIVE
+  INACTIVE
+  CANCELLED
+  PAST_DUE
+  TRIALING
+  PAUSED
+}
+
+enum SubscriptionPlan {
+  BASIC
+  PRO
+  ENTERPRISE
+  CUSTOM
+}
+
+enum BillingCycle {
+  MONTHLY
+  YEARLY
+  QUARTERLY
+}
+
+enum RefundStatus {
+  PENDING
+  SUCCEEDED
+  FAILED
+  CANCELLED
+}
+
+enum CreditType {
+  PROMOTIONAL
+  REFUND
+  LOYALTY
+  MANUAL
+}
+
+enum AIService {
+  CHAT
+  ANALYSIS
+  GENERATION
+  TRANSCRIPTION
+  TRANSLATION
+  SUMMARIZATION
+  CLASSIFICATION
 }

@@ -263,7 +263,7 @@ export default function CollaborationPortal({
                               {documents.map((doc) => (
                                 <Button
                                   key={doc.id}
-                                  variant={activeDocument === doc.id ? 'default' : 'ghost'}
+                                  variant={activeDocument === doc.id ? 'secondary' : 'ghost'}
                                   size="sm"
                                   className="w-full justify-start"
                                   onClick={() => setActiveDocument(doc.id)}

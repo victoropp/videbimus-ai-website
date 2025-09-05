@@ -29,6 +29,9 @@ export enum ConsultationStatus {
   RESCHEDULED = 'RESCHEDULED'
 }
 
+// Use Prisma's generated enum for compatibility
+export { ConsultationStatus as PrismaConsultationStatus } from '@prisma/client';
+
 export enum ConsultationType {
   DISCOVERY = 'DISCOVERY',
   STRATEGY = 'STRATEGY',

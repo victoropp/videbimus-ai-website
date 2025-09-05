@@ -13,7 +13,11 @@ const testimonials: Testimonial[] = [
     company: 'TechCorp Industries',
     content: 'Videbimus AI transformed our entire data infrastructure. Their team delivered a comprehensive ML platform that increased our operational efficiency by 40% and reduced costs by $2M annually.',
     image: '/testimonials/sarah-chen.jpg',
-    rating: 5
+    rating: 5,
+    isActive: true,
+    sortOrder: 1,
+    createdAt: new Date(),
+    updatedAt: new Date()
   },
   {
     id: '2',
@@ -22,7 +26,11 @@ const testimonials: Testimonial[] = [
     company: 'FinanceFlow',
     content: 'The fraud detection system they built has been a game-changer. We\'ve reduced false positives by 60% while catching 95% more actual fraud attempts. The ROI was evident within 3 months.',
     image: '/testimonials/michael-rodriguez.jpg',
-    rating: 5
+    rating: 5,
+    isActive: true,
+    sortOrder: 2,
+    createdAt: new Date(),
+    updatedAt: new Date()
   },
   {
     id: '3',
@@ -31,7 +39,11 @@ const testimonials: Testimonial[] = [
     company: 'HealthTech Solutions',
     content: 'Their expertise in healthcare AI is unmatched. The clinical decision support system they developed has improved patient outcomes by 25% while reducing diagnostic time by half.',
     image: '/testimonials/emily-watson.jpg',
-    rating: 5
+    rating: 5,
+    isActive: true,
+    sortOrder: 3,
+    createdAt: new Date(),
+    updatedAt: new Date()
   },
   {
     id: '4',
@@ -40,7 +52,11 @@ const testimonials: Testimonial[] = [
     company: 'RetailMax',
     content: 'The personalization engine Videbimus AI created for us increased our conversion rates by 35% and customer lifetime value by 50%. Their team understood our business from day one.',
     image: '/testimonials/james-liu.jpg',
-    rating: 5
+    rating: 5,
+    isActive: true,
+    sortOrder: 4,
+    createdAt: new Date(),
+    updatedAt: new Date()
   },
   {
     id: '5',
@@ -49,7 +65,11 @@ const testimonials: Testimonial[] = [
     company: 'ManufacturePro',
     content: 'Predictive maintenance was just a concept until Videbimus AI made it reality. We\'ve prevented 90% of equipment failures and saved over $5M in unplanned downtime.',
     image: '/testimonials/amanda-foster.jpg',
-    rating: 5
+    rating: 5,
+    isActive: true,
+    sortOrder: 5,
+    createdAt: new Date(),
+    updatedAt: new Date()
   },
   {
     id: '6',
@@ -58,7 +78,11 @@ const testimonials: Testimonial[] = [
     company: 'LogisticsCorp',
     content: 'Route optimization through AI has revolutionized our delivery network. 30% reduction in fuel costs, 25% faster deliveries, and happier customers. Exceptional work!',
     image: '/testimonials/david-kim.jpg',
-    rating: 5
+    rating: 5,
+    isActive: true,
+    sortOrder: 6,
+    createdAt: new Date(),
+    updatedAt: new Date()
   }
 ]
 

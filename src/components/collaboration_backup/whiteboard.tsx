@@ -450,7 +450,8 @@ export default function Whiteboard({
 
     const dataURL = canvas.toDataURL({
       format: 'png',
-      quality: 1.0
+      quality: 1.0,
+      multiplier: 1
     });
 
     // Create download link
@@ -489,7 +490,7 @@ export default function Whiteboard({
             <CardTitle>Collaborative Whiteboard</CardTitle>
             <div className="flex items-center gap-2">
               <Badge 
-                variant={connectionStatus === 'connected' ? 'default' : 'destructive'}
+                variant={connectionStatus === 'connected' ? 'secondary' : 'destructive'}
               >
                 {connectionStatus === 'connected' ? 
                   <Wifi className="w-3 h-3 mr-1" /> : 
@@ -515,42 +516,42 @@ export default function Whiteboard({
             {/* Tools */}
             <div className="flex gap-1">
               <Button
-                variant={activeTool === 'select' ? 'default' : 'outline'}
+                variant={activeTool === 'select' ? 'secondary' : 'outline'}
                 size="sm"
                 onClick={() => setTool('select')}
               >
                 <MousePointer className="w-4 h-4" />
               </Button>
               <Button
-                variant={activeTool === 'pen' ? 'default' : 'outline'}
+                variant={activeTool === 'pen' ? 'secondary' : 'outline'}
                 size="sm"
                 onClick={() => setTool('pen')}
               >
                 <Pen className="w-4 h-4" />
               </Button>
               <Button
-                variant={activeTool === 'eraser' ? 'default' : 'outline'}
+                variant={activeTool === 'eraser' ? 'secondary' : 'outline'}
                 size="sm"
                 onClick={() => setTool('eraser')}
               >
                 <Eraser className="w-4 h-4" />
               </Button>
               <Button
-                variant={activeTool === 'rectangle' ? 'default' : 'outline'}
+                variant={activeTool === 'rectangle' ? 'secondary' : 'outline'}
                 size="sm"
                 onClick={() => setTool('rectangle')}
               >
                 <Square className="w-4 h-4" />
               </Button>
               <Button
-                variant={activeTool === 'circle' ? 'default' : 'outline'}
+                variant={activeTool === 'circle' ? 'secondary' : 'outline'}
                 size="sm"
                 onClick={() => setTool('circle')}
               >
                 <Circle className="w-4 h-4" />
               </Button>
               <Button
-                variant={activeTool === 'text' ? 'default' : 'outline'}
+                variant={activeTool === 'text' ? 'secondary' : 'outline'}
                 size="sm"
                 onClick={() => setTool('text')}
               >

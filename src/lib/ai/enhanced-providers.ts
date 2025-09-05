@@ -301,8 +301,12 @@ export class EnhancedAIProviders {
           if (result) {
             return {
               ...result,
+              content: result.content || '',
+              provider: result.provider || providerName,
+              model: result.model || '',
+              tokensUsed: result.tokensUsed || 0,
               responseTime: Date.now() - startTime,
-              confidence: this.calculateConfidence(result.content, providerName)
+              confidence: this.calculateConfidence(result.content || '', providerName)
             };
           }
         } catch (error) {
@@ -379,7 +383,7 @@ export class EnhancedAIProviders {
     });
 
     const content = Array.isArray(response.content) 
-      ? response.content.find(c => c.type === 'text')?.text || ''
+      ? (response.content.find(c => c.type === 'text' && 'text' in c) as any)?.text || ''
       : '';
 
     return {
@@ -438,7 +442,7 @@ export class EnhancedAIProviders {
     const messages = request.messages.filter(m => m.role !== 'system');
     const lastMessage = messages[messages.length - 1];
     const history = messages.slice(0, -1).map(msg => ({
-      role: msg.role === 'assistant' ? 'CHATBOT' : 'USER',
+      role: msg.role === 'assistant' ? 'CHATBOT' as const : 'USER' as const,
       message: msg.content,
     }));
 

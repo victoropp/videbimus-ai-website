@@ -115,32 +115,6 @@ export default function DocumentEditor({
     };
   }, [roomId, documentId, token]);
 
-  const initializeSocket = useCallback(async () => {
-    try {
-      setConnectionStatus('connecting');
-      
-      if (!socket.isConnected() && token) {
-        await socket.connect(token);
-      }
-      
-      setupSocketListeners();
-      await socket.joinRoom(roomId);
-      setConnectionStatus('connected');
-      
-      await loadDocument();
-      await loadVersions();
-      
-    } catch (error) {
-      console.error('Failed to initialize socket:', error);
-      setConnectionStatus('disconnected');
-      toast({
-        title: 'Connection Error',
-        description: 'Failed to connect to document server',
-        variant: 'destructive',
-      });
-    }
-  }, [roomId, documentId, token, setupSocketListeners]);
-
   const setupSocketListeners = useCallback(() => {
     socket.on('document-edit', (data) => {
       if (data.userId !== userId && data.documentId === documentId) {
@@ -198,6 +172,32 @@ export default function DocumentEditor({
       });
     });
   }, [userId, documentId]);
+
+  const initializeSocket = useCallback(async () => {
+    try {
+      setConnectionStatus('connecting');
+      
+      if (!socket.isConnected() && token) {
+        await socket.connect(token);
+      }
+      
+      setupSocketListeners();
+      await socket.joinRoom(roomId);
+      setConnectionStatus('connected');
+      
+      await loadDocument();
+      await loadVersions();
+      
+    } catch (error) {
+      console.error('Failed to initialize socket:', error);
+      setConnectionStatus('disconnected');
+      toast({
+        title: 'Connection Error',
+        description: 'Failed to connect to document server',
+        variant: 'destructive',
+      });
+    }
+  }, [roomId, documentId, token, setupSocketListeners]);
 
   const setupCollaborativeEditing = useCallback(() => {
     // Initialize Yjs document

@@ -472,7 +472,7 @@ export default function RealTimeChat({
             <CardTitle className="text-lg">Chat</CardTitle>
             <div className="flex items-center gap-2">
               <Badge 
-                variant={connectionStatus === 'connected' ? 'default' : 'destructive'}
+                variant={connectionStatus === 'connected' ? 'secondary' : 'destructive'}
                 className="cursor-pointer"
               >
                 {connectionStatus === 'connected' ? 

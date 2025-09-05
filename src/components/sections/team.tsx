@@ -14,7 +14,13 @@ const team: TeamMember[] = [
     role: 'Founder & CEO',
     bio: 'FCCA, MBA, BSc. Experienced leader in AI and data science consulting with expertise in transforming businesses through intelligent automation and data-driven strategies.',
     image: '/team/victor-collins-oppon.jpg',
-    linkedin: 'https://www.linkedin.com/in/victor-collins-oppon-fcca-mba-bsc-01541019/'
+    linkedin: 'https://www.linkedin.com/in/victor-collins-oppon-fcca-mba-bsc-01541019/',
+    isActive: true,
+    sortOrder: 1,
+    skills: ['Leadership', 'Strategy', 'Finance', 'AI Consulting'],
+    experience: 10,
+    createdAt: new Date(),
+    updatedAt: new Date()
   },
   {
     id: '2',
@@ -22,7 +28,13 @@ const team: TeamMember[] = [
     role: 'Chief Technology Officer',
     bio: 'Innovative technology leader with deep expertise in AI architecture, machine learning systems, and enterprise-scale implementations.',
     image: '/team/sai-raj-ali.jpg',
-    linkedin: 'https://www.linkedin.com/in/sairajdream/'
+    linkedin: 'https://www.linkedin.com/in/sairajdream/',
+    isActive: true,
+    sortOrder: 2,
+    skills: ['AI Architecture', 'Machine Learning', 'System Design', 'Technology Leadership'],
+    experience: 12,
+    createdAt: new Date(),
+    updatedAt: new Date()
   },
   {
     id: '3',
@@ -30,7 +42,13 @@ const team: TeamMember[] = [
     role: 'Head of Data Science',
     bio: 'Data science expert specializing in predictive analytics, statistical modeling, and developing data-driven solutions for complex business challenges.',
     image: '/team/shawanah-ally.jpg',
-    linkedin: 'https://www.linkedin.com/in/sally01/'
+    linkedin: 'https://www.linkedin.com/in/sally01/',
+    isActive: true,
+    sortOrder: 3,
+    skills: ['Data Science', 'Predictive Analytics', 'Statistical Modeling', 'Python'],
+    experience: 8,
+    createdAt: new Date(),
+    updatedAt: new Date()
   },
   {
     id: '4',
@@ -38,7 +56,13 @@ const team: TeamMember[] = [
     role: 'AI Strategy Director',
     bio: 'Strategic AI consultant with expertise in developing and implementing comprehensive AI transformation roadmaps for enterprise clients.',
     image: '/team/rukayat-salau.jpg',
-    linkedin: 'https://www.linkedin.com/in/rukayatsalau/'
+    linkedin: 'https://www.linkedin.com/in/rukayatsalau/',
+    isActive: true,
+    sortOrder: 4,
+    skills: ['AI Strategy', 'Digital Transformation', 'Business Development', 'Consulting'],
+    experience: 7,
+    createdAt: new Date(),
+    updatedAt: new Date()
   }
 ]
 

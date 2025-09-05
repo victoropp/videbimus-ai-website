@@ -379,7 +379,17 @@
       "Bash(start http://localhost:3006/collaboration)",
       "Read(/C:\\Users\\victo\\Documents\\Data_Science_Projects\\videbimusai-analysis/**)",
       "Bash(start http://localhost:3000/collaboration)",
-      "Read(/C:\\Users\\victo\\Documents\\Data_Science_Projects\\videbimusai-analysis\\src\\lib\\config/**)"
+      "Read(/C:\\Users\\victo\\Documents\\Data_Science_Projects\\videbimusai-analysis\\src\\lib\\config/**)",
+      "Bash(npx vercel:*)",
+      "Bash(npx replace-in-files-cli:*)",
+      "WebFetch(domain:videbimus-ai-website-ee5di1am1-victoropp-3791s-projects.vercel.app)",
+      "WebFetch(domain:videbimus-ai-website-cqm1p1j59-victoropp-3791s-projects.vercel.app)",
+      "Bash(npx next:*)",
+      "WebFetch(domain:videbimus-ai-website-i3r9x881q-victoropp-3791s-projects.vercel.app)",
+      "WebFetch(domain:videbimus-ai-website-df7fth71u-victoropp-3791s-projects.vercel.app)",
+      "WebFetch(domain:videbimus-ai-website-gatjg5uzq-victoropp-3791s-projects.vercel.app)",
+      "WebFetch(domain:videbimus-ai-website-4iewbmrf2-victoropp-3791s-projects.vercel.app)",
+      "WebFetch(domain:www.videbimusai.com)"
     ],
     "deny": [],
     "ask": []

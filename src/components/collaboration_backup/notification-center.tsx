@@ -350,21 +350,21 @@ export default function NotificationCenter({
             {/* Filter Tabs */}
             <div className="flex gap-2 mt-2">
               <Button
-                variant={filter === 'all' ? 'default' : 'ghost'}
+                variant={filter === 'all' ? 'secondary' : 'ghost'}
                 size="sm"
                 onClick={() => setFilter('all')}
               >
                 All ({notifications.length})
               </Button>
               <Button
-                variant={filter === 'unread' ? 'default' : 'ghost'}
+                variant={filter === 'unread' ? 'secondary' : 'ghost'}
                 size="sm"
                 onClick={() => setFilter('unread')}
               >
                 Unread ({unreadCount})
               </Button>
               <Button
-                variant={filter === 'mentions' ? 'default' : 'ghost'}
+                variant={filter === 'mentions' ? 'secondary' : 'ghost'}
                 size="sm"
                 onClick={() => setFilter('mentions')}
               >

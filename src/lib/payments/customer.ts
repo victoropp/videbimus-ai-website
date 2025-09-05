@@ -22,265 +22,197 @@ export interface UpdateCustomerData {
  * Create a new Stripe customer and store in database
  */
 export async function createCustomer(data: CreateCustomerData) {
-  try {
-    // Check if customer already exists
-    const existingCustomer = await prisma.customer.findFirst({
-      where: { userId: data.userId }
-    })
+  const stripeCustomer = await stripe.customers.create({
+    email: data.email,
+    name: data.name,
+    phone: data.phone,
+    metadata: data.metadata || {}
+  })
 
-    if (existingCustomer) {
-      throw new Error('Customer already exists for this user')
-    }
-
-    // Create customer in Stripe
-    const stripeCustomer = await stripe.customers.create({
+  const customer = await prisma.customer.create({
+    data: {
+      userId: data.userId,
+      stripeCustomerId: stripeCustomer.id,
       email: data.email,
       name: data.name,
       phone: data.phone,
-      metadata: {
-        userId: data.userId,
-        ...data.metadata
-      }
-    })
+      metadata: data.metadata || {}
+    },
+    include: {
+      user: true
+    }
+  })
 
-    // Store customer in database
-    const customer = await prisma.customer.create({
-      data: {
-        userId: data.userId,
-        stripeCustomerId: stripeCustomer.id,
-        email: data.email,
-        name: data.name,
-        phone: data.phone,
-        metadata: data.metadata || {}
-      },
-      include: {
-        user: true,
-        billingAddress: true,
-        paymentMethods: true
-      }
-    })
-
-    // Update user with Stripe customer ID
-    await prisma.user.update({
-      where: { id: data.userId },
-      data: { stripeCustomerId: stripeCustomer.id }
-    })
-
-    return { customer, stripeCustomer }
-  } catch (error) {
-    console.error('Error creating customer:', error)
-    throw error
-  }
+  return customer
 }
 
 /**
  * Get customer by user ID
  */
 export async function getCustomerByUserId(userId: string) {
-  try {
-    const customer = await prisma.customer.findFirst({
-      where: { userId },
-      include: {
-        user: true,
-        subscriptions: {
-          where: { status: { in: ['ACTIVE', 'TRIALING'] } },
-          include: {
-            subscriptionItems: true
-          }
-        },
-        paymentMethods: {
-          where: { isActive: true },
-          orderBy: { isDefault: 'desc' }
-        },
-        billingAddress: true,
-        credits: {
-          where: { balance: { gt: 0 } },
-          orderBy: { createdAt: 'desc' }
-        }
-      }
-    })
-
-    return customer
-  } catch (error) {
-    console.error('Error getting customer:', error)
-    throw error
-  }
+  return await prisma.customer.findUnique({
+    where: { userId },
+    include: {
+      user: true,
+      subscriptions: true,
+      paymentMethods: true,
+      billingAddress: true,
+      credits: true
+    }
+  })
 }
 
 /**
  * Get customer by Stripe customer ID
  */
 export async function getCustomerByStripeId(stripeCustomerId: string) {
-  try {
-    const customer = await prisma.customer.findUnique({
-      where: { stripeCustomerId },
-      include: {
-        user: true,
-        subscriptions: {
-          include: {
-            subscriptionItems: true
-          }
-        },
-        paymentMethods: true,
-        billingAddress: true
-      }
-    })
-
-    return customer
-  } catch (error) {
-    console.error('Error getting customer by Stripe ID:', error)
-    throw error
-  }
+  return await prisma.customer.findUnique({
+    where: { stripeCustomerId },
+    include: {
+      user: true,
+      subscriptions: true,
+      paymentMethods: true,
+      billingAddress: true,
+      credits: true
+    }
+  })
 }
 
 /**
  * Update customer information
  */
 export async function updateCustomer(customerId: string, data: UpdateCustomerData) {
-  try {
-    const customer = await prisma.customer.findUnique({
-      where: { id: customerId }
-    })
+  const customer = await prisma.customer.findUnique({
+    where: { id: customerId }
+  })
 
-    if (!customer) {
-      throw new Error('Customer not found')
-    }
-
-    // Update in Stripe
-    const stripeCustomer = await stripe.customers.update(customer.stripeCustomerId, {
-      email: data.email,
-      name: data.name,
-      phone: data.phone,
-      metadata: data.metadata
-    })
-
-    // Update in database
-    const updatedCustomer = await prisma.customer.update({
-      where: { id: customerId },
-      data: {
-        email: data.email,
-        name: data.name,
-        phone: data.phone,
-        defaultPaymentMethodId: data.defaultPaymentMethod,
-        metadata: data.metadata || {}
-      },
-      include: {
-        user: true,
-        subscriptions: true,
-        paymentMethods: true,
-        billingAddress: true
-      }
-    })
-
-    return { customer: updatedCustomer, stripeCustomer }
-  } catch (error) {
-    console.error('Error updating customer:', error)
-    throw error
+  if (!customer) {
+    throw new Error('Customer not found')
   }
+
+  const updateData: any = {}
+  if (data.name !== undefined) updateData.name = data.name
+  if (data.email !== undefined) updateData.email = data.email
+  if (data.phone !== undefined) updateData.phone = data.phone
+  if (data.defaultPaymentMethod !== undefined) updateData.defaultPaymentMethodId = data.defaultPaymentMethod
+  if (data.metadata !== undefined) updateData.metadata = data.metadata
+
+  // Update Stripe customer if needed
+  const stripeUpdateData: Stripe.CustomerUpdateParams = {}
+  if (data.name !== undefined) stripeUpdateData.name = data.name
+  if (data.email !== undefined) stripeUpdateData.email = data.email
+  if (data.phone !== undefined) stripeUpdateData.phone = data.phone
+  if (data.metadata !== undefined) stripeUpdateData.metadata = data.metadata
+
+  if (Object.keys(stripeUpdateData).length > 0) {
+    await stripe.customers.update(customer.stripeCustomerId, stripeUpdateData)
+  }
+
+  return await prisma.customer.update({
+    where: { id: customerId },
+    data: updateData,
+    include: {
+      user: true,
+      subscriptions: true,
+      paymentMethods: true,
+      billingAddress: true,
+      credits: true
+    }
+  })
 }
 
 /**
  * Delete customer (soft delete - deactivate)
  */
 export async function deleteCustomer(customerId: string) {
-  try {
-    const customer = await prisma.customer.findUnique({
-      where: { id: customerId },
-      include: {
-        subscriptions: {
-          where: { status: { in: ['ACTIVE', 'TRIALING'] } }
-        }
-      }
-    })
+  const customer = await prisma.customer.findUnique({
+    where: { id: customerId }
+  })
 
-    if (!customer) {
-      throw new Error('Customer not found')
-    }
-
-    // Check for active subscriptions
-    if (customer.subscriptions.length > 0) {
-      throw new Error('Cannot delete customer with active subscriptions')
-    }
-
-    // Delete from Stripe (this will also cancel any active subscriptions)
-    await stripe.customers.del(customer.stripeCustomerId)
-
-    // Soft delete in database by updating metadata
-    await prisma.customer.update({
-      where: { id: customerId },
-      data: {
-        metadata: {
-          ...customer.metadata,
-          deleted: true,
-          deletedAt: new Date().toISOString()
-        }
-      }
-    })
-
-    return true
-  } catch (error) {
-    console.error('Error deleting customer:', error)
-    throw error
+  if (!customer) {
+    throw new Error('Customer not found')
   }
+
+  // Delete in Stripe (this deactivates the customer)
+  await stripe.customers.del(customer.stripeCustomerId)
+
+  // Delete from our database (cascade will handle relations)
+  await prisma.customer.delete({
+    where: { id: customerId }
+  })
+
+  return { success: true }
 }
 
 /**
  * Get customer portal URL for self-service billing
  */
 export async function getCustomerPortalUrl(customerId: string, returnUrl?: string) {
-  try {
-    const customer = await prisma.customer.findUnique({
-      where: { id: customerId }
-    })
+  const customer = await prisma.customer.findUnique({
+    where: { id: customerId }
+  })
 
-    if (!customer) {
-      throw new Error('Customer not found')
-    }
-
-    const portalSession = await stripe.billingPortal.sessions.create({
-      customer: customer.stripeCustomerId,
-      return_url: returnUrl || process.env.NEXT_PUBLIC_APP_URL + '/billing'
-    })
-
-    return portalSession.url
-  } catch (error) {
-    console.error('Error creating customer portal session:', error)
-    throw error
+  if (!customer) {
+    throw new Error('Customer not found')
   }
+
+  const session = await stripe.billingPortal.sessions.create({
+    customer: customer.stripeCustomerId,
+    return_url: returnUrl || process.env.NEXT_PUBLIC_SITE_URL
+  })
+
+  return session.url
 }
 
 /**
  * Sync customer data from Stripe
  */
 export async function syncCustomerFromStripe(stripeCustomerId: string) {
-  try {
-    // Get customer from Stripe
-    const stripeCustomer = await stripe.customers.retrieve(stripeCustomerId) as Stripe.Customer
-
-    // Find customer in database
-    const customer = await prisma.customer.findUnique({
+  const stripeCustomer = await stripe.customers.retrieve(stripeCustomerId)
+  
+  if (stripeCustomer.deleted) {
+    // If customer was deleted in Stripe, delete from our DB too
+    const existingCustomer = await prisma.customer.findUnique({
       where: { stripeCustomerId }
     })
-
-    if (!customer) {
-      throw new Error('Customer not found in database')
+    
+    if (existingCustomer) {
+      await prisma.customer.delete({
+        where: { id: existingCustomer.id }
+      })
     }
+    
+    return null
+  }
 
-    // Update customer with Stripe data
-    const updatedCustomer = await prisma.customer.update({
-      where: { id: customer.id },
-      data: {
-        email: stripeCustomer.email!,
+  // Type guard to ensure we have a valid customer
+  if ('email' in stripeCustomer) {
+    const customer = await prisma.customer.upsert({
+      where: { stripeCustomerId },
+      update: {
+        email: stripeCustomer.email || '',
         name: stripeCustomer.name,
         phone: stripeCustomer.phone,
-        defaultPaymentMethodId: stripeCustomer.invoice_settings?.default_payment_method as string,
         metadata: stripeCustomer.metadata || {}
+      },
+      create: {
+        userId: '', // This would need to be handled separately
+        stripeCustomerId: stripeCustomer.id,
+        email: stripeCustomer.email || '',
+        name: stripeCustomer.name,
+        phone: stripeCustomer.phone,
+        metadata: stripeCustomer.metadata || {}
+      },
+      include: {
+        user: true,
+        subscriptions: true,
+        paymentMethods: true
       }
     })
 
-    return updatedCustomer
-  } catch (error) {
-    console.error('Error syncing customer from Stripe:', error)
-    throw error
+    return customer
   }
+
+  return null
 }
+

@@ -249,7 +249,7 @@ export class QueryOptimizer {
   ): Promise<Record<K, T>> {
     const results = await Promise.allSettled(
       Object.entries(queries).map(async ([key, queryFn]) => {
-        const result = await queryFn();
+        const result = await (queryFn as () => Promise<T>)();
         return [key, result];
       })
     );

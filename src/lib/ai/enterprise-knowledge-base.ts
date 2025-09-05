@@ -397,7 +397,8 @@ Instructions:
         maxTokens: 500,
       });
 
-      return response.content || this.generateEnhancedFallbackResponse(query, intent, documents);
+      const content = typeof response === 'object' && 'content' in response ? response.content : '';
+      return content || this.generateEnhancedFallbackResponse(query, intent, documents);
     } catch (error) {
       console.error('AI response generation failed:', error);
       // Generate a high-quality context-aware fallback response

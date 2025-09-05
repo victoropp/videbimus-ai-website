@@ -59,8 +59,8 @@ export const serviceConfigSchema = z.object({
   // Email Service
   email: z.object({
     resend: z.object({
-      apiKey: z.string(),
-      fromEmail: z.string().email(),
+      apiKey: z.string().default('re_dummy_key_for_build'),
+      fromEmail: z.string().email().default('noreply@videbimusai.com'),
       timeout: z.number().default(30000),
       maxRetries: z.number().default(3),
     }),

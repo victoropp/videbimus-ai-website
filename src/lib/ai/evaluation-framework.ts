@@ -144,7 +144,7 @@ export class EvaluationFramework {
       ...ragMetrics,
     });
 
-    const metrics: EvaluationMetrics = {
+    const baseMetrics = {
       relevance,
       coherence,
       completeness,
@@ -158,7 +158,11 @@ export class EvaluationFramework {
       helpfulness,
       ...ragMetrics,
       overallScore,
-      confidence: this.calculateConfidence(metrics),
+    };
+
+    const metrics: EvaluationMetrics = {
+      ...baseMetrics,
+      confidence: this.calculateConfidence(baseMetrics as EvaluationMetrics),
     };
 
     // Generate feedback and suggestions
@@ -203,7 +207,8 @@ Return only a number between 0 and 1.`;
         maxTokens: 10,
       });
 
-      const score = parseFloat(result.content.trim());
+      const content = typeof result === 'object' && 'content' in result ? result.content : '';
+      const score = parseFloat(content.trim());
       return isNaN(score) ? 0.5 : Math.min(1, Math.max(0, score));
     } catch {
       return 0.5; // Default middle score on error

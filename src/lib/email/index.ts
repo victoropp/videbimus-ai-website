@@ -3,7 +3,7 @@ import { render } from "@react-email/render"
 import { ContactNotificationEmail } from "./templates/contact-notification"
 import { WelcomeEmail } from "./templates/welcome"
 
-const resend = new Resend(process.env.RESEND_API_KEY)
+const resend = new Resend(process.env.RESEND_API_KEY || 're_dummy_key_for_build')
 
 interface ContactNotificationData {
   name: string

@@ -282,7 +282,7 @@ export default function PresenceIndicator({
       <div className={`flex items-center gap-2 ${className}`}>
         {/* Connection status */}
         <Badge 
-          variant={isConnected ? 'default' : 'destructive'}
+          variant={isConnected ? 'secondary' : 'destructive'}
           className="flex items-center gap-1 text-xs"
         >
           <Circle className={`w-2 h-2 ${isConnected ? 'fill-current' : ''}`} />

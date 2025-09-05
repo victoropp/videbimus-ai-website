@@ -92,43 +92,6 @@ export default function RealTimeChat({
     scrollToBottom();
   }, [messages]);
 
-  useEffect(() => {
-    initializeSocket();
-    return () => {
-      socket.disconnect();
-    };
-  }, [initializeSocket]);
-
-  const initializeSocket = useCallback(async () => {
-    try {
-      setConnectionStatus('connecting');
-      
-      // Connect to socket if not already connected
-      if (!socket.isConnected() && token) {
-        await socket.connect(token);
-      }
-      
-      // Set up event listeners
-      setupSocketListeners();
-      
-      // Join room
-      await socket.joinRoom(roomId);
-      setConnectionStatus('connected');
-      
-      // Load initial messages
-      await loadMessages();
-      
-    } catch (error) {
-      console.error('Failed to initialize socket:', error);
-      setConnectionStatus('disconnected');
-      toast({
-        title: 'Connection Error',
-        description: 'Failed to connect to chat server',
-        variant: 'destructive',
-      });
-    }
-  }, [roomId, token, setupSocketListeners]);
-
   const setupSocketListeners = useCallback(() => {
     // New message handler
     socket.on('new-message', (message: Message) => {
@@ -192,6 +155,43 @@ export default function RealTimeChat({
       });
     });
   }, [currentUser.id]);
+
+  const initializeSocket = useCallback(async () => {
+    try {
+      setConnectionStatus('connecting');
+      
+      // Connect to socket if not already connected
+      if (!socket.isConnected() && token) {
+        await socket.connect(token);
+      }
+      
+      // Set up event listeners
+      setupSocketListeners();
+      
+      // Join room
+      await socket.joinRoom(roomId);
+      setConnectionStatus('connected');
+      
+      // Load initial messages
+      await loadMessages();
+      
+    } catch (error) {
+      console.error('Failed to initialize socket:', error);
+      setConnectionStatus('disconnected');
+      toast({
+        title: 'Connection Error',
+        description: 'Failed to connect to chat server',
+        variant: 'destructive',
+      });
+    }
+  }, [roomId, token, setupSocketListeners]);
+
+  useEffect(() => {
+    initializeSocket();
+    return () => {
+      socket.disconnect();
+    };
+  }, [initializeSocket]);
 
   const loadMessages = async () => {
     try {

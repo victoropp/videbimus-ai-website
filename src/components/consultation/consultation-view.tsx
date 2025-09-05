@@ -24,7 +24,8 @@ import { format } from 'date-fns'
 import Link from 'next/link'
 import { useToast } from '@/hooks/use-toast'
 import { api } from '@/lib/trpc/react'
-import { Consultation, ConsultationStatus } from '@/types/consultation'
+import { ConsultationStatus } from '@/types/consultation'
+import type { Consultation } from '@prisma/client'
 
 interface ConsultationViewProps {
   consultation: Consultation & {
@@ -188,16 +189,16 @@ export function ConsultationView({ consultation, currentUser }: ConsultationView
           {consultation.status === 'SCHEDULED' && (
             <>
               <Button
-                onClick={() => handleStatusChange('IN_PROGRESS')}
-                disabled={updateConsultation.isLoading}
+                onClick={() => handleStatusChange(ConsultationStatus.IN_PROGRESS)}
+                disabled={updateConsultation.isPending}
               >
                 <CheckCircle className="h-4 w-4 mr-2" />
                 Start Session
               </Button>
               <Button
                 variant="outline"
-                onClick={() => handleStatusChange('RESCHEDULED')}
-                disabled={updateConsultation.isLoading}
+                onClick={() => handleStatusChange(ConsultationStatus.RESCHEDULED)}
+                disabled={updateConsultation.isPending}
               >
                 <RotateCcw className="h-4 w-4 mr-2" />
                 Reschedule
@@ -207,8 +208,8 @@ export function ConsultationView({ consultation, currentUser }: ConsultationView
           
           {consultation.status === 'IN_PROGRESS' && (
             <Button
-              onClick={() => handleStatusChange('COMPLETED')}
-              disabled={updateConsultation.isLoading}
+              onClick={() => handleStatusChange(ConsultationStatus.COMPLETED)}
+              disabled={updateConsultation.isPending}
             >
               <CheckCircle className="h-4 w-4 mr-2" />
               Complete Session
@@ -218,8 +219,8 @@ export function ConsultationView({ consultation, currentUser }: ConsultationView
           {(consultation.status === 'SCHEDULED' || consultation.status === 'IN_PROGRESS') && (
             <Button
               variant="outline"
-              onClick={() => handleStatusChange('CANCELLED')}
-              disabled={updateConsultation.isLoading}
+              onClick={() => handleStatusChange(ConsultationStatus.CANCELLED)}
+              disabled={updateConsultation.isPending}
             >
               <XCircle className="h-4 w-4 mr-2" />
               Cancel
@@ -237,7 +238,7 @@ export function ConsultationView({ consultation, currentUser }: ConsultationView
           <Button
             variant="outline"
             onClick={handleDelete}
-            disabled={deleteConsultation.isLoading}
+            disabled={deleteConsultation.isPending}
             className="text-red-600 hover:text-red-700"
           >
             <Trash2 className="h-4 w-4 mr-2" />

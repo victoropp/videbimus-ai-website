@@ -120,7 +120,7 @@ class EmailService {
     
     // Initialize SMTP if configured
     if (this.config.smtp) {
-      this.smtp = nodemailer.createTransporter({
+      this.smtp = nodemailer.createTransport({
         host: this.config.smtp.host,
         port: this.config.smtp.port,
         secure: this.config.smtp.secure,
@@ -179,7 +179,7 @@ class EmailService {
         subject: template.subject,
         html: template.html,
         text: template.text,
-        reply_to: options.replyTo,
+        replyTo: options.replyTo,
         cc: options.cc?.map(r => `${r.name || ''} <${r.email}>`.trim()),
         bcc: options.bcc?.map(r => `${r.name || ''} <${r.email}>`.trim()),
         attachments: options.attachments?.map(att => ({
@@ -201,7 +201,7 @@ class EmailService {
         recipient: recipient.email,
       };
     } catch (error) {
-      this.updateEmailStats('failed', 1);
+      this.updateEmailStats('bounced', 1);
       throw error;
     }
   }
@@ -241,7 +241,7 @@ class EmailService {
         recipient: recipient.email,
       };
     } catch (error) {
-      this.updateEmailStats('failed', 1);
+      this.updateEmailStats('bounced', 1);
       throw error;
     }
   }

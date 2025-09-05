@@ -27,9 +27,9 @@ interface CacheConfig {
 }
 
 export class SemanticCache {
-  private cache: Map<string, CacheEntry> = new Map();
+  protected cache: Map<string, CacheEntry> = new Map();
   private embeddings: Map<string, number[]> = new Map();
-  private config: CacheConfig;
+  protected config: CacheConfig;
 
   constructor(config?: Partial<CacheConfig>) {
     this.config = {
@@ -45,7 +45,7 @@ export class SemanticCache {
    * Generate embedding for text using a lightweight model
    * In production, this would use OpenAI's embedding API or a local model
    */
-  private async generateEmbedding(text: string): Promise<number[]> {
+  protected async generateEmbedding(text: string): Promise<number[]> {
     // Simplified embedding generation using hash-based approach
     // In production, replace with actual embedding model
     const hash = createHash('sha256').update(text).digest();
@@ -68,7 +68,7 @@ export class SemanticCache {
   /**
    * Calculate cosine similarity between two vectors
    */
-  private cosineSimilarity(a: number[], b: number[]): number {
+  protected cosineSimilarity(a: number[], b: number[]): number {
     if (a.length !== b.length) return 0;
     
     let dotProduct = 0;
@@ -320,7 +320,7 @@ export class AdvancedSemanticCache extends SemanticCache {
   /**
    * Calculate keyword overlap between two queries
    */
-  private calculateKeywordOverlap(query1: string, query2: string): number {
+  protected calculateKeywordOverlap(query1: string, query2: string): number {
     const tokens1 = new Set(query1.toLowerCase().split(/\s+/));
     const tokens2 = new Set(query2.toLowerCase().split(/\s+/));
     
@@ -332,7 +332,7 @@ export class AdvancedSemanticCache extends SemanticCache {
     return overlap / Math.max(tokens1.size, tokens2.size);
   }
 
-  async set(
+  override async set(
     query: string, 
     response: string, 
     metadata?: Partial<CacheEntry['metadata']>

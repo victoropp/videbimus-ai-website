@@ -73,7 +73,6 @@ class VectorStoreService {
     
     this.pinecone = new Pinecone({
       apiKey: this.config.apiKey,
-      environment: this.config.environment,
     });
     
     this.index = this.pinecone.index(this.config.index);
@@ -164,7 +163,7 @@ class VectorStoreService {
         model: 'text-embedding-3-small',
       });
 
-      return response.embeddings;
+      return (response as any).embeddings;
     } catch (error) {
       throw new CustomServiceError({
         type: ServiceErrorType.AI_SERVICE,
@@ -459,7 +458,7 @@ class VectorStoreService {
     try {
       const response = await this.index.namespace(namespace || this.defaultNamespace).fetch([id]);
       
-      const vector = response.vectors?.[id];
+      const vector = (response as any).vectors?.[id];
       if (!vector) return null;
 
       return {
@@ -487,10 +486,10 @@ class VectorStoreService {
     try {
       const stats = await this.index.describeIndexStats();
       return {
-        namespaces: stats.namespaces || {},
+        namespaces: (stats as any).namespaces || {},
         dimension: stats.dimension || 0,
         indexFullness: stats.indexFullness || 0,
-        totalVectorCount: stats.totalVectorCount || 0,
+        totalVectorCount: (stats as any).totalRecordCount || 0,
       };
     } catch (error) {
       throw new CustomServiceError({

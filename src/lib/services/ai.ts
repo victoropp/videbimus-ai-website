@@ -280,22 +280,28 @@ class AIService {
       tool_choice: options.toolChoice,
     });
 
-    const choice = completion.choices[0];
-    if (!choice) {
-      throw new Error('No completion choice returned');
-    }
+    // Handle streaming vs non-streaming responses
+    if ('choices' in completion && completion.choices) {
+      const choice = completion.choices[0];
+      if (!choice) {
+        throw new Error('No completion choice returned');
+      }
 
-    return {
-      content: choice.message.content || '',
-      usage: {
-        promptTokens: completion.usage?.prompt_tokens || 0,
-        completionTokens: completion.usage?.completion_tokens || 0,
-        totalTokens: completion.usage?.total_tokens || 0,
-      },
-      model: completion.model,
-      finishReason: choice.finish_reason || 'unknown',
-      toolCalls: choice.message.tool_calls,
-    };
+      return {
+        content: choice.message?.content || '',
+        usage: {
+          promptTokens: completion.usage?.prompt_tokens || 0,
+          completionTokens: completion.usage?.completion_tokens || 0,
+          totalTokens: completion.usage?.total_tokens || 0,
+        },
+        model: completion.model,
+        finishReason: choice.finish_reason || 'unknown',
+        toolCalls: choice.message?.tool_calls,
+      };
+    } else {
+      // Handle streaming response case
+      throw new Error('Streaming responses not supported in this context');
+    }
   }
 
   private async anthropicChatCompletion(
@@ -320,22 +326,28 @@ class AIService {
       tool_choice: options.toolChoice,
     });
 
-    const textContent = completion.content
-      .filter(c => c.type === 'text')
-      .map(c => c.text)
-      .join('\n');
+    // Handle streaming vs non-streaming responses
+    if ('content' in completion && Array.isArray(completion.content)) {
+      const textContent = completion.content
+        .filter(c => c.type === 'text')
+        .map(c => (c as any).text)
+        .join('\n');
 
-    return {
-      content: textContent,
-      usage: {
-        promptTokens: completion.usage.input_tokens,
-        completionTokens: completion.usage.output_tokens,
-        totalTokens: completion.usage.input_tokens + completion.usage.output_tokens,
-      },
-      model: completion.model,
-      finishReason: completion.stop_reason || 'unknown',
-      toolCalls: completion.content.filter(c => c.type === 'tool_use'),
-    };
+      return {
+        content: textContent,
+        usage: {
+          promptTokens: completion.usage?.input_tokens || 0,
+          completionTokens: completion.usage?.output_tokens || 0,
+          totalTokens: (completion.usage?.input_tokens || 0) + (completion.usage?.output_tokens || 0),
+        },
+        model: completion.model || 'anthropic',
+        finishReason: completion.stop_reason || 'unknown',
+        toolCalls: completion.content.filter(c => c.type === 'tool_use'),
+      };
+    } else {
+      // Handle streaming response case
+      throw new Error('Streaming responses not supported in this context');
+    }
   }
 
   private async huggingfaceChatCompletion(
@@ -402,8 +414,7 @@ class AIService {
       const totalTokens = response.usage.total_tokens;
       this.trackUsage(model, totalTokens, 1, this.calculateCost(modelInfo, { 
         promptTokens: totalTokens,
-        completionTokens: 0,
-        totalTokens 
+        completionTokens: 0
       }));
 
       return {

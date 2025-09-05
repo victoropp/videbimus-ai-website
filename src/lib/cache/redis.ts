@@ -122,7 +122,6 @@ class CacheManager {
     if (this.config.url && this.config.url !== 'redis://localhost:6379') {
       return new Redis(this.config.url, {
         maxRetriesPerRequest: this.config.maxRetriesPerRequest,
-        retryDelayOnFailover: this.config.retryDelayOnFailover,
         enableOfflineQueue: this.config.enableOfflineQueue,
         lazyConnect: this.config.lazyConnect,
         connectTimeout: 10000,
@@ -140,7 +139,6 @@ class CacheManager {
       password: this.config.password,
       db: this.config.db,
       maxRetriesPerRequest: this.config.maxRetriesPerRequest,
-      retryDelayOnFailover: this.config.retryDelayOnFailover,
       enableOfflineQueue: this.config.enableOfflineQueue,
       lazyConnect: this.config.lazyConnect,
       // Connection handling
@@ -151,8 +149,6 @@ class CacheManager {
         const delay = Math.min(times * 50, 2000);
         return delay;
       },
-      // Error handling
-      maxRetriesPerRequest: 3,
     };
 
     const redis = new Redis(options);

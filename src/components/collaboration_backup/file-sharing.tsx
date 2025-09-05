@@ -368,7 +368,7 @@ export default function FileSharing({
             </CardTitle>
             <div className="flex items-center gap-2">
               <Badge 
-                variant={connectionStatus === 'connected' ? 'default' : 'destructive'}
+                variant={connectionStatus === 'connected' ? 'secondary' : 'destructive'}
               >
                 {connectionStatus === 'connected' ? 
                   <Wifi className="w-3 h-3 mr-1" /> : 

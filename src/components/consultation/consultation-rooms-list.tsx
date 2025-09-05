@@ -39,7 +39,7 @@ import { api } from '@/lib/trpc/react'
 import { format } from 'date-fns'
 import Link from 'next/link'
 import { useToast } from '@/hooks/use-toast'
-import { ConsultationRoomStatus } from '@/types/consultation'
+import { ConsultationRoomStatus } from '@prisma/client'
 
 export function ConsultationRoomsList() {
   const [searchTerm, setSearchTerm] = useState('')
@@ -302,7 +302,7 @@ export function ConsultationRoomsList() {
                     <div className="flex items-center gap-2 ml-4">
                       <Link href={`/consultation/rooms/${room.id}`}>
                         <Button 
-                          variant={room.status === 'ACTIVE' ? 'default' : 'outline'}
+                          variant={room.status === 'ACTIVE' ? 'primary' : 'outline'}
                           size="sm"
                           className={room.status === 'ACTIVE' ? 'bg-green-600 hover:bg-green-700' : ''}
                         >

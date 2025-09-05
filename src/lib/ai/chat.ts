@@ -156,11 +156,11 @@ Instructions:
       } else if ('content' in completion) {
         // Anthropic format
         responseContent = Array.isArray(completion.content) 
-          ? completion.content[0]?.text || ''
+          ? (completion.content[0] && 'text' in completion.content[0] ? completion.content[0].text : '')
           : completion.content;
       } else {
         // Hugging Face or other formats
-        responseContent = completion.generated_text || completion.response || '';
+        responseContent = (completion as any).generated_text || (completion as any).response || '';
       }
 
       // Create assistant message

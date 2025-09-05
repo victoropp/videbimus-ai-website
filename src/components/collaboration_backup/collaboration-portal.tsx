@@ -148,7 +148,7 @@ export default function CollaborationPortal({
               </div>
               <div className="flex items-center gap-2">
                 <Badge 
-                  variant={connectionStatus === 'connected' ? 'default' : 'destructive'}
+                  variant={connectionStatus === 'connected' ? 'secondary' : 'destructive'}
                   className="flex items-center gap-1"
                 >
                   {connectionStatus === 'connected' ? (
@@ -263,7 +263,7 @@ export default function CollaborationPortal({
                               {documents.map((doc) => (
                                 <Button
                                   key={doc.id}
-                                  variant={activeDocument === doc.id ? 'default' : 'ghost'}
+                                  variant={activeDocument === doc.id ? 'secondary' : 'ghost'}
                                   size="sm"
                                   className="w-full justify-start"
                                   onClick={() => setActiveDocument(doc.id)}

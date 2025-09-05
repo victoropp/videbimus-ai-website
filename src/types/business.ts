@@ -84,25 +84,7 @@ export interface Technology {
   category: 'frontend' | 'backend' | 'database' | 'ai' | 'devops' | 'analytics';
 }
 
-// Team Types
-export interface TeamMember extends BaseEntity, WithImage {
-  name: string;
-  role: string;
-  bio: string;
-  email?: Email;
-  expertise: string[];
-  certifications?: Certification[];
-  social?: {
-    linkedin?: URL;
-    twitter?: URL;
-    github?: URL;
-    website?: URL;
-  };
-  availability?: {
-    status: 'available' | 'busy' | 'unavailable';
-    nextAvailable?: Timestamp;
-  };
-}
+// Team Types - See TeamMember interface definition below in Content Management Models section
 
 export interface Certification {
   id: ID;
@@ -114,18 +96,7 @@ export interface Certification {
   verificationUrl?: URL;
 }
 
-// Testimonial Types
-export interface Testimonial extends BaseEntity, WithImage {
-  name: string;
-  role: string;
-  company: string;
-  content: string;
-  rating: number;
-  serviceId?: ID;
-  projectId?: ID;
-  featured: boolean;
-  verified: boolean;
-}
+// Testimonial Types - See Testimonial interface definition below in Content Management Models section
 
 // Case Study Types
 export interface CaseStudy {

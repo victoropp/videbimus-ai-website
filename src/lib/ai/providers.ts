@@ -329,7 +329,7 @@ export class UniversalAIClient {
         choices: [{
           message: {
             role: 'assistant',
-            content: completion.choices[0]?.message?.content || '',
+            content: 'choices' in completion ? completion.choices[0]?.message?.content || '' : '',
           },
         }],
       };
@@ -368,7 +368,7 @@ export class UniversalAIClient {
         choices: [{
           message: {
             role: 'assistant',
-            content: completion.choices[0]?.message?.content || '',
+            content: 'choices' in completion ? completion.choices[0]?.message?.content || '' : '',
           },
         }],
       };
@@ -384,7 +384,7 @@ export class UniversalAIClient {
     try {
       // Convert messages to Cohere format
       const formattedMessages = messages.map(msg => ({
-        role: msg.role === 'assistant' ? 'CHATBOT' : 'USER',
+        role: msg.role === 'assistant' ? 'CHATBOT' as const : 'USER' as const,
         message: msg.content,
       }));
 
@@ -466,7 +466,7 @@ export class UniversalAIClient {
       const prompt = this.formatMessagesForReplicate(messages);
 
       const output = await replicate.run(
-        modelId,
+        modelId as `${string}/${string}`,
         {
           input: {
             prompt,

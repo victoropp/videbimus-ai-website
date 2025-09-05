@@ -32,7 +32,7 @@ export class AIProviderFactory {
     if (!this.instances.has(key)) {
       this.instances.set(key, new OpenAI({
         apiKey: config.apiKey,
-        organization: config.organization,
+        organization: 'organization' in config ? config.organization : undefined,
       }));
     }
     return this.instances.get(key);
