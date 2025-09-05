@@ -15,8 +15,6 @@ class RateLimiter {
 
   constructor(config: RateLimitConfig) {
     this.config = {
-      maxRequests: 100,
-      windowMs: 15 * 60 * 1000, // 15 minutes
       keyGenerator: this.defaultKeyGenerator,
       skipSuccessfulRequests: false,
       skipFailedRequests: false,

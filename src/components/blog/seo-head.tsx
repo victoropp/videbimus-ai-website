@@ -39,7 +39,7 @@ export default function SEOHead({
     pageDescription = post.seoDescription || post.excerpt || defaultDescription
     pageImage = post.featuredImage ? `${siteUrl}${post.featuredImage}` : defaultImage
     pageUrl = `${siteUrl}/blog/${post.slug}`
-    pageKeywords = [...(post.seoKeywords || []), ...post.tags, ...pageKeywords]
+    pageKeywords = [...(post.seoKeywords || []), ...(post.tags || []), ...pageKeywords]
   } else if (category) {
     pageTitle = `${category.name} | Blog | ${siteName}`
     pageDescription = category.description || `Latest ${category.name.toLowerCase()} articles from ${siteName}`

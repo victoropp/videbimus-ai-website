@@ -26,6 +26,7 @@ try {
 }
 import { getStorageConfig } from '../config/services';
 import { withErrorHandling, ServiceErrorType, CustomServiceError } from './error-handler';
+import { getErrorMessage, toError } from '../utils';
 import crypto from 'crypto';
 import path from 'path';
 
@@ -181,7 +182,7 @@ class StorageService {
         type: ServiceErrorType.FILE_STORAGE,
         service: 'storage',
         operation: 'uploadFile',
-        message: `Failed to upload file: ${error.message}`,
+        message: `Failed to upload file: ${getErrorMessage(error)}`,
         retryable: true,
         originalError: error as Error,
         metadata: {
@@ -218,7 +219,7 @@ class StorageService {
         type: ServiceErrorType.FILE_STORAGE,
         service: 'storage',
         operation: 'getFileMetadata',
-        message: `Failed to get file metadata: ${error.message}`,
+        message: `Failed to get file metadata: ${getErrorMessage(error)}`,
         retryable: true,
         originalError: error as Error,
         metadata: { key },
@@ -240,7 +241,7 @@ class StorageService {
         type: ServiceErrorType.FILE_STORAGE,
         service: 'storage',
         operation: 'deleteFile',
-        message: `Failed to delete file: ${error.message}`,
+        message: `Failed to delete file: ${getErrorMessage(error)}`,
         retryable: true,
         originalError: error as Error,
         metadata: { key },
@@ -278,7 +279,7 @@ class StorageService {
         type: ServiceErrorType.FILE_STORAGE,
         service: 'storage',
         operation: 'getPresignedUrl',
-        message: `Failed to generate presigned URL: ${error.message}`,
+        message: `Failed to generate presigned URL: ${getErrorMessage(error)}`,
         retryable: true,
         originalError: error as Error,
         metadata: { key, operation },
@@ -302,7 +303,7 @@ class StorageService {
 
       const result = await this.s3Client.send(command);
 
-      const files: FileMetadata[] = (result.Contents || []).map(obj => ({
+      const files: FileMetadata[] = (result.Contents || []).map((obj: any) => ({
         key: obj.Key!,
         url: `https://${this.bucketName}.s3.${this.config.aws.region}.amazonaws.com/${obj.Key!}`,
         cdnUrl: this.config.aws.cdnUrl ? `${this.config.aws.cdnUrl}/${obj.Key!}` : undefined,
@@ -322,7 +323,7 @@ class StorageService {
         type: ServiceErrorType.FILE_STORAGE,
         service: 'storage',
         operation: 'listFiles',
-        message: `Failed to list files: ${error.message}`,
+        message: `Failed to list files: ${getErrorMessage(error)}`,
         retryable: true,
         originalError: error as Error,
         metadata: { prefix, maxKeys },
@@ -356,7 +357,7 @@ class StorageService {
         type: ServiceErrorType.FILE_STORAGE,
         service: 'storage',
         operation: 'copyFile',
-        message: `Failed to copy file: ${error.message}`,
+        message: `Failed to copy file: ${getErrorMessage(error)}`,
         retryable: true,
         originalError: error as Error,
         metadata: { sourceKey, destinationKey },
@@ -443,7 +444,7 @@ class StorageService {
         type: ServiceErrorType.FILE_STORAGE,
         service: 'storage',
         operation: 'getUsageStats',
-        message: `Failed to get usage statistics: ${error.message}`,
+        message: `Failed to get usage statistics: ${getErrorMessage(error)}`,
         retryable: true,
         originalError: error as Error,
         metadata: { prefix },

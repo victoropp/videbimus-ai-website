@@ -152,7 +152,7 @@ Instructions:
       // Handle different provider response formats
       if ('choices' in completion) {
         // OpenAI format
-        responseContent = completion.choices[0]?.message?.content || '';
+        responseContent = completion.choices?.[0]?.message?.content || '';
       } else if ('content' in completion) {
         // Anthropic format
         responseContent = Array.isArray(completion.content) 

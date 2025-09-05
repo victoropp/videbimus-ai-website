@@ -1,11 +1,12 @@
 import { z } from 'zod';
+import { getErrorMessage } from '../utils';
 
 // Optional Sentry import - gracefully handle if not available
 let Sentry: any = null;
 try {
   Sentry = require('@sentry/nextjs');
 } catch (error) {
-  console.warn('Sentry not available:', error);
+  console.warn('Sentry not available:', getErrorMessage(error));
 }
 
 // Error types
@@ -225,7 +226,7 @@ export async function retryWithBackoff<T>(
   throw new Error('Retry logic error - should not reach here');
 }
 
-function isErrorRetryable(error: any, retryableErrors?: ServiceErrorType[]): boolean {
+function isErrorRetryable(error: unknown, retryableErrors?: ServiceErrorType[]): boolean {
   if (error instanceof CustomServiceError) {
     if (!error.retryable) return false;
     if (retryableErrors) {
@@ -235,14 +236,15 @@ function isErrorRetryable(error: any, retryableErrors?: ServiceErrorType[]): boo
   }
   
   // Check for common retryable HTTP status codes
-  if (error.statusCode || error.status) {
-    const statusCode = error.statusCode || error.status;
+  if (error && typeof error === 'object' && ('statusCode' in error || 'status' in error)) {
+    const statusCode = (error as any).statusCode || (error as any).status;
     return [408, 429, 500, 502, 503, 504].includes(statusCode);
   }
   
   // Check for common retryable error messages
-  if (error.message) {
-    const message = error.message.toLowerCase();
+  const errorMessage = getErrorMessage(error);
+  if (errorMessage) {
+    const message = errorMessage.toLowerCase();
     return (
       message.includes('timeout') ||
       message.includes('network') ||
@@ -299,7 +301,7 @@ export class ErrorHandler {
 
     // Send to Sentry (if available)
     if (Sentry?.withScope) {
-      Sentry.withScope(scope => {
+      Sentry.withScope((scope: any) => {
         scope.setTag('service', error.service);
         scope.setTag('operation', error.operation);
         scope.setTag('errorType', error.type);
@@ -318,7 +320,7 @@ export class ErrorHandler {
     }
   }
 
-  static handleError(error: any, service: string, operation: string): ServiceError {
+  static handleError(error: unknown, service: string, operation: string): ServiceError {
     if (error instanceof CustomServiceError) {
       return error;
     }
@@ -328,14 +330,19 @@ export class ErrorHandler {
     let retryable = false;
     let statusCode: number | undefined;
 
-    if (error.code === 'ECONNREFUSED' || error.code === 'ENOTFOUND') {
-      type = ServiceErrorType.NETWORK;
-      retryable = true;
-    } else if (error.code === 'ETIMEDOUT') {
-      type = ServiceErrorType.TIMEOUT;
-      retryable = true;
-    } else if (error.statusCode || error.status) {
-      statusCode = error.statusCode || error.status;
+    if (error && typeof error === 'object' && 'code' in error) {
+      const errorCode = (error as any).code;
+      if (errorCode === 'ECONNREFUSED' || errorCode === 'ENOTFOUND') {
+        type = ServiceErrorType.NETWORK;
+        retryable = true;
+      } else if (errorCode === 'ETIMEDOUT') {
+        type = ServiceErrorType.TIMEOUT;
+        retryable = true;
+      }
+    }
+    
+    if (error && typeof error === 'object' && ('statusCode' in error || 'status' in error)) {
+      statusCode = (error as any).statusCode || (error as any).status;
       
       if (statusCode === 401) {
         type = ServiceErrorType.AUTHENTICATION;
@@ -344,7 +351,7 @@ export class ErrorHandler {
       } else if (statusCode === 429) {
         type = ServiceErrorType.RATE_LIMIT;
         retryable = true;
-      } else if (statusCode >= 500) {
+      } else if (statusCode && statusCode >= 500) {
         type = ServiceErrorType.EXTERNAL_SERVICE;
         retryable = true;
       }
@@ -354,10 +361,10 @@ export class ErrorHandler {
       type,
       service,
       operation,
-      message: error.message || 'Unknown error occurred',
+      message: getErrorMessage(error),
       statusCode,
       retryable,
-      originalError: error,
+      originalError: error instanceof Error ? error : new Error(getErrorMessage(error)),
     });
 
     this.logError(serviceError);
@@ -416,7 +423,7 @@ export async function performHealthCheck(
       service,
       status: 'unhealthy',
       responseTime,
-      error: error instanceof Error ? error.message : 'Unknown error',
+      error: getErrorMessage(error),
     };
   }
 }

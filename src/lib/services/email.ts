@@ -3,6 +3,7 @@ import nodemailer from 'nodemailer';
 import { render } from '@react-email/render';
 import { getEmailConfig } from '../config/services';
 import { withErrorHandling, ServiceErrorType, CustomServiceError } from './error-handler';
+import { getErrorMessage } from '../utils';
 import { ContactNotificationEmail } from '../email/templates/contact-notification';
 import { WelcomeEmail } from '../email/templates/welcome';
 
@@ -151,7 +152,7 @@ class EmailService {
         type: ServiceErrorType.EMAIL,
         service: 'email',
         operation: 'sendEmail',
-        message: `Failed to send email: ${error.message}`,
+        message: `Failed to send email: ${getErrorMessage(error)}`,
         retryable: true,
         originalError: error as Error,
         metadata: {
@@ -276,7 +277,7 @@ class EmailService {
             id: 'failed',
             status: 'failed' as const,
             recipient: recipient.email,
-            error: error instanceof Error ? error.message : 'Unknown error',
+            error: getErrorMessage(error),
           };
         }
       });
@@ -314,7 +315,7 @@ class EmailService {
         type: ServiceErrorType.EMAIL,
         service: 'email',
         operation: 'sendContactNotificationEmail',
-        message: `Failed to send contact notification: ${error.message}`,
+        message: `Failed to send contact notification: ${getErrorMessage(error)}`,
         retryable: true,
         originalError: error as Error,
         metadata: { contactId: data.contactId, senderEmail: data.email },
@@ -341,7 +342,7 @@ class EmailService {
         type: ServiceErrorType.EMAIL,
         service: 'email',
         operation: 'sendWelcomeEmail',
-        message: `Failed to send welcome email: ${error.message}`,
+        message: `Failed to send welcome email: ${getErrorMessage(error)}`,
         retryable: true,
         originalError: error as Error,
         metadata: { email: data.email },

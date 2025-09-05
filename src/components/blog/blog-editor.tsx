@@ -84,7 +84,7 @@ export default function BlogEditor({
     selectedTags: post?.tags || [], // tags is String[] not objects
     seoTitle: post?.seoTitle || '',
     seoDescription: post?.seoDescription || '',
-    seoKeywords: [], // Add seoKeywords field as string array
+    seoKeywords: post?.seoKeywords || [] as string[], // Add seoKeywords field as string array
     featuredImage: post?.featuredImage || '',
     publishedAt: post?.publishedAt ? new Date(post.publishedAt).toISOString().slice(0, 16) : ''
   })

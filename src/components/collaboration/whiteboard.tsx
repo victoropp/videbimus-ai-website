@@ -303,7 +303,9 @@ export default function Whiteboard({
         break;
       case 'eraser':
         canvas.isDrawingMode = true;
-        canvas.freeDrawingBrush.color = '#ffffff';
+        if (canvas.freeDrawingBrush) {
+          canvas.freeDrawingBrush.color = '#ffffff';
+        }
         break;
       case 'rectangle':
         canvas.isDrawingMode = false;

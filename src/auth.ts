@@ -112,14 +112,14 @@ export const authConfig = {
       // Include user role in JWT token
       if (user) {
         token.role = (user as any).role || UserRole.CLIENT
-        token.id = user.id
+        token.id = user.id as string
       }
       
       // Handle OAuth sign-in
       if (account && user) {
         // Update last login for OAuth users
         await prisma.user.update({
-          where: { id: user.id || '' },
+          where: { id: user.id as string },
           data: { lastLoginAt: new Date() }
         })
       }

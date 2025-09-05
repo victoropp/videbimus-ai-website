@@ -110,7 +110,7 @@ Respond in JSON format:
     });
 
     let responseContent: string;
-    if ('choices' in response) {
+    if ('choices' in response && response.choices) {
       responseContent = response.choices[0]?.message?.content || '';
     } else if ('content' in response) {
       responseContent = Array.isArray(response.content) 
@@ -206,7 +206,7 @@ Return only the tags as a JSON array: ["tag1", "tag2", "tag3", ...]`;
     });
 
     let responseContent: string;
-    if ('choices' in response) {
+    if ('choices' in response && response.choices) {
       responseContent = response.choices[0]?.message?.content || '';
     } else if ('content' in response) {
       responseContent = Array.isArray(response.content) 

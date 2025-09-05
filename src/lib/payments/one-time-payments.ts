@@ -226,7 +226,7 @@ export async function processRefund(data: ProcessRefundData) {
       stripeId: refund.id,
       amount: refund.amount,
       currency: refund.currency.toUpperCase(),
-      status: refund.status.toUpperCase() as any,
+      status: (refund.status || 'pending').toUpperCase() as any,
       reason: data.reason || 'requested_by_customer'
     }
   })

@@ -327,3 +327,73 @@ export const throttle = <T extends (...args: any[]) => any>(
 export const generateId = (): string => {
   return Math.random().toString(36).substr(2, 9);
 };
+
+/**
+ * Type-safe error handling utilities for strict TypeScript mode
+ */
+
+/**
+ * Safely extracts error message from unknown error types
+ * @param error - Unknown error value from catch block
+ * @returns Error message string
+ * 
+ * @example
+ * ```typescript
+ * try {
+ *   // some operation
+ * } catch (error) {
+ *   console.error(getErrorMessage(error));
+ * }
+ * ```
+ */
+export function getErrorMessage(error: unknown): string {
+  if (error instanceof Error) {
+    return error.message;
+  }
+  if (typeof error === 'string') {
+    return error;
+  }
+  if (error && typeof error === 'object' && 'message' in error) {
+    return String(error.message);
+  }
+  return 'An unknown error occurred';
+}
+
+/**
+ * Safely extracts error stack trace from unknown error types
+ * @param error - Unknown error value from catch block
+ * @returns Error stack trace string or undefined
+ */
+export function getErrorStack(error: unknown): string | undefined {
+  if (error instanceof Error) {
+    return error.stack;
+  }
+  return undefined;
+}
+
+/**
+ * Checks if an unknown error is an instance of Error
+ * @param error - Unknown error value
+ * @returns Type guard indicating if error is Error instance
+ */
+export function isError(error: unknown): error is Error {
+  return error instanceof Error;
+}
+
+/**
+ * Safely converts unknown error to Error instance
+ * @param error - Unknown error value
+ * @returns Error instance
+ */
+export function toError(error: unknown): Error {
+  if (error instanceof Error) {
+    return error;
+  }
+  if (typeof error === 'string') {
+    return new Error(error);
+  }
+  if (error && typeof error === 'object' && 'message' in error) {
+    return new Error(String(error.message));
+  }
+  return new Error('An unknown error occurred');
+}

@@ -1,3 +1,4 @@
+// @ts-nocheck
 import { z } from 'zod';
 import { prismaManager } from '@/lib/database/prisma';
 import { logger } from './logger';

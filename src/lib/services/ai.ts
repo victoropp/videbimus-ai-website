@@ -3,6 +3,7 @@ import { Anthropic } from '@anthropic-ai/sdk';
 import { HfInference } from '@huggingface/inference';
 import { getAIConfig } from '../config/services';
 import { withErrorHandling, ServiceErrorType, CustomServiceError } from './error-handler';
+import { getErrorMessage, toError } from '../utils';
 
 export interface ChatMessage {
   role: 'system' | 'user' | 'assistant';
@@ -252,7 +253,7 @@ class AIService {
         type: ServiceErrorType.AI_SERVICE,
         service: 'ai',
         operation: 'chatCompletion',
-        message: `Chat completion failed: ${error.message}`,
+        message: `Chat completion failed: ${getErrorMessage(error)}`,
         retryable: this.isRetryableError(error),
         originalError: error as Error,
         metadata: { model, provider: modelInfo.provider },
@@ -430,7 +431,7 @@ class AIService {
         type: ServiceErrorType.AI_SERVICE,
         service: 'ai',
         operation: 'generateEmbeddings',
-        message: `Embedding generation failed: ${error.message}`,
+        message: `Embedding generation failed: ${getErrorMessage(error)}`,
         retryable: this.isRetryableError(error),
         originalError: error as Error,
         metadata: { model, textsCount: texts.length },
@@ -470,7 +471,7 @@ class AIService {
         type: ServiceErrorType.AI_SERVICE,
         service: 'ai',
         operation: 'streamChatCompletion',
-        message: `Streaming chat completion failed: ${error.message}`,
+        message: `Streaming chat completion failed: ${getErrorMessage(error)}`,
         retryable: this.isRetryableError(error),
         originalError: error as Error,
         metadata: { model, provider: modelInfo.provider },

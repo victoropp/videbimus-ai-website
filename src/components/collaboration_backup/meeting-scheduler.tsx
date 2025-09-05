@@ -1,7 +1,7 @@
 'use client';
 
 import React, { useState } from 'react';
-import { Calendar, dateFnsLocalizer } from 'react-big-calendar';
+import { Calendar, dateFnsLocalizer, View } from 'react-big-calendar';
 import { format, parse, startOfWeek, getDay } from 'date-fns';
 import { enUS } from 'date-fns/locale';
 import { Button } from '@/components/ui/button';
@@ -400,7 +400,13 @@ export default function MeetingScheduler({
               startAccessor="start"
               endAccessor="end"
               view={view}
-              onView={setView}
+              onView={(newView: View) => {
+                if (newView === 'work_week') {
+                  setView('week');
+                } else if (['month', 'week', 'day', 'agenda'].includes(newView)) {
+                  setView(newView as 'month' | 'week' | 'day' | 'agenda');
+                }
+              }}
               onSelectEvent={handleSelectEvent}
               onSelectSlot={handleSelectSlot}
               selectable

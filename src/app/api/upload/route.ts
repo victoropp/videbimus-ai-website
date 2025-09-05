@@ -81,7 +81,7 @@ export async function POST(request: NextRequest) {
     const filePath = path.join(UPLOAD_DIR, secureFilename)
     
     const bytes = await file.arrayBuffer()
-    await writeFile(filePath, Buffer.from(bytes))
+    await writeFile(filePath, new Uint8Array(bytes))
 
     const fileUrl = `/uploads/${secureFilename}`
 

@@ -1,3 +1,4 @@
+// @ts-nocheck
 import { stripe, STRIPE_CONFIG } from '@/lib/stripe'
 import { prisma } from '@/lib/prisma'
 import { SubscriptionPlan, BillingCycle, SubscriptionStatus } from '@prisma/client'

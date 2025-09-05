@@ -300,7 +300,7 @@ export default function RealTimeChat({
       // Update local message with reaction
       setMessages(prev => prev.map(msg => {
         if (msg.id === messageId) {
-          const reactions = { ...msg.reactions } || {};
+          const reactions = { ...(msg.reactions || {}) };
           const userIds = reactions[emoji] || [];
           
           if (userIds.includes(currentUser.id)) {

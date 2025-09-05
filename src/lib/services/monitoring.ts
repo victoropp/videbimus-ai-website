@@ -3,11 +3,12 @@ let Sentry: any = null;
 try {
   Sentry = require('@sentry/nextjs');
 } catch (error) {
-  console.warn('Sentry not available:', error);
+  console.warn('Sentry not available:', (error as Error).message);
 }
 import * as os from 'os';
 import { getAnalyticsConfig, isProduction } from '../config/services';
 import { withErrorHandling, ServiceErrorType, CustomServiceError, performHealthCheck } from './error-handler';
+import { getErrorMessage } from '../utils';
 import { aiService } from './ai';
 import { emailService } from './email';
 import { storageService } from './storage-mock'; // Using mock storage for deployment
@@ -128,7 +129,7 @@ class MonitoringService {
             new Sentry.Integrations.Prisma({ client: prisma }),
           ] : [])
         ],
-        beforeSend(event, hint) {
+        beforeSend(event: any, hint: any) {
           // Filter out low-priority errors in production
           if (isProduction() && event.level === 'warning') {
             return null;
@@ -209,7 +210,7 @@ class MonitoringService {
       try {
         await this.performSystemHealthCheck();
       } catch (error) {
-        console.error('Health check failed:', error);
+        console.error('Health check failed:', getErrorMessage(error));
       }
     }, 5 * 60 * 1000);
   }
@@ -286,7 +287,7 @@ class MonitoringService {
 
     // Send to Sentry
     if (this.config.sentry.enabled && Sentry?.withScope) {
-      Sentry.withScope(scope => {
+      Sentry.withScope((scope: any) => {
         scope.setTag('service', service);
         scope.setTag('operation', operation);
         scope.setLevel('error');
@@ -448,13 +449,13 @@ class MonitoringService {
       try {
         await this.executeAlertAction(action, alert);
       } catch (error) {
-        console.error('Failed to execute alert action:', error);
+        console.error('Failed to execute alert action:', getErrorMessage(error));
       }
     }
 
     // Send to Sentry
     if (this.config.sentry.enabled && Sentry?.withScope) {
-      Sentry.withScope(scope => {
+      Sentry.withScope((scope: any) => {
         scope.setTag('alert', rule.name);
         scope.setTag('service', alert.service);
         scope.setLevel(alert.severity === 'critical' ? 'error' : 'warning');
@@ -616,7 +617,9 @@ export function withMonitoring<T extends any[], R>(
         status: 'error',
       });
       
-      monitoringService.recordError(service, operation, error as Error);
+      if (error instanceof Error) {
+        monitoringService.recordError(service, operation, error);
+      }
       
       throw error;
     }

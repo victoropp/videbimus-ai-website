@@ -32,7 +32,7 @@ export class PCICompliance {
    */
   static decrypt(encryptedData: { encrypted: string; iv: string; authTag: string }, key: string): string {
     const decipher = crypto.createDecipher('aes-256-gcm', key)
-    decipher.setAuthTag(Buffer.from(encryptedData.authTag, 'hex'))
+    decipher.setAuthTag(new Uint8Array(Buffer.from(encryptedData.authTag, 'hex')))
     
     let decrypted = decipher.update(encryptedData.encrypted, 'hex', 'utf8')
     decrypted += decipher.final('utf8')
@@ -172,8 +172,8 @@ export class PCICompliance {
       .digest('hex')
     
     return crypto.timingSafeEqual(
-      Buffer.from(signature),
-      Buffer.from(expectedSignature)
+      new Uint8Array(Buffer.from(signature)),
+      new Uint8Array(Buffer.from(expectedSignature))
     )
   }
 
@@ -199,7 +199,7 @@ export class PCICompliance {
    */
   static verifyHash(data: string, hash: string, salt: string): boolean {
     const { hash: computedHash } = this.hashWithSalt(data, salt)
-    return crypto.timingSafeEqual(Buffer.from(hash), Buffer.from(computedHash))
+    return crypto.timingSafeEqual(new Uint8Array(Buffer.from(hash)), new Uint8Array(Buffer.from(computedHash)))
   }
 }
 

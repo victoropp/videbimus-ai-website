@@ -4,6 +4,7 @@
  */
 
 import { withErrorHandling, ServiceErrorType } from './error-handler';
+import { getErrorMessage } from '../utils';
 import crypto from 'crypto';
 import path from 'path';
 import { promises as fs } from 'fs';
@@ -60,7 +61,7 @@ class MockStorageService {
     }
   ): Promise<UploadResult> {
     try {
-      const etag = crypto.createHash('md5').update(buffer).digest('hex');
+      const etag = crypto.createHash('md5').update(new Uint8Array(buffer)).digest('hex');
       
       // Store file metadata in memory (mock)
       const storageObject: StorageObject = {
@@ -81,7 +82,7 @@ class MockStorageService {
         etag
       };
     } catch (error) {
-      throw new Error(`Storage upload failed: ${error.message}`);
+      throw new Error(`Storage upload failed: ${getErrorMessage(error)}`);
     }
   }
 
@@ -252,7 +253,7 @@ class MockStorageService {
       return {
         healthy: false,
         latency: Date.now() - startTime,
-        message: `Health check failed: ${error.message}`
+        message: `Health check failed: ${getErrorMessage(error)}`
       };
     }
   }

@@ -2,6 +2,7 @@ import { Pinecone, Index, RecordMetadata } from '@pinecone-database/pinecone';
 import { getServiceConfig } from '../config/services';
 import { withErrorHandling, ServiceErrorType, CustomServiceError } from './error-handler';
 import { aiService } from './ai';
+import { getErrorMessage, toError } from '../utils';
 import crypto from 'crypto';
 
 export interface VectorDocument {
@@ -169,9 +170,9 @@ class VectorStoreService {
         type: ServiceErrorType.AI_SERVICE,
         service: 'vector-store',
         operation: 'generateEmbeddings',
-        message: `Failed to generate embeddings: ${error.message}`,
+        message: `Failed to generate embeddings: ${getErrorMessage(error)}`,
         retryable: true,
-        originalError: error as Error,
+        originalError: toError(error),
         metadata: { textsCount: texts.length },
       });
     }
@@ -216,7 +217,7 @@ class VectorStoreService {
         } catch (error) {
           failed.push({ 
             id: doc.id, 
-            error: error instanceof Error ? error.message : 'Unknown error'
+            error: getErrorMessage(error)
           });
         }
       }
@@ -245,9 +246,9 @@ class VectorStoreService {
         type: ServiceErrorType.VECTOR_DATABASE,
         service: 'vector-store',
         operation: 'upsertDocuments',
-        message: `Failed to upsert documents: ${error.message}`,
+        message: `Failed to upsert documents: ${getErrorMessage(error)}`,
         retryable: true,
-        originalError: error as Error,
+        originalError: toError(error),
         metadata: { 
           documentsCount: documents.length,
           namespace: namespace || this.defaultNamespace,
@@ -292,9 +293,9 @@ class VectorStoreService {
         type: ServiceErrorType.VECTOR_DATABASE,
         service: 'vector-store',
         operation: 'addDocument',
-        message: `Failed to add document: ${error.message}`,
+        message: `Failed to add document: ${getErrorMessage(error)}`,
         retryable: true,
-        originalError: error as Error,
+        originalError: toError(error),
         metadata: { documentLength: document.content.length },
       });
     }
@@ -335,9 +336,9 @@ class VectorStoreService {
         type: ServiceErrorType.VECTOR_DATABASE,
         service: 'vector-store',
         operation: 'searchSimilar',
-        message: `Failed to search similar documents: ${error.message}`,
+        message: `Failed to search similar documents: ${getErrorMessage(error)}`,
         retryable: true,
-        originalError: error as Error,
+        originalError: toError(error),
         metadata: { query, options },
       });
     }
@@ -400,9 +401,9 @@ class VectorStoreService {
         type: ServiceErrorType.VECTOR_DATABASE,
         service: 'vector-store',
         operation: 'hybridSearch',
-        message: `Failed to perform hybrid search: ${error.message}`,
+        message: `Failed to perform hybrid search: ${getErrorMessage(error)}`,
         retryable: true,
-        originalError: error as Error,
+        originalError: toError(error),
         metadata: { query, filters, options },
       });
     }
@@ -422,9 +423,9 @@ class VectorStoreService {
         type: ServiceErrorType.VECTOR_DATABASE,
         service: 'vector-store',
         operation: 'deleteDocuments',
-        message: `Failed to delete documents: ${error.message}`,
+        message: `Failed to delete documents: ${getErrorMessage(error)}`,
         retryable: true,
-        originalError: error as Error,
+        originalError: toError(error),
         metadata: { idsCount: ids.length, namespace: namespace || this.defaultNamespace },
       });
     }
@@ -442,9 +443,9 @@ class VectorStoreService {
         type: ServiceErrorType.VECTOR_DATABASE,
         service: 'vector-store',
         operation: 'deleteByFilter',
-        message: `Failed to delete documents by filter: ${error.message}`,
+        message: `Failed to delete documents by filter: ${getErrorMessage(error)}`,
         retryable: true,
-        originalError: error as Error,
+        originalError: toError(error),
         metadata: { filter, namespace: namespace || this.defaultNamespace },
       });
     }
@@ -473,9 +474,9 @@ class VectorStoreService {
         type: ServiceErrorType.VECTOR_DATABASE,
         service: 'vector-store',
         operation: 'getDocument',
-        message: `Failed to get document: ${error.message}`,
+        message: `Failed to get document: ${getErrorMessage(error)}`,
         retryable: true,
-        originalError: error as Error,
+        originalError: toError(error),
         metadata: { id, namespace: namespace || this.defaultNamespace },
       });
     }
@@ -496,9 +497,9 @@ class VectorStoreService {
         type: ServiceErrorType.VECTOR_DATABASE,
         service: 'vector-store',
         operation: 'getIndexStats',
-        message: `Failed to get index stats: ${error.message}`,
+        message: `Failed to get index stats: ${getErrorMessage(error)}`,
         retryable: true,
-        originalError: error as Error,
+        originalError: toError(error),
       });
     }
   }
@@ -513,9 +514,9 @@ class VectorStoreService {
         type: ServiceErrorType.VECTOR_DATABASE,
         service: 'vector-store',
         operation: 'listNamespaces',
-        message: `Failed to list namespaces: ${error.message}`,
+        message: `Failed to list namespaces: ${getErrorMessage(error)}`,
         retryable: true,
-        originalError: error as Error,
+        originalError: toError(error),
       });
     }
   }
@@ -529,9 +530,9 @@ class VectorStoreService {
         type: ServiceErrorType.VECTOR_DATABASE,
         service: 'vector-store',
         operation: 'clearNamespace',
-        message: `Failed to clear namespace: ${error.message}`,
+        message: `Failed to clear namespace: ${getErrorMessage(error)}`,
         retryable: true,
-        originalError: error as Error,
+        originalError: toError(error),
         metadata: { namespace: namespace || this.defaultNamespace },
       });
     }
@@ -572,9 +573,9 @@ class VectorStoreService {
         type: ServiceErrorType.VECTOR_DATABASE,
         service: 'vector-store',
         operation: 'extractAndAddFromUrl',
-        message: `Failed to extract and add from URL: ${error.message}`,
+        message: `Failed to extract and add from URL: ${getErrorMessage(error)}`,
         retryable: false,
-        originalError: error as Error,
+        originalError: toError(error),
         metadata: { url },
       });
     }
@@ -611,7 +612,7 @@ class VectorStoreService {
       } catch (error) {
         errors.push({
           operation,
-          error: error instanceof Error ? error.message : 'Unknown error',
+          error: getErrorMessage(error),
         });
       }
     }

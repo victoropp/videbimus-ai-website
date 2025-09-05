@@ -1,6 +1,7 @@
 import DailyIframe, { DailyCall, DailyEvent, DailyEventObject } from '@daily-co/daily-js';
 import { getServiceConfig } from '../config/services';
 import { withErrorHandling, ServiceErrorType, CustomServiceError } from './error-handler';
+import { getErrorMessage, toError } from '../utils';
 
 export interface VideoRoomConfig {
   name?: string;
@@ -130,9 +131,9 @@ class VideoService {
         type: ServiceErrorType.VIDEO,
         service: 'video',
         operation: 'createRoom',
-        message: `Failed to create room: ${error.message}`,
-        retryable: this.isRetryableError(error),
-        originalError: error as Error,
+        message: `Failed to create room: ${getErrorMessage(error)}`,
+        retryable: this.isRetryableError(toError(error)),
+        originalError: toError(error),
         metadata: { config },
       });
     }
@@ -171,9 +172,9 @@ class VideoService {
         type: ServiceErrorType.VIDEO,
         service: 'video',
         operation: 'getRoomInfo',
-        message: `Failed to get room info: ${error.message}`,
-        retryable: this.isRetryableError(error),
-        originalError: error as Error,
+        message: `Failed to get room info: ${getErrorMessage(error)}`,
+        retryable: this.isRetryableError(toError(error)),
+        originalError: toError(error),
         metadata: { roomName },
       });
     }
@@ -197,9 +198,9 @@ class VideoService {
         type: ServiceErrorType.VIDEO,
         service: 'video',
         operation: 'deleteRoom',
-        message: `Failed to delete room: ${error.message}`,
-        retryable: this.isRetryableError(error),
-        originalError: error as Error,
+        message: `Failed to delete room: ${getErrorMessage(error)}`,
+        retryable: this.isRetryableError(toError(error)),
+        originalError: toError(error),
         metadata: { roomName },
       });
     }
@@ -240,9 +241,9 @@ class VideoService {
         type: ServiceErrorType.VIDEO,
         service: 'video',
         operation: 'createMeetingToken',
-        message: `Failed to create meeting token: ${error.message}`,
-        retryable: this.isRetryableError(error),
-        originalError: error as Error,
+        message: `Failed to create meeting token: ${getErrorMessage(error)}`,
+        retryable: this.isRetryableError(toError(error)),
+        originalError: toError(error),
         metadata: { roomName, tokenConfig },
       });
     }
@@ -274,9 +275,9 @@ class VideoService {
         type: ServiceErrorType.VIDEO,
         service: 'video',
         operation: 'initializeCall',
-        message: `Failed to initialize call: ${error.message}`,
+        message: `Failed to initialize call: ${getErrorMessage(error)}`,
         retryable: false,
-        originalError: error as Error,
+        originalError: toError(error),
         metadata: { roomUrl, hasToken: !!token },
       });
     }
@@ -305,9 +306,9 @@ class VideoService {
         type: ServiceErrorType.VIDEO,
         service: 'video',
         operation: 'joinRoom',
-        message: `Failed to join room: ${error.message}`,
-        retryable: this.isRetryableError(error),
-        originalError: error as Error,
+        message: `Failed to join room: ${getErrorMessage(error)}`,
+        retryable: this.isRetryableError(toError(error)),
+        originalError: toError(error),
         metadata: { roomUrl, hasToken: !!token },
       });
     }
@@ -327,9 +328,9 @@ class VideoService {
         type: ServiceErrorType.VIDEO,
         service: 'video',
         operation: 'leaveRoom',
-        message: `Failed to leave room: ${error.message}`,
+        message: `Failed to leave room: ${getErrorMessage(error)}`,
         retryable: false,
-        originalError: error as Error,
+        originalError: toError(error),
         metadata: { roomUrl },
       });
     }
@@ -363,9 +364,9 @@ class VideoService {
         type: ServiceErrorType.VIDEO,
         service: 'video',
         operation: 'startRecording',
-        message: `Failed to start recording: ${error.message}`,
-        retryable: this.isRetryableError(error),
-        originalError: error as Error,
+        message: `Failed to start recording: ${getErrorMessage(error)}`,
+        retryable: this.isRetryableError(toError(error)),
+        originalError: toError(error),
         metadata: { roomUrl, options },
       });
     }
@@ -385,9 +386,9 @@ class VideoService {
         type: ServiceErrorType.VIDEO,
         service: 'video',
         operation: 'stopRecording',
-        message: `Failed to stop recording: ${error.message}`,
-        retryable: this.isRetryableError(error),
-        originalError: error as Error,
+        message: `Failed to stop recording: ${getErrorMessage(error)}`,
+        retryable: this.isRetryableError(toError(error)),
+        originalError: toError(error),
         metadata: { roomUrl },
       });
     }
@@ -420,9 +421,9 @@ class VideoService {
         type: ServiceErrorType.VIDEO,
         service: 'video',
         operation: 'getRecordings',
-        message: `Failed to get recordings: ${error.message}`,
-        retryable: this.isRetryableError(error),
-        originalError: error as Error,
+        message: `Failed to get recordings: ${getErrorMessage(error)}`,
+        retryable: this.isRetryableError(toError(error)),
+        originalError: toError(error),
         metadata: { roomName },
       });
     }
@@ -446,9 +447,9 @@ class VideoService {
         type: ServiceErrorType.VIDEO,
         service: 'video',
         operation: 'updateParticipant',
-        message: `Failed to update participant: ${error.message}`,
-        retryable: this.isRetryableError(error),
-        originalError: error as Error,
+        message: `Failed to update participant: ${getErrorMessage(error)}`,
+        retryable: this.isRetryableError(toError(error)),
+        originalError: toError(error),
         metadata: { roomUrl, sessionId, updates },
       });
     }
@@ -470,9 +471,9 @@ class VideoService {
         type: ServiceErrorType.VIDEO,
         service: 'video',
         operation: 'toggleLocalAudio',
-        message: `Failed to toggle audio: ${error.message}`,
+        message: `Failed to toggle audio: ${getErrorMessage(error)}`,
         retryable: false,
-        originalError: error as Error,
+        originalError: toError(error),
         metadata: { roomUrl },
       });
     }
@@ -493,9 +494,9 @@ class VideoService {
         type: ServiceErrorType.VIDEO,
         service: 'video',
         operation: 'toggleLocalVideo',
-        message: `Failed to toggle video: ${error.message}`,
+        message: `Failed to toggle video: ${getErrorMessage(error)}`,
         retryable: false,
-        originalError: error as Error,
+        originalError: toError(error),
         metadata: { roomUrl },
       });
     }
@@ -518,9 +519,9 @@ class VideoService {
         type: ServiceErrorType.VIDEO,
         service: 'video',
         operation: 'startScreenShare',
-        message: `Failed to start screen share: ${error.message}`,
+        message: `Failed to start screen share: ${getErrorMessage(error)}`,
         retryable: false,
-        originalError: error as Error,
+        originalError: toError(error),
         metadata: { roomUrl, options },
       });
     }
@@ -539,9 +540,9 @@ class VideoService {
         type: ServiceErrorType.VIDEO,
         service: 'video',
         operation: 'stopScreenShare',
-        message: `Failed to stop screen share: ${error.message}`,
+        message: `Failed to stop screen share: ${getErrorMessage(error)}`,
         retryable: false,
-        originalError: error as Error,
+        originalError: toError(error),
         metadata: { roomUrl },
       });
     }
@@ -630,13 +631,14 @@ class VideoService {
     return formatted;
   }
 
-  private isRetryableError(error: any): boolean {
-    if (error.status || error.statusCode) {
-      const status = error.status || error.statusCode;
+  private isRetryableError(error: Error): boolean {
+    const errorObj = error as any;
+    if (errorObj.status || errorObj.statusCode) {
+      const status = errorObj.status || errorObj.statusCode;
       return [408, 429, 500, 502, 503, 504].includes(status);
     }
     
-    const message = error.message?.toLowerCase() || '';
+    const message = getErrorMessage(error).toLowerCase();
     return (
       message.includes('timeout') ||
       message.includes('network') ||

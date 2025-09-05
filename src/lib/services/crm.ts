@@ -1,5 +1,6 @@
 import { getServiceConfig } from '../config/services';
 import { withErrorHandling, ServiceErrorType, CustomServiceError } from './error-handler';
+import { getErrorMessage, toError } from '../utils';
 
 export interface CRMContact {
   id: string;
@@ -169,9 +170,9 @@ class CRMService {
         type: ServiceErrorType.CRM,
         service: 'crm',
         operation: 'createHubSpotContact',
-        message: `Failed to create HubSpot contact: ${error.message}`,
+        message: `Failed to create HubSpot contact: ${getErrorMessage(error)}`,
         retryable: true,
-        originalError: error as Error,
+        originalError: toError(error),
         metadata: { email: contact.email },
       });
     }
@@ -222,9 +223,9 @@ class CRMService {
         type: ServiceErrorType.CRM,
         service: 'crm',
         operation: 'createSalesforceContact',
-        message: `Failed to create Salesforce contact: ${error.message}`,
+        message: `Failed to create Salesforce contact: ${getErrorMessage(error)}`,
         retryable: true,
-        originalError: error as Error,
+        originalError: toError(error),
         metadata: { email: contact.email },
       });
     }
@@ -277,9 +278,9 @@ class CRMService {
         type: ServiceErrorType.CRM,
         service: 'crm',
         operation: 'getHubSpotContact',
-        message: `Failed to get HubSpot contact: ${error.message}`,
+        message: `Failed to get HubSpot contact: ${getErrorMessage(error)}`,
         retryable: true,
-        originalError: error as Error,
+        originalError: toError(error),
         metadata: { contactId: id },
       });
     }
@@ -320,9 +321,9 @@ class CRMService {
         type: ServiceErrorType.CRM,
         service: 'crm',
         operation: 'getSalesforceContact',
-        message: `Failed to get Salesforce contact: ${error.message}`,
+        message: `Failed to get Salesforce contact: ${getErrorMessage(error)}`,
         retryable: true,
-        originalError: error as Error,
+        originalError: toError(error),
         metadata: { contactId: id },
       });
     }
@@ -390,9 +391,9 @@ class CRMService {
         type: ServiceErrorType.CRM,
         service: 'crm',
         operation: 'updateHubSpotContact',
-        message: `Failed to update HubSpot contact: ${error.message}`,
+        message: `Failed to update HubSpot contact: ${getErrorMessage(error)}`,
         retryable: true,
-        originalError: error as Error,
+        originalError: toError(error),
         metadata: { contactId: id },
       });
     }
@@ -427,9 +428,9 @@ class CRMService {
         type: ServiceErrorType.CRM,
         service: 'crm',
         operation: 'updateSalesforceContact',
-        message: `Failed to update Salesforce contact: ${error.message}`,
+        message: `Failed to update Salesforce contact: ${getErrorMessage(error)}`,
         retryable: true,
-        originalError: error as Error,
+        originalError: toError(error),
         metadata: { contactId: id },
       });
     }
@@ -521,9 +522,9 @@ class CRMService {
         type: ServiceErrorType.CRM,
         service: 'crm',
         operation: 'searchHubSpotContacts',
-        message: `Failed to search HubSpot contacts: ${error.message}`,
+        message: `Failed to search HubSpot contacts: ${getErrorMessage(error)}`,
         retryable: true,
-        originalError: error as Error,
+        originalError: toError(error),
         metadata: { query },
       });
     }
@@ -577,9 +578,9 @@ class CRMService {
         type: ServiceErrorType.CRM,
         service: 'crm',
         operation: 'searchSalesforceContacts',
-        message: `Failed to search Salesforce contacts: ${error.message}`,
+        message: `Failed to search Salesforce contacts: ${getErrorMessage(error)}`,
         retryable: true,
-        originalError: error as Error,
+        originalError: toError(error),
         metadata: { query },
       });
     }

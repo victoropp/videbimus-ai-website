@@ -1,5 +1,6 @@
 import { getServiceConfig } from '../config/services';
 import { withErrorHandling, ServiceErrorType, CustomServiceError } from './error-handler';
+import { getErrorMessage, toError } from '../utils';
 
 export interface CalendarEvent {
   id: string;
@@ -188,9 +189,9 @@ class CalendarService {
         type: ServiceErrorType.CALENDAR,
         service: 'calendar',
         operation: 'createGoogleEvent',
-        message: `Failed to create Google Calendar event: ${error.message}`,
+        message: `Failed to create Google Calendar event: ${getErrorMessage(error)}`,
         retryable: true,
-        originalError: error as Error,
+        originalError: toError(error),
         metadata: { title: event.title, startTime: event.startTime },
       });
     }
@@ -246,9 +247,9 @@ class CalendarService {
         type: ServiceErrorType.CALENDAR,
         service: 'calendar',
         operation: 'createOutlookEvent',
-        message: `Failed to create Outlook Calendar event: ${error.message}`,
+        message: `Failed to create Outlook Calendar event: ${getErrorMessage(error)}`,
         retryable: true,
-        originalError: error as Error,
+        originalError: toError(error),
         metadata: { title: event.title, startTime: event.startTime },
       });
     }
@@ -289,9 +290,9 @@ class CalendarService {
         type: ServiceErrorType.CALENDAR,
         service: 'calendar',
         operation: 'getGoogleEvent',
-        message: `Failed to get Google Calendar event: ${error.message}`,
+        message: `Failed to get Google Calendar event: ${getErrorMessage(error)}`,
         retryable: true,
-        originalError: error as Error,
+        originalError: toError(error),
         metadata: { eventId: id },
       });
     }
@@ -322,9 +323,9 @@ class CalendarService {
         type: ServiceErrorType.CALENDAR,
         service: 'calendar',
         operation: 'getOutlookEvent',
-        message: `Failed to get Outlook Calendar event: ${error.message}`,
+        message: `Failed to get Outlook Calendar event: ${getErrorMessage(error)}`,
         retryable: true,
-        originalError: error as Error,
+        originalError: toError(error),
         metadata: { eventId: id },
       });
     }
@@ -492,9 +493,9 @@ class CalendarService {
         type: ServiceErrorType.CALENDAR,
         service: 'calendar',
         operation: 'getGoogleEvents',
-        message: `Failed to get Google Calendar events: ${error.message}`,
+        message: `Failed to get Google Calendar events: ${getErrorMessage(error)}`,
         retryable: true,
-        originalError: error as Error,
+        originalError: toError(error),
         metadata: { startDate, endDate },
       });
     }
@@ -528,9 +529,9 @@ class CalendarService {
         type: ServiceErrorType.CALENDAR,
         service: 'calendar',
         operation: 'getOutlookEvents',
-        message: `Failed to get Outlook Calendar events: ${error.message}`,
+        message: `Failed to get Outlook Calendar events: ${getErrorMessage(error)}`,
         retryable: true,
-        originalError: error as Error,
+        originalError: toError(error),
         metadata: { startDate, endDate },
       });
     }

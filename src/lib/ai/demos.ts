@@ -82,8 +82,8 @@ Please respond with a JSON object in the following format:
     });
 
     let responseContent: string;
-    if ('choices' in response) {
-      responseContent = response.choices[0]?.message?.content || '';
+    if ('choices' in response && response.choices) {
+      responseContent = response.choices?.[0]?.message?.content || '';
     } else if ('content' in response) {
       responseContent = Array.isArray(response.content) 
         ? (response.content[0] && 'text' in response.content[0] ? response.content[0].text : '')
@@ -204,8 +204,8 @@ Summary:`;
     });
 
     let responseContent: string;
-    if ('choices' in response) {
-      responseContent = response.choices[0]?.message?.content || '';
+    if ('choices' in response && response.choices) {
+      responseContent = response.choices?.[0]?.message?.content || '';
     } else if ('content' in response) {
       responseContent = Array.isArray(response.content) 
         ? (response.content[0] && 'text' in response.content[0] ? response.content[0].text : '')
@@ -338,8 +338,8 @@ Please respond with a JSON array of entities in the following format:
     });
 
     let responseContent: string;
-    if ('choices' in response) {
-      responseContent = response.choices[0]?.message?.content || '';
+    if ('choices' in response && response.choices) {
+      responseContent = response.choices?.[0]?.message?.content || '';
     } else if ('content' in response) {
       responseContent = Array.isArray(response.content) 
         ? (response.content[0] && 'text' in response.content[0] ? response.content[0].text : '')
@@ -385,7 +385,7 @@ Please respond with a JSON object in the following format:
   });
 
   let responseContent: string;
-  if ('choices' in response) {
+  if ('choices' in response && response.choices) {
     responseContent = response.choices[0]?.message?.content || '';
   } else if ('content' in response) {
     responseContent = Array.isArray(response.content) 
@@ -438,7 +438,7 @@ Please respond with a JSON object in the following format:
   });
 
   let responseContent: string;
-  if ('choices' in response) {
+  if ('choices' in response && response.choices) {
     responseContent = response.choices[0]?.message?.content || '';
   } else if ('content' in response) {
     responseContent = Array.isArray(response.content) 
@@ -481,7 +481,7 @@ Please respond with a JSON array of keywords:
   });
 
   let responseContent: string;
-  if ('choices' in response) {
+  if ('choices' in response && response.choices) {
     responseContent = response.choices[0]?.message?.content || '';
   } else if ('content' in response) {
     responseContent = Array.isArray(response.content) 
@@ -545,8 +545,8 @@ Answer:`;
     });
 
     let responseContent: string;
-    if ('choices' in response) {
-      responseContent = response.choices[0]?.message?.content || '';
+    if ('choices' in response && response.choices) {
+      responseContent = response.choices?.[0]?.message?.content || '';
     } else if ('content' in response) {
       responseContent = Array.isArray(response.content) 
         ? (response.content[0] && 'text' in response.content[0] ? response.content[0].text : '')
@@ -577,7 +577,7 @@ Translation:`;
   });
 
   let responseContent: string;
-  if ('choices' in response) {
+  if ('choices' in response && response.choices) {
     responseContent = response.choices[0]?.message?.content || '';
   } else if ('content' in response) {
     responseContent = Array.isArray(response.content) 

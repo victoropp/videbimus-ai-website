@@ -150,8 +150,8 @@ export async function getCustomerPaymentMethods(
       expYear: pm.cardExpYear || 0
     } : undefined,
     billingDetails: {
-      name: pm.billingName,
-      email: pm.billingEmail
+      name: pm.billingName || undefined,
+      email: pm.billingEmail || undefined
     }
   }))
 }
@@ -264,8 +264,8 @@ export async function getPaymentMethodDetails(
       expYear: paymentMethod.cardExpYear || 0
     } : undefined,
     billingDetails: {
-      name: paymentMethod.billingName,
-      email: paymentMethod.billingEmail
+      name: paymentMethod.billingName || undefined,
+      email: paymentMethod.billingEmail || undefined
     }
   }
 }

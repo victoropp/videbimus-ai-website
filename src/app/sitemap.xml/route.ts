@@ -6,7 +6,7 @@ export async function GET() {
     const baseUrl = process.env.NEXTAUTH_URL || 'https://videbimus.com'
     
     // Get published blog posts (with fallback for build time)
-    let posts = []
+    let posts: Array<{slug: string; publishedAt: Date | null; updatedAt: Date}> = []
     try {
       posts = await prisma.blogPost.findMany({
       where: {
@@ -27,7 +27,7 @@ export async function GET() {
     }
 
     // Get categories (with fallback for build time)
-    let categories = []
+    let categories: Array<{slug: string; updatedAt: Date}> = []
     try {
       categories = await prisma.category.findMany({
       where: {
@@ -48,7 +48,7 @@ export async function GET() {
     }
 
     // Get unique tags from blog posts (tags are String[] in BlogPost)
-    let blogPostsWithTags = []
+    let blogPostsWithTags: Array<{tags: string[] | null; updatedAt: Date}> = []
     try {
       blogPostsWithTags = await prisma.blogPost.findMany({
       where: {
@@ -67,7 +67,7 @@ export async function GET() {
     // Extract unique tags with their most recent update
     const tagMap = new Map<string, Date>()
     blogPostsWithTags.forEach(post => {
-      post.tags?.forEach(tag => {
+      post.tags?.forEach((tag: string) => {
         const currentDate = tagMap.get(tag)
         if (!currentDate || post.updatedAt > currentDate) {
           tagMap.set(tag, post.updatedAt)
