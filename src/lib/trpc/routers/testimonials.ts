@@ -57,7 +57,16 @@ export const testimonialsRouter = createTRPCRouter({
     .input(testimonialSchema)
     .mutation(async ({ ctx, input }) => {
       return ctx.db.testimonial.create({
-        data: input,
+        data: {
+          name: input.name,
+          role: input.role,
+          company: input.company,
+          content: input.content,
+          image: input.image,
+          rating: input.rating,
+          isActive: input.isActive,
+          sortOrder: input.sortOrder,
+        },
       })
     }),
 

@@ -432,7 +432,7 @@ class VideoService {
   async updateParticipant(roomUrl: string, sessionId: string, updates: {
     setAudio?: boolean;
     setVideo?: boolean;
-    eject?: boolean;
+    eject?: true;
   }): Promise<void> {
     try {
       const callObject = this.activeRooms.get(roomUrl);

@@ -5,8 +5,10 @@ export async function GET() {
   try {
     const baseUrl = process.env.NEXTAUTH_URL || 'https://videbimus.com'
     
-    // Get published blog posts
-    const posts = await prisma.blogPost.findMany({
+    // Get published blog posts (with fallback for build time)
+    let posts = []
+    try {
+      posts = await prisma.blogPost.findMany({
       where: {
         published: true,
         status: 'PUBLISHED'
@@ -19,10 +21,15 @@ export async function GET() {
       orderBy: {
         publishedAt: 'desc'
       }
-    })
+      })
+    } catch (dbError) {
+      console.warn('Database not available during build, using empty posts array')
+    }
 
-    // Get categories
-    const categories = await prisma.category.findMany({
+    // Get categories (with fallback for build time)
+    let categories = []
+    try {
+      categories = await prisma.category.findMany({
       where: {
         blogPosts: {
           some: {
@@ -35,10 +42,15 @@ export async function GET() {
         slug: true,
         updatedAt: true
       }
-    })
+      })
+    } catch (dbError) {
+      console.warn('Database not available during build, using empty categories array')
+    }
 
     // Get unique tags from blog posts (tags are String[] in BlogPost)
-    const blogPostsWithTags = await prisma.blogPost.findMany({
+    let blogPostsWithTags = []
+    try {
+      blogPostsWithTags = await prisma.blogPost.findMany({
       where: {
         published: true,
         status: 'PUBLISHED'
@@ -47,12 +59,15 @@ export async function GET() {
         tags: true,
         updatedAt: true
       }
-    })
+      })
+    } catch (dbError) {
+      console.warn('Database not available during build, using empty blog posts array')
+    }
 
     // Extract unique tags with their most recent update
     const tagMap = new Map<string, Date>()
     blogPostsWithTags.forEach(post => {
-      post.tags.forEach(tag => {
+      post.tags?.forEach(tag => {
         const currentDate = tagMap.get(tag)
         if (!currentDate || post.updatedAt > currentDate) {
           tagMap.set(tag, post.updatedAt)

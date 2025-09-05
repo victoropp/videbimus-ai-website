@@ -1,7 +1,7 @@
 import { z } from 'zod'
 import { createTRPCRouter, publicProcedure, protectedProcedure, adminProcedure } from '../init'
 import { TRPCError } from '@trpc/server'
-import { Decimal } from 'decimal.js'
+import { Prisma } from '@prisma/client'
 
 const invoiceItemSchema = z.object({
   description: z.string().min(1).max(200),
@@ -52,8 +52,8 @@ export const financialRouter = createTRPCRouter({
         const whereClause: any = {}
 
         // Non-admin users can only see their own invoices
-        if (ctx.user.role !== 'ADMIN') {
-          whereClause.clientId = ctx.user.id
+        if (ctx.session?.user?.role !== 'ADMIN') {
+          whereClause.clientId = ctx.session!.user.id
         } else if (input.clientId) {
           whereClause.clientId = input.clientId
         }
@@ -132,7 +132,7 @@ export const financialRouter = createTRPCRouter({
         }
 
         // Check permissions
-        if (ctx.user.role !== 'ADMIN' && invoice.clientId !== ctx.user.id) {
+        if (ctx.session?.user?.role !== 'ADMIN' && invoice.clientId !== ctx.session?.user?.id) {
           throw new TRPCError({
             code: 'FORBIDDEN',
             message: 'Access denied',
@@ -161,17 +161,24 @@ export const financialRouter = createTRPCRouter({
         // Create invoice with items
         const invoice = await ctx.db.invoice.create({
           data: {
-            ...invoiceData,
-            amount: new Decimal(invoiceData.amount),
-            tax: invoiceData.tax ? new Decimal(invoiceData.tax) : undefined,
-            total: new Decimal(invoiceData.total),
+            number: invoiceData.number,
+            description: invoiceData.description,
+            status: invoiceData.status,
+            issuedDate: invoiceData.issuedDate,
+            dueDate: invoiceData.dueDate,
+            notes: invoiceData.notes,
+            currency: invoiceData.currency,
+            clientId: invoiceData.clientId,
+            amount: new Prisma.Decimal(invoiceData.amount),
+            tax: invoiceData.tax ? new Prisma.Decimal(invoiceData.tax) : undefined,
+            total: new Prisma.Decimal(invoiceData.total),
             items: {
               create: items.map(item => ({
                 ...item,
-                quantity: new Decimal(item.quantity),
-                rate: new Decimal(item.rate),
-                amount: new Decimal(item.amount),
-              })),
+                quantity: new Prisma.Decimal(item.quantity),
+                rate: new Prisma.Decimal(item.rate),
+                amount: new Prisma.Decimal(item.amount),
+              })) as any,
             },
           },
           include: {
@@ -216,13 +223,13 @@ export const financialRouter = createTRPCRouter({
 
         // Convert decimal fields
         if (updateData.amount !== undefined) {
-          updateData.amount = new Decimal(updateData.amount) as any
+          updateData.amount = new Prisma.Decimal(updateData.amount) as any
         }
         if (updateData.tax !== undefined && updateData.tax !== null) {
-          updateData.tax = new Decimal(updateData.tax) as any
+          updateData.tax = new Prisma.Decimal(updateData.tax) as any
         }
         if (updateData.total !== undefined) {
-          updateData.total = new Decimal(updateData.total) as any
+          updateData.total = new Prisma.Decimal(updateData.total) as any
         }
 
         const updatedInvoice = await ctx.db.$transaction(async (tx) => {
@@ -244,10 +251,10 @@ export const financialRouter = createTRPCRouter({
               data: items.map(item => ({
                 ...item,
                 invoiceId: input.id,
-                quantity: new Decimal(item.quantity),
-                rate: new Decimal(item.rate),
-                amount: new Decimal(item.amount),
-              })),
+                quantity: new Prisma.Decimal(item.quantity),
+                rate: new Prisma.Decimal(item.rate),
+                amount: new Prisma.Decimal(item.amount),
+              })) as any,
             })
           }
 
@@ -329,9 +336,9 @@ export const financialRouter = createTRPCRouter({
         }
 
         // Non-admin users can only see payments for their invoices
-        if (ctx.user.role !== 'ADMIN') {
+        if (ctx.session?.user?.role !== 'ADMIN') {
           whereClause.invoice = {
-            clientId: ctx.user.id,
+            clientId: ctx.session?.user?.id,
           }
         }
 
@@ -372,8 +379,13 @@ export const financialRouter = createTRPCRouter({
       .mutation(async ({ ctx, input }) => {
         return ctx.db.payment.create({
           data: {
-            ...input,
-            amount: new Decimal(input.amount),
+            amount: new Prisma.Decimal(input.amount),
+            currency: input.currency,
+            method: input.method,
+            notes: input.notes,
+            transactionId: input.transactionId,
+            reference: input.reference,
+            invoiceId: input.invoiceId,
             status: 'COMPLETED', // Default to completed for manual entries
             processedAt: input.processedAt || new Date(),
           },
@@ -414,7 +426,7 @@ export const financialRouter = createTRPCRouter({
 
         const updateData = { ...input.data }
         if (updateData.amount !== undefined) {
-          updateData.amount = new Decimal(updateData.amount) as any
+          updateData.amount = new Prisma.Decimal(updateData.amount) as any
         }
 
         return ctx.db.payment.update({

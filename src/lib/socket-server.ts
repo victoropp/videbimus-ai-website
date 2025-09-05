@@ -157,7 +157,8 @@ class SocketService {
         where: {
           id: roomId,
           OR: [
-            { createdBy: socket.userId },
+            { clientId: socket.userId },
+            { consultantId: socket.userId },
             { participants: { some: { userId: socket.userId } } }
           ]
         },
@@ -417,7 +418,7 @@ class SocketService {
       });
 
       // Update main document
-      await prisma.document.update({
+      await prisma.consultationDocument.update({
         where: { id: documentId },
         data: {
           content,

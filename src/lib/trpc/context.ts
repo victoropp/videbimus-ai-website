@@ -11,6 +11,7 @@ const createInnerTRPCContext = (opts: CreateContextOptions) => {
   return {
     session: opts.session,
     prisma,
+    db: prisma, // Add db alias for compatibility
   }
 }
 
@@ -18,7 +19,7 @@ export const createTRPCContext = async (opts: CreateNextContextOptions) => {
   const { req, res } = opts
 
   // Get the session from the server using the getServerSession wrapper function
-  const session = await getServerSession(req, res)
+  const session = await getServerSession()
 
   return createInnerTRPCContext({
     session,

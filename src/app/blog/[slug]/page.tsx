@@ -194,7 +194,7 @@ export default function BlogPostPage() {
                     {post.category.name}
                   </Badge>
                 )}
-                {post.tags.slice(0, 3).map((tag, index) => (
+                {post.tags?.slice(0, 3).map((tag, index) => (
                   <Badge key={index} variant="outline" className="border-white/20 text-white">
                     <Tag className="h-3 w-3 mr-1" />
                     {tag}
@@ -334,7 +334,7 @@ export default function BlogPostPage() {
                 </motion.div>
 
                 {/* Tags */}
-                {post.tags.length > 0 && (
+                {post.tags && post.tags.length > 0 && (
                   <motion.div
                     initial={{ opacity: 0, y: 20 }}
                     animate={{ opacity: 1, y: 0 }}
@@ -343,7 +343,7 @@ export default function BlogPostPage() {
                   >
                     <h3 className="font-semibold text-gray-900 dark:text-white mb-3">Tags</h3>
                     <div className="flex flex-wrap gap-2">
-                      {post.tags.map((tag, index) => (
+                      {post.tags?.map((tag, index) => (
                         <Button
                           key={index}
                           variant="outline"
@@ -456,7 +456,7 @@ export default function BlogPostPage() {
                             {relatedPost.category.name}
                           </Badge>
                         )}
-                        {relatedPost.tags.slice(0, 2).map((tag, index) => (
+                        {relatedPost.tags?.slice(0, 2).map((tag, index) => (
                           <Badge key={index} variant="outline" className="text-xs">
                             {tag}
                           </Badge>

@@ -389,7 +389,14 @@
       "WebFetch(domain:videbimus-ai-website-df7fth71u-victoropp-3791s-projects.vercel.app)",
       "WebFetch(domain:videbimus-ai-website-gatjg5uzq-victoropp-3791s-projects.vercel.app)",
       "WebFetch(domain:videbimus-ai-website-4iewbmrf2-victoropp-3791s-projects.vercel.app)",
-      "WebFetch(domain:www.videbimusai.com)"
+      "WebFetch(domain:www.videbimusai.com)",
+      "WebFetch(domain:oilflowbidec-erp.videbimusai.com)",
+      "Bash(nslookup:*)",
+      "WebFetch(domain:oilflow-bidec-92s28nl71-victoropp-3791s-projects.vercel.app)",
+      "WebFetch(domain:oilflow-bidec-erp.vercel.app)",
+      "WebFetch(domain:oilflow-bidec-erp-website-victoropp-3791s-projects.vercel.app)",
+      "Read(//c/Users/victo/Documents/Data_Science_Projects/**)",
+      "Bash(npx @next/codemod@canary next-lint-to-eslint-cli:*)"
     ],
     "deny": [],
     "ask": []

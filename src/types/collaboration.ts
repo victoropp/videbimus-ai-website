@@ -4,6 +4,8 @@
  */
 
 import type { BaseEntity, ID, Timestamp, Email, WithMetadata } from './common';
+import type { UserRole } from '@prisma/client';
+import type { Consultation } from './consultation';
 
 // User and Presence Types
 export interface User extends BaseEntity {
@@ -144,17 +146,17 @@ export type MeetingStatus = 'scheduled' | 'in-progress' | 'completed' | 'cancell
 
 export interface MeetingParticipant {
   user: User;
-  role: ParticipantRole;
+  role: CollaborationRole;
   joinedAt?: Timestamp;
   leftAt?: Timestamp;
   status: ParticipantStatus;
-  permissions: ParticipantPermissions;
+  permissions: CollaborationPermissions;
 }
 
-export type ParticipantRole = 'host' | 'co-host' | 'participant' | 'observer';
+export type CollaborationRole = 'host' | 'co-host' | 'participant' | 'observer';
 export type ParticipantStatus = 'invited' | 'joined' | 'left' | 'ejected';
 
-export interface ParticipantPermissions {
+export interface CollaborationPermissions {
   canSpeak: boolean;
   canVideo: boolean;
   canScreenShare: boolean;
@@ -230,7 +232,7 @@ export interface MeetingLinks {
 }
 
 // Chat Types
-export interface ChatMessage extends BaseEntity {
+export interface CollaborationMessage extends BaseEntity {
   content: string;
   author: User;
   roomId: ID;
@@ -238,7 +240,7 @@ export interface ChatMessage extends BaseEntity {
   type: MessageType;
   status: MessageStatus;
   reactions: MessageReaction[];
-  attachments: MessageAttachment[];
+  attachments: ChatAttachment[];
   mentions: MessageMention[];
   editedAt?: Timestamp;
   deletedAt?: Timestamp;
@@ -253,7 +255,7 @@ export interface MessageReaction {
   count: number;
 }
 
-export interface MessageAttachment {
+export interface ChatAttachment {
   id: ID;
   name: string;
   type: string;
@@ -274,7 +276,7 @@ export interface ChatThread extends BaseEntity {
   parentMessageId: ID;
   participants: User[];
   messageCount: number;
-  lastMessage?: ChatMessage;
+  lastMessage?: CollaborationMessage;
   archived: boolean;
 }
 
@@ -331,7 +333,7 @@ export interface DocumentPermissions {
 export interface WhiteboardElement extends BaseEntity {
   type: ElementType;
   position: Position;
-  size: Size;
+  size: DocumentSize;
   style: ElementStyle;
   content?: string;
   path?: Point[];
@@ -355,7 +357,7 @@ export interface Position {
   y: number;
 }
 
-export interface Size {
+export interface DocumentSize {
   width: number;
   height: number;
 }

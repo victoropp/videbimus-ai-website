@@ -868,6 +868,7 @@ model SystemHealth {
   metadata    Json?    // Additional health data
   createdAt   DateTime @default(now())
 
+  @@unique([service])
   @@index([service, lastCheck])
   @@map("system_health")
 }

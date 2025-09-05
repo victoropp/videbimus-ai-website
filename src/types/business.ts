@@ -3,7 +3,11 @@
  * @fileoverview Types related to business entities, services, and operations
  */
 
-import type { BaseEntity, ID, Timestamp, Email, URL, Slug, WithImage, WithSEO, ImageData } from './common';
+import type { BaseEntity, ID, Timestamp, Email, URL, Slug, WithImage, WithSEO, ImageData, SEOData } from './common';
+import type { Priority } from '@prisma/client';
+
+// Re-export Priority for convenience
+export type { Priority };
 
 // Service Types
 export type ServiceCategory = 'discovery' | 'implementation' | 'transformation' | 'specialized';

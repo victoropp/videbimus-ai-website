@@ -9,15 +9,28 @@ const nextConfig = {
     imageSizes: [16, 32, 48, 64, 96, 128, 256, 384],
   },
   typescript: {
-    ignoreBuildErrors: true,
+    ignoreBuildErrors: false,
   },
   eslint: {
     ignoreDuringBuilds: true,
   },
   output: 'standalone',
-  generateStaticParams: false,
   trailingSlash: false,
   poweredByHeader: false,
+  webpack: (config, { isServer }) => {
+    // Suppress the specific Prisma instrumentation warning
+    config.module.exprContextCritical = false;
+    
+    // Add specific rule for OpenTelemetry instrumentation warning
+    if (isServer) {
+      config.ignoreWarnings = [
+        /Critical dependency: the request of a dependency is an expression/,
+        /Module not found: Can't resolve 'pg-native'/,
+      ];
+    }
+    
+    return config;
+  },
 }
 
 module.exports = nextConfig

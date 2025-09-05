@@ -83,7 +83,20 @@ export const teamRouter = createTRPCRouter({
       }
 
       return ctx.db.teamMember.create({
-        data: input,
+        data: {
+          name: input.name,
+          role: input.role,
+          bio: input.bio,
+          image: input.image,
+          email: input.email,
+          linkedin: input.linkedin,
+          twitter: input.twitter,
+          github: input.github,
+          isActive: input.isActive,
+          sortOrder: input.sortOrder,
+          skills: input.skills,
+          experience: input.experience,
+        },
       })
     }),
 

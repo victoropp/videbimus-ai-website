@@ -158,7 +158,7 @@ export default function SEOHead({
           <meta property="article:modified_time" content={new Date(post.updatedAt).toISOString()} />
           <meta property="article:author" content={post.author.name} />
           {post.category && <meta property="article:section" content={post.category.name} />}
-          {post.tags.map((tag, index) => (
+          {post.tags?.map((tag, index) => (
             <meta key={index} property="article:tag" content={tag} />
           ))}
         </>

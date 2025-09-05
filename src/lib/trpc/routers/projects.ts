@@ -55,7 +55,12 @@ export const projectsRouter = createTRPCRouter({
     .mutation(async ({ ctx, input }) => {
       const project = await ctx.prisma.project.create({
         data: {
-          ...input,
+          title: input.title,
+          description: input.description,
+          priority: input.priority,
+          budget: input.budget,
+          startDate: input.startDate,
+          endDate: input.endDate,
           userId: ctx.session.user.id,
         },
         include: {
@@ -257,7 +262,13 @@ export const projectsRouter = createTRPCRouter({
       }
 
       const task = await ctx.prisma.task.create({
-        data: input,
+        data: {
+          title: input.title,
+          description: input.description,
+          priority: input.priority,
+          projectId: input.projectId,
+          dueDate: input.dueDate,
+        },
       })
 
       return { task, message: "Task created successfully" }

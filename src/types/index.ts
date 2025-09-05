@@ -39,21 +39,6 @@ export type SEOData = SEO;
 
 // Re-export specific commonly used types for convenience
 export type {
-  // Common types
-  ID,
-  Timestamp,
-  Email,
-  URL,
-  Slug,
-  Status,
-  Theme,
-  Size,
-  Variant,
-  NavigationItem,
-  ApiResponse,
-  PaginatedResponse,
-  FormState,
-  
   // Business types
   Service,
   TeamMember,
@@ -68,15 +53,6 @@ export type {
   Lead,
   Client,
   Technology,
-  
-  // AI types
-  AIModel,
-  ChatSession,
-  ChatMessage,
-  AIDemo,
-  AITask,
-  KnowledgeBase,
-  Recommendation,
   
   // System and monitoring types
   Contact,

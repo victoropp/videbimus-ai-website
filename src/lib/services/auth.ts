@@ -8,6 +8,15 @@ import { getAuthConfig } from '../config/services';
 import { withErrorHandling, ServiceErrorType, CustomServiceError } from './error-handler';
 import bcrypt from 'bcryptjs';
 import { z } from 'zod';
+import type { 
+  NextAuthConfig, 
+  User, 
+  Account, 
+  Profile, 
+  Session
+} from 'next-auth';
+import type { JWT } from '@auth/core/jwt';
+import type { AdapterUser } from 'next-auth/adapters';
 
 export interface UserProfile {
   id: string;
@@ -108,7 +117,7 @@ class AuthService {
   }
 
   // Get NextAuth configuration
-  getNextAuthConfig() {
+  getNextAuthConfig(): NextAuthConfig {
     const providers = [];
 
     // Add Google provider if configured
@@ -147,14 +156,14 @@ class AuthService {
           email: { label: 'Email', type: 'email' },
           password: { label: 'Password', type: 'password' },
         },
-        async authorize(credentials: any) {
+        async authorize(credentials: Partial<Record<string, unknown>>, request: Request) {
           if (!credentials?.email || !credentials?.password) {
             return null;
           }
 
           try {
             const user = await prisma.user.findUnique({
-              where: { email: credentials.email },
+              where: { email: credentials.email as string },
               include: { accounts: true },
             });
 
@@ -163,7 +172,7 @@ class AuthService {
             }
 
             const isPasswordValid = await bcrypt.compare(
-              credentials.password,
+              credentials.password as string,
               user.password
             );
 
@@ -203,9 +212,13 @@ class AuthService {
         verifyRequest: '/auth/verify-request',
       },
       callbacks: {
-        async jwt({ token, user, account }) {
+        async jwt({ token, user, account }: { 
+          token: JWT; 
+          user: User | AdapterUser | null; 
+          account: Account | null; 
+        }) {
           if (user) {
-            token.role = user.role;
+            token.role = (user as any).role || 'USER';
             token.id = user.id;
           }
           
@@ -218,20 +231,27 @@ class AuthService {
           
           return token;
         },
-        async session({ session, token }) {
+        async session({ session, token }: { 
+          session: Session; 
+          token: JWT; 
+        }) {
           if (session.user) {
             session.user.role = token.role as string;
             session.user.id = token.id as string;
           }
           return session;
         },
-        async signIn({ user, account, profile }) {
+        async signIn({ user, account, profile }: { 
+          user: User | AdapterUser; 
+          account: Account | null; 
+          profile?: Profile; 
+        }) {
           try {
             // Handle OAuth sign-ins
             if (account?.provider === 'google' || account?.provider === 'github') {
               // Check if user already exists
               const existingUser = await prisma.user.findUnique({
-                where: { email: user.email! },
+                where: { email: user.email || '' },
               });
 
               if (existingUser) {
@@ -268,7 +288,7 @@ class AuthService {
               // Create new user for OAuth sign-in
               const newUser = await prisma.user.create({
                 data: {
-                  email: user.email!,
+                  email: user.email || '',
                   name: user.name,
                   image: user.image,
                   emailVerified: new Date(),
@@ -303,15 +323,19 @@ class AuthService {
         },
       },
       events: {
-        async signIn({ user, account, isNewUser }) {
+        async signIn({ user, account, isNewUser }: { 
+          user: User; 
+          account: Account | null; 
+          isNewUser?: boolean; 
+        }) {
           console.log(`User signed in: ${user.email} (${account?.provider || 'credentials'})`);
           
           if (isNewUser) {
             // Send welcome email, set up user preferences, etc.
-            await this.handleNewUserSignup(user.id!);
+            await this.handleNewUserSignup(user.id || '');
           }
         },
-        async signOut({ token }) {
+        async signOut({ token }: { token: JWT }) {
           console.log(`User signed out: ${token?.email}`);
         },
       },

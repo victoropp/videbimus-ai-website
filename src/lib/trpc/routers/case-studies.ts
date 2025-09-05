@@ -148,7 +148,7 @@ export const caseStudiesRouter = createTRPCRouter({
       }
 
       // Check permissions
-      if (ctx.user.role !== 'ADMIN' && caseStudy.authorId !== ctx.user.id) {
+      if (ctx.session?.user?.role !== 'ADMIN' && caseStudy.authorId !== ctx.session?.user?.id) {
         throw new TRPCError({
           code: 'FORBIDDEN',
           message: 'Access denied',
@@ -164,7 +164,7 @@ export const caseStudiesRouter = createTRPCRouter({
     .mutation(async ({ ctx, input }) => {
       const data = {
         ...input,
-        authorId: ctx.user.id,
+        authorId: ctx.session!.user.id,
       }
 
       // Generate slug if not provided
@@ -187,7 +187,7 @@ export const caseStudiesRouter = createTRPCRouter({
       }
 
       return ctx.db.caseStudyEntry.create({
-        data,
+        data: data as any,
         include: {
           author: {
             select: {
@@ -218,7 +218,7 @@ export const caseStudiesRouter = createTRPCRouter({
       }
 
       // Check permissions
-      if (ctx.user.role !== 'ADMIN' && caseStudy.authorId !== ctx.user.id) {
+      if (ctx.session?.user?.role !== 'ADMIN' && caseStudy.authorId !== ctx.session?.user?.id) {
         throw new TRPCError({
           code: 'FORBIDDEN',
           message: 'Access denied',
@@ -276,7 +276,7 @@ export const caseStudiesRouter = createTRPCRouter({
       }
 
       // Check permissions
-      if (ctx.user.role !== 'ADMIN' && caseStudy.authorId !== ctx.user.id) {
+      if (ctx.session?.user?.role !== 'ADMIN' && caseStudy.authorId !== ctx.session?.user?.id) {
         throw new TRPCError({
           code: 'FORBIDDEN',
           message: 'Access denied',

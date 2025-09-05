@@ -40,10 +40,10 @@ export const analyticsRouter = createTRPCRouter({
     .mutation(async ({ ctx, input }) => {
       return ctx.db.analytics.create({
         data: {
-          userId: ctx.user?.id,
-          sessionId: ctx.session?.sessionToken,
           ...input,
-        },
+          userId: ctx.session?.user?.id,
+          sessionId: ctx.session?.user?.id || 'anonymous',
+        } as any,
       })
     }),
 
@@ -53,11 +53,11 @@ export const analyticsRouter = createTRPCRouter({
     .mutation(async ({ ctx, input }) => {
       return ctx.db.userActivity.create({
         data: {
-          userId: ctx.user.id,
-          sessionId: ctx.session?.sessionToken,
           ...input,
+          userId: ctx.session!.user.id,
+          sessionId: ctx.session!.user.id,
           timestamp: new Date(),
-        },
+        } as any,
       })
     }),
 
@@ -66,7 +66,7 @@ export const analyticsRouter = createTRPCRouter({
     .input(performanceMetricSchema)
     .mutation(async ({ ctx, input }) => {
       return ctx.db.performanceMetric.create({
-        data: input,
+        data: input as any,
       })
     }),
 

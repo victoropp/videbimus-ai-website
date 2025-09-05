@@ -355,7 +355,7 @@ class ClientSocketService {
   // Utility methods
   getConnectionState(): 'disconnected' | 'connecting' | 'connected' {
     if (!this.socket) return 'disconnected';
-    if (this.socket.connecting) return 'connecting';
+    if (!this.socket.connected && this.socket.disconnected === false) return 'connecting';
     if (this.socket.connected) return 'connected';
     return 'disconnected';
   }

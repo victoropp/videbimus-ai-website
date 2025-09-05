@@ -6,6 +6,9 @@ import CredentialsProvider from "next-auth/providers/credentials"
 import { compare } from "bcryptjs"
 import { prisma } from "@/lib/prisma"
 import { UserRole } from "@prisma/client"
+import type { NextAuthConfig, User, Account, Profile, Session } from "next-auth"
+import type { JWT } from "@auth/core/jwt"
+import type { AdapterUser } from "next-auth/adapters"
 
 export const authConfig = {
   adapter: PrismaAdapter(prisma),
@@ -51,7 +54,7 @@ export const authConfig = {
         email: { label: "Email", type: "email" },
         password: { label: "Password", type: "password" }
       },
-      async authorize(credentials) {
+      async authorize(credentials: Partial<Record<"email" | "password", unknown>>, request: Request) {
         if (!credentials?.email || !credentials?.password) {
           return null
         }
@@ -101,10 +104,14 @@ export const authConfig = {
     maxAge: 30 * 24 * 60 * 60, // 30 days
   },
   callbacks: {
-    async jwt({ token, user, account }) {
+    async jwt({ token, user, account }: { 
+      token: JWT; 
+      user: User | AdapterUser | null; 
+      account: Account | null; 
+    }) {
       // Include user role in JWT token
       if (user) {
-        token.role = user.role
+        token.role = (user as any).role || UserRole.CLIENT
         token.id = user.id
       }
       
@@ -112,14 +119,17 @@ export const authConfig = {
       if (account && user) {
         // Update last login for OAuth users
         await prisma.user.update({
-          where: { id: user.id },
+          where: { id: user.id || '' },
           data: { lastLoginAt: new Date() }
         })
       }
 
       return token
     },
-    async session({ session, token }) {
+    async session({ session, token }: { 
+      session: Session; 
+      token: JWT; 
+    }) {
       // Send user role to the client
       if (token) {
         session.user.id = token.id as string
@@ -127,7 +137,11 @@ export const authConfig = {
       }
       return session
     },
-    async signIn({ user, account, profile }) {
+    async signIn({ user, account, profile }: { 
+      user: User | AdapterUser; 
+      account: Account | null; 
+      profile?: Profile; 
+    }) {
       // Allow OAuth sign-ins
       if (account?.provider === "google" || account?.provider === "github") {
         return true
@@ -150,10 +164,14 @@ export const authConfig = {
     error: "/auth/error",
   },
   events: {
-    async signIn({ user, account, isNewUser }) {
+    async signIn({ user, account, isNewUser }: { 
+      user: User; 
+      account: Account | null; 
+      isNewUser?: boolean; 
+    }) {
       console.log(`User ${user.email} signed in with ${account?.provider}`)
     },
-    async signOut({ token }) {
+    async signOut({ token }: { token: JWT }) {
       console.log(`User signed out: ${token?.email}`)
     },
   },

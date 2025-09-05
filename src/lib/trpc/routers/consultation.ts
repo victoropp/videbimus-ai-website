@@ -139,7 +139,7 @@ export const consultationRouter = createTRPCRouter({
         data: {
           ...input,
           userId: ctx.session.user.id,
-        },
+        } as any,
         include: {
           user: {
             select: {
@@ -365,7 +365,7 @@ export const consultationRouter = createTRPCRouter({
       }
 
       const room = await ctx.prisma.consultationRoom.create({
-        data: input,
+        data: input as any,
         include: {
           client: {
             select: {
@@ -623,7 +623,7 @@ export const consultationRouter = createTRPCRouter({
         data: {
           ...input,
           senderId: ctx.session.user.id,
-        },
+        } as any,
         include: {
           sender: {
             select: {
@@ -784,7 +784,7 @@ export const consultationRouter = createTRPCRouter({
         data: {
           ...input,
           uploadedBy: ctx.session.user.id,
-        },
+        } as any,
         include: {
           uploader: {
             select: {
@@ -885,10 +885,10 @@ export const consultationRouter = createTRPCRouter({
             version: existingDocument.version,
             changeNote: "Updated via consultation room",
             createdBy: ctx.session.user.id,
-          },
+          } as any,
         })
 
-        updateData.version = existingDocument.version + 1
+        Object.assign(updateData, { version: existingDocument.version + 1 })
       }
 
       const document = await ctx.prisma.consultationDocument.update({
@@ -929,7 +929,7 @@ export const consultationRouter = createTRPCRouter({
         data: {
           ...input,
           createdBy: ctx.session.user.id,
-        },
+        } as any,
         include: {
           assignee: {
             select: {
@@ -977,7 +977,7 @@ export const consultationRouter = createTRPCRouter({
 
       // Set completion date if status is completed
       if (input.status === "completed") {
-        updateData.completedAt = new Date()
+        (updateData as any).completedAt = new Date()
       }
 
       const actionItem = await ctx.prisma.consultationActionItem.update({
