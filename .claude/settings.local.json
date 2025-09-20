@@ -396,7 +396,8 @@
       "WebFetch(domain:oilflow-bidec-erp.vercel.app)",
       "WebFetch(domain:oilflow-bidec-erp-website-victoropp-3791s-projects.vercel.app)",
       "Read(//c/Users/victo/Documents/Data_Science_Projects/**)",
-      "Bash(npx @next/codemod@canary next-lint-to-eslint-cli:*)"
+      "Bash(npx @next/codemod@canary next-lint-to-eslint-cli:*)",
+      "Bash(npm test)"
     ],
     "deny": [],
     "ask": []
