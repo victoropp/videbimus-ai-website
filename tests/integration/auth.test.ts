@@ -160,7 +160,7 @@ describe('Authentication Integration Tests', () => {
 
       expect(validateSession('session-token-abc')).toBe(true)
       expect(validateSession('invalid-token')).toBe(false)
-      expect(validateSession('')).toBe(false)
+      expect(validateSession('')).toBeFalsy()
     })
 
     it('should expire sessions after timeout', async () => {

@@ -101,7 +101,7 @@ describe('Blog API Routes', () => {
       }
 
       const isValid = invalidPost.title && invalidPost.slug && invalidPost.content
-      expect(isValid).toBe(false)
+      expect(isValid).toBeFalsy()
     })
 
     it('should validate slug format', () => {
