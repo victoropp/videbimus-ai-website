@@ -121,7 +121,9 @@ export default function AboutPage() {
             </h1>
             <p className="mx-auto max-w-3xl text-xl text-gray-200 mb-8">
               Founded in 2025, we bring together decades of collective experience from leading tech companies,
-              research institutions, and Fortune 500 enterprises to deliver cutting-edge AI solutions that drive real business value.
+              research institutions, and Fortune 500 enterprises. We specialize in Oil & Gas (Petroverse platform)
+              and Insurance (INSURE360 solution), while delivering cutting-edge AI solutions across all industries
+              that drive real business value.
             </p>
           </motion.div>
         </div>
@@ -177,9 +179,11 @@ export default function AboutPage() {
                 </div>
                 <CardContent className="p-0">
                   <p className="text-lg text-gray-600 dark:text-gray-300 leading-relaxed">
-                    To democratize artificial intelligence and make cutting-edge AI solutions accessible 
-                    to businesses of all sizes. We believe every organization should have the opportunity 
-                    to leverage AI for competitive advantage, operational efficiency, and innovation.
+                    To democratize artificial intelligence and make cutting-edge AI solutions accessible
+                    to businesses of all sizes. From complex Oil & Gas operations to Insurance automation,
+                    and from enterprise solutions to small business tools, we believe every organization
+                    should have the opportunity to leverage AI for competitive advantage, operational
+                    efficiency, and innovation.
                   </p>
                 </CardContent>
               </Card>

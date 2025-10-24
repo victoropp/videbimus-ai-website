@@ -2,7 +2,7 @@ import { NextRequest, NextResponse } from "next/server"
 import { getServerSession } from "@/auth"
 import { prisma } from "@/lib/prisma"
 import { validateFileType, validateFileSize, generateSecureFilename } from "@/lib/security"
-import { writeFile, mkdir } from "fs/promises"
+import { writeFile, mkdir, rename, unlink } from "fs/promises"
 import path from "path"
 
 const UPLOAD_DIR = path.join(process.cwd(), "public/uploads")
@@ -76,60 +76,85 @@ export async function POST(request: NextRequest) {
       // Directory might already exist
     }
 
-    // Generate secure filename and save file
+    // Generate secure filename
     const secureFilename = generateSecureFilename(file.name)
-    const filePath = path.join(UPLOAD_DIR, secureFilename)
-    
-    const bytes = await file.arrayBuffer()
-    await writeFile(filePath, Buffer.from(bytes))
-
+    const tempPath = path.join(UPLOAD_DIR, `${secureFilename}.tmp`)
+    const finalPath = path.join(UPLOAD_DIR, secureFilename)
     const fileUrl = `/uploads/${secureFilename}`
 
-    // Save file record to database
-    if (projectId) {
-      const fileRecord = await prisma.projectFile.create({
-        data: {
-          filename: secureFilename,
-          originalName: file.name,
-          mimeType: file.type,
-          size: file.size,
-          url: fileUrl,
-          projectId,
-        },
-      })
+    try {
+      // Write to temp file first
+      const bytes = await file.arrayBuffer()
+      await writeFile(tempPath, Buffer.from(bytes))
 
-      return NextResponse.json({
-        message: "File uploaded successfully",
-        file: fileRecord,
-      })
-    } else if (consultationId) {
-      const fileRecord = await prisma.consultationFile.create({
-        data: {
-          filename: secureFilename,
-          originalName: file.name,
-          mimeType: file.type,
-          size: file.size,
-          url: fileUrl,
-          consultationId,
-        },
-      })
+      // Save file record to database and rename atomically in transaction
+      if (projectId) {
+        const fileRecord = await prisma.$transaction(async (tx) => {
+          const record = await tx.projectFile.create({
+            data: {
+              filename: secureFilename,
+              originalName: file.name,
+              mimeType: file.type,
+              size: file.size,
+              url: fileUrl,
+              projectId,
+            },
+          })
 
-      return NextResponse.json({
-        message: "File uploaded successfully",
-        file: fileRecord,
-      })
-    } else {
-      // Generic file upload (could be extended for other purposes)
-      return NextResponse.json({
-        message: "File uploaded successfully",
-        file: {
-          filename: secureFilename,
-          originalName: file.name,
-          mimeType: file.type,
-          size: file.size,
-          url: fileUrl,
-        },
-      })
+          // Atomic rename after database record created
+          await rename(tempPath, finalPath)
+          return record
+        })
+
+        return NextResponse.json({
+          message: "File uploaded successfully",
+          file: fileRecord,
+        })
+      } else if (consultationId) {
+        const fileRecord = await prisma.$transaction(async (tx) => {
+          const record = await tx.consultationFile.create({
+            data: {
+              filename: secureFilename,
+              originalName: file.name,
+              mimeType: file.type,
+              size: file.size,
+              url: fileUrl,
+              consultationId,
+            },
+          })
+
+          // Atomic rename after database record created
+          await rename(tempPath, finalPath)
+          return record
+        })
+
+        return NextResponse.json({
+          message: "File uploaded successfully",
+          file: fileRecord,
+        })
+      } else {
+        // Generic file upload (could be extended for other purposes)
+        await rename(tempPath, finalPath)
+
+        return NextResponse.json({
+          message: "File uploaded successfully",
+          file: {
+            filename: secureFilename,
+            originalName: file.name,
+            mimeType: file.type,
+            size: file.size,
+            url: fileUrl,
+          },
+        })
+      }
+    } catch (error) {
+      // Clean up temp file on error
+      try {
+        await unlink(tempPath)
+      } catch (cleanupError) {
+        // Ignore cleanup errors
+      }
+      throw error
     }
   } catch (error) {
     console.error("Upload error:", error)

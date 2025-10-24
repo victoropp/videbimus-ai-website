@@ -1,0 +1,19 @@
+#!/bin/sh
+. "$(dirname "$0")/_/husky.sh"
+
+# Validate commit message format
+# Format: <type>(<scope>): <subject>
+# Example: feat(blog): add new post editor
+
+commit_msg=$(cat "$1")
+
+# Check if commit message follows conventional commits
+if ! echo "$commit_msg" | grep -qE "^(feat|fix|docs|style|refactor|test|chore|perf)(\(.+\))?: .{1,}$"; then
+  echo "Error: Invalid commit message format"
+  echo "Format: <type>(<scope>): <subject>"
+  echo "Types: feat, fix, docs, style, refactor, test, chore, perf"
+  echo "Example: feat(blog): add new post editor"
+  exit 1
+fi
+
+echo "Commit message format is valid"

@@ -301,8 +301,8 @@ export function ConsultationRoomsList() {
                     {/* Action Buttons */}
                     <div className="flex items-center gap-2 ml-4">
                       <Link href={`/consultation/rooms/${room.id}`}>
-                        <Button 
-                          variant={room.status === 'ACTIVE' ? 'default' : 'outline'}
+                        <Button
+                          variant={room.status === 'ACTIVE' ? 'primary' : 'outline'}
                           size="sm"
                           className={room.status === 'ACTIVE' ? 'bg-green-600 hover:bg-green-700' : ''}
                         >

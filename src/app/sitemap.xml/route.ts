@@ -108,12 +108,6 @@ export async function GET() {
         lastmod: new Date().toISOString(),
         changefreq: 'weekly',
         priority: '0.8'
-      },
-      {
-        url: `${baseUrl}/collaboration`,
-        lastmod: new Date().toISOString(),
-        changefreq: 'weekly',
-        priority: '0.7'
       }
     ]
 

@@ -8,6 +8,24 @@ import type { Testimonial } from '@/types'
 const testimonials: Testimonial[] = [
   {
     id: '1',
+    name: 'John Thompson',
+    role: 'Operations Director',
+    company: 'Petroverse - Oil & Gas',
+    content: 'The AI-powered predictive maintenance system from Videbimus has been transformative for our drilling operations. We\'ve reduced equipment downtime by 45% and achieved 99.2% safety compliance. The ROI was clear within 4 months.',
+    image: '/testimonials/john-thompson.jpg',
+    rating: 5
+  },
+  {
+    id: '2',
+    name: 'Lisa Martinez',
+    role: 'Chief Technology Officer',
+    company: 'INSURE360 - Insurance',
+    content: 'Their insurance automation platform is exceptional. Claims processing is now 70% faster, fraud detection accuracy improved to 98.5%, and our operational costs dropped by 50%. This has revolutionized how we serve our customers.',
+    image: '/testimonials/lisa-martinez.jpg',
+    rating: 5
+  },
+  {
+    id: '3',
     name: 'Sarah Chen',
     role: 'Chief Technology Officer',
     company: 'TechCorp Industries',
@@ -16,7 +34,7 @@ const testimonials: Testimonial[] = [
     rating: 5
   },
   {
-    id: '2',
+    id: '4',
     name: 'Michael Rodriguez',
     role: 'Head of Data Science',
     company: 'FinanceFlow',
@@ -25,7 +43,7 @@ const testimonials: Testimonial[] = [
     rating: 5
   },
   {
-    id: '3',
+    id: '5',
     name: 'Dr. Emily Watson',
     role: 'VP of Innovation',
     company: 'HealthTech Solutions',
@@ -34,30 +52,12 @@ const testimonials: Testimonial[] = [
     rating: 5
   },
   {
-    id: '4',
+    id: '6',
     name: 'James Liu',
     role: 'CEO',
     company: 'RetailMax',
     content: 'The personalization engine Videbimus AI created for us increased our conversion rates by 35% and customer lifetime value by 50%. Their team understood our business from day one.',
     image: '/testimonials/james-liu.jpg',
-    rating: 5
-  },
-  {
-    id: '5',
-    name: 'Amanda Foster',
-    role: 'Operations Director',
-    company: 'ManufacturePro',
-    content: 'Predictive maintenance was just a concept until Videbimus AI made it reality. We\'ve prevented 90% of equipment failures and saved over $5M in unplanned downtime.',
-    image: '/testimonials/amanda-foster.jpg',
-    rating: 5
-  },
-  {
-    id: '6',
-    name: 'David Kim',
-    role: 'Chief Data Officer',
-    company: 'LogisticsCorp',
-    content: 'Route optimization through AI has revolutionized our delivery network. 30% reduction in fuel costs, 25% faster deliveries, and happier customers. Exceptional work!',
-    image: '/testimonials/david-kim.jpg',
     rating: 5
   }
 ]
@@ -167,8 +167,8 @@ export function Testimonials() {
           <p className="text-sm text-gray-500 dark:text-gray-400 mb-8">
             Trusted by companies across industries
           </p>
-          <div className="grid grid-cols-2 md:grid-cols-5 gap-8 items-center opacity-60">
-            {['TechCorp', 'FinanceFlow', 'HealthTech', 'RetailMax', 'LogisticsCorp'].map((company, index) => (
+          <div className="grid grid-cols-2 md:grid-cols-6 gap-8 items-center opacity-60">
+            {['Petroverse', 'INSURE360', 'TechCorp', 'FinanceFlow', 'HealthTech', 'RetailMax'].map((company, index) => (
               <div
                 key={company}
                 className="text-lg font-semibold text-gray-600 dark:text-gray-400 hover:text-gray-900 dark:hover:text-gray-200 transition-colors"

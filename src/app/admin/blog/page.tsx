@@ -4,7 +4,13 @@ import { useState, useEffect, useCallback } from 'react'
 import { useSession } from 'next-auth/react'
 import { useRouter } from 'next/navigation'
 import Link from 'next/link'
-import { motion } from 'framer-motion'
+import dynamic from 'next/dynamic'
+// Dynamically import framer-motion to reduce initial bundle
+const motion = dynamic(() => import('framer-motion').then(mod => ({ default: mod.motion.div })), {
+  ssr: false,
+  loading: () => <div />
+})
+
 import {
   Plus,
   Search,
@@ -307,8 +313,10 @@ export default function BlogAdminPage() {
                   </CardContent>
                 </Card>
               ) : (
-                posts.map((post, index) => (
-                  <motion.div
+                posts.map((post, index) => {
+                  const MotionDiv = motion as any
+                  return (
+                  <MotionDiv
                     key={post.id}
                     initial={{ opacity: 0, y: 20 }}
                     animate={{ opacity: 1, y: 0 }}
@@ -431,8 +439,9 @@ export default function BlogAdminPage() {
                         </div>
                       </CardContent>
                     </Card>
-                  </motion.div>
-                ))
+                  </MotionDiv>
+                  )
+                })
               )}
             </div>
 

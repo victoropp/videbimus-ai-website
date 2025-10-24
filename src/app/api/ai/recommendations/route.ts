@@ -3,6 +3,12 @@ import { z } from 'zod';
 import { recommendationEngine, UserProfile, ContentItem } from '@/lib/ai/recommendations';
 import { getServerSession } from '@/auth';
 
+// Helper function for safe integer parsing
+const parsePositiveInt = (value: string | null, defaultValue: number): number => {
+  const parsed = parseInt(value || String(defaultValue));
+  return Number.isNaN(parsed) || parsed < 1 ? defaultValue : parsed;
+};
+
 const recommendationRequestSchema = z.object({
   userProfile: z.object({
     userId: z.string(),
@@ -159,7 +165,7 @@ export async function PUT(req: NextRequest) {
 export async function GET(req: NextRequest) {
   try {
     const { searchParams } = new URL(req.url);
-    const timeWindow = searchParams.get('timeWindow');
+    const timeWindowDays = Math.min(parsePositiveInt(searchParams.get('timeWindow'), 7), 90);
 
     // Mock content for trending analysis
     const mockContent = [
@@ -180,12 +186,12 @@ export async function GET(req: NextRequest) {
 
     const trendingTopics = await recommendationEngine.analyzeTrendingTopics(
       mockContent,
-      timeWindow ? parseInt(timeWindow) : 7
+      timeWindowDays
     );
 
     return NextResponse.json({
       trendingTopics,
-      timeWindow: timeWindow ? parseInt(timeWindow) : 7,
+      timeWindow: timeWindowDays,
       timestamp: new Date().toISOString(),
     });
   } catch (error) {

@@ -1,28 +1,62 @@
 import { NextRequest } from "next/server"
 import { headers } from "next/headers"
 
+/**
+ * Validates that all critical environment variables are set
+ * Throws error if any required variable is missing
+ */
+export function validateCriticalEnvVars(): void {
+  const criticalVars = [
+    'NEXTAUTH_SECRET',
+    'ENCRYPTION_KEY',
+  ]
+
+  const missingVars: string[] = []
+
+  for (const varName of criticalVars) {
+    if (!process.env[varName] || process.env[varName]?.trim() === '') {
+      missingVars.push(varName)
+    }
+  }
+
+  if (missingVars.length > 0) {
+    throw new Error(
+      `Critical environment variables are missing or empty: ${missingVars.join(', ')}. ` +
+      'Application cannot start without these variables properly configured.'
+    )
+  }
+}
+
 // CSRF Token generation and validation
 export function generateCSRFToken(): string {
+  // Use crypto.getRandomValues() for cryptographically secure random values
+  const array = new Uint8Array(32)
+
   if (typeof window !== 'undefined' && window.crypto) {
-    const array = new Uint8Array(32)
     window.crypto.getRandomValues(array)
-    return Array.from(array, byte => byte.toString(16).padStart(2, '0')).join('')
   } else if (typeof global !== 'undefined' && global.crypto) {
-    const array = new Uint8Array(32)
     global.crypto.getRandomValues(array)
-    return Array.from(array, byte => byte.toString(16).padStart(2, '0')).join('')
+  } else {
+    // No fallback - throw error if crypto is not available
+    throw new Error('Web Crypto API is not available. Cannot generate secure CSRF token.')
   }
-  // Fallback for environments without crypto
-  return Math.random().toString(36).substring(2) + Date.now().toString(36)
+
+  return Array.from(array, byte => byte.toString(16).padStart(2, '0')).join('')
 }
 
 export async function validateCSRFToken(token: string, sessionToken: string): Promise<boolean> {
   if (!token || !sessionToken) return false
-  
+
   try {
     const encoder = new TextEncoder()
     const data = encoder.encode(sessionToken)
-    const keyData = encoder.encode(process.env.NEXTAUTH_SECRET || "fallback-secret")
+
+    // Validate that NEXTAUTH_SECRET is set
+    if (!process.env.NEXTAUTH_SECRET) {
+      throw new Error('NEXTAUTH_SECRET environment variable is required but not set')
+    }
+
+    const keyData = encoder.encode(process.env.NEXTAUTH_SECRET)
     
     // Import key for HMAC
     const key = await crypto.subtle.importKey(
@@ -146,15 +180,20 @@ export function generateSecureFilename(originalName: string): string {
 export async function encrypt(text: string): Promise<string> {
   const encoder = new TextEncoder()
   const data = encoder.encode(text)
-  
+
   // Generate IV
   const iv = new Uint8Array(12)
   crypto.getRandomValues(iv)
-  
+
+  // Validate that ENCRYPTION_KEY is set
+  if (!process.env.ENCRYPTION_KEY) {
+    throw new Error('ENCRYPTION_KEY environment variable is required but not set')
+  }
+
   // Derive key from password
   const keyMaterial = await crypto.subtle.importKey(
     'raw',
-    encoder.encode(process.env.ENCRYPTION_KEY || 'fallback'),
+    encoder.encode(process.env.ENCRYPTION_KEY),
     { name: 'PBKDF2' },
     false,
     ['deriveKey']
@@ -196,18 +235,23 @@ export async function decrypt(encryptedData: string): Promise<string> {
   try {
     const decoder = new TextDecoder()
     const encoder = new TextEncoder()
-    
+
     // Convert from base64
     const combined = Uint8Array.from(atob(encryptedData), c => c.charCodeAt(0))
-    
+
     // Extract IV and encrypted data
     const iv = combined.slice(0, 12)
     const encrypted = combined.slice(12)
-    
+
+    // Validate that ENCRYPTION_KEY is set
+    if (!process.env.ENCRYPTION_KEY) {
+      throw new Error('ENCRYPTION_KEY environment variable is required but not set')
+    }
+
     // Derive key
     const keyMaterial = await crypto.subtle.importKey(
       'raw',
-      encoder.encode(process.env.ENCRYPTION_KEY || 'fallback'),
+      encoder.encode(process.env.ENCRYPTION_KEY),
       { name: 'PBKDF2' },
       false,
       ['deriveKey']

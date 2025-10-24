@@ -106,7 +106,7 @@ const DefaultErrorFallback: React.FC<ErrorFallbackProps> = ({ error, resetError,
           </Alert>
 
           <div className="flex flex-col sm:flex-row gap-3 justify-center">
-            <Button onClick={resetError} variant="default" className="flex items-center gap-2">
+            <Button onClick={resetError} variant="primary" className="flex items-center gap-2">
               <RefreshCw className="h-4 w-4" />
               Try Again
             </Button>
@@ -167,12 +167,12 @@ export class ErrorBoundary extends React.Component<ErrorBoundaryProps, ErrorBoun
     }
   }
 
-  componentDidCatch(error: Error, errorInfo: React.ErrorInfo) {
+  override componentDidCatch(error: Error, errorInfo: React.ErrorInfo) {
     this.setState({ errorInfo })
-    
+
     // Log the error
     logError(error, errorInfo, this.state.errorId)
-    
+
     // Call optional error callback
     this.props.onError?.(error, errorInfo)
   }
@@ -186,7 +186,7 @@ export class ErrorBoundary extends React.Component<ErrorBoundaryProps, ErrorBoun
     })
   }
 
-  componentDidUpdate(prevProps: ErrorBoundaryProps, prevState: ErrorBoundaryState) {
+  override componentDidUpdate(prevProps: ErrorBoundaryProps, prevState: ErrorBoundaryState) {
     // Auto-recovery attempt after 10 seconds in development
     if (
       process.env.NODE_ENV === 'development' &&
@@ -200,13 +200,13 @@ export class ErrorBoundary extends React.Component<ErrorBoundaryProps, ErrorBoun
     }
   }
 
-  componentWillUnmount() {
+  override componentWillUnmount() {
     if (this.resetTimeoutId) {
       clearTimeout(this.resetTimeoutId)
     }
   }
 
-  render() {
+  override render() {
     if (this.state.hasError) {
       const FallbackComponent = this.props.fallback || DefaultErrorFallback
       

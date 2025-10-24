@@ -105,12 +105,8 @@ export type {
 } from './business';
 
 export type {
-  // Collaboration types
-  Room,
-  Meeting,
-  SharedDocument,
-  WhiteboardElement,
-  CodeSession,
+  // Collaboration types (simplified for basic client portal)
+  SimpleRoom,
 } from './collaboration';
 
 export type {
@@ -149,14 +145,8 @@ export type {
 } from './ai';
 
 export type {
-  // Collaboration enum types
+  // Collaboration enum types (simplified)
   UserStatus,
-  RoomType,
-  MeetingType,
-  DocumentType,
-  ElementType,
-  Tool,
-  ActivityType,
 } from './collaboration';
 
 export type {

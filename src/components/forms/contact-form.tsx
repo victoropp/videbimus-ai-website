@@ -70,7 +70,7 @@ export function ContactForm() {
             </div>
             <CardTitle className="text-xl mb-2">Message Sent!</CardTitle>
             <CardDescription className="text-base">
-              Thank you for your interest. We'll get back to you within 24 hours to schedule your free consultation.
+              Thank you for your interest in VidebimusAI! Our team will review your request and respond within 24 hours to schedule your free 30-minute consultation. Check your email for confirmation.
             </CardDescription>
           </CardContent>
         </Card>
@@ -148,6 +148,31 @@ export function ContactForm() {
             />
           </div>
 
+          {/* Industry */}
+          <div>
+            <label htmlFor="industry" className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">
+              Industry
+            </label>
+            <select
+              id="industry"
+              {...register('industry')}
+              className="flex h-12 w-full rounded-lg border border-gray-300 bg-white px-4 py-3 text-base ring-offset-white file:border-0 file:bg-transparent file:text-sm file:font-medium placeholder:text-gray-500 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-cyan-500 focus-visible:ring-offset-2 disabled:cursor-not-allowed disabled:opacity-50 dark:border-gray-700 dark:bg-gray-950 dark:ring-offset-gray-950 dark:placeholder:text-gray-400 dark:focus-visible:ring-cyan-400"
+            >
+              <option value="">Select your industry...</option>
+              <option value="oil-gas">Oil & Gas</option>
+              <option value="insurance">Insurance</option>
+              <option value="healthcare">Healthcare</option>
+              <option value="finance">Finance & Banking</option>
+              <option value="manufacturing">Manufacturing</option>
+              <option value="retail">Retail & E-commerce</option>
+              <option value="technology">Technology</option>
+              <option value="logistics">Logistics & Supply Chain</option>
+              <option value="energy">Energy & Utilities</option>
+              <option value="small-business">Small Business</option>
+              <option value="other">Other</option>
+            </select>
+          </div>
+
           {/* Service */}
           <div>
             <label htmlFor="service" className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">
@@ -164,6 +189,46 @@ export function ContactForm() {
                   {service.label}
                 </option>
               ))}
+            </select>
+          </div>
+
+          {/* Timeline */}
+          <div>
+            <label htmlFor="timeline" className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">
+              Project Timeline
+            </label>
+            <select
+              id="timeline"
+              {...register('timeline')}
+              className="flex h-12 w-full rounded-lg border border-gray-300 bg-white px-4 py-3 text-base ring-offset-white file:border-0 file:bg-transparent file:text-sm file:font-medium placeholder:text-gray-500 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-cyan-500 focus-visible:ring-offset-2 disabled:cursor-not-allowed disabled:opacity-50 dark:border-gray-700 dark:bg-gray-950 dark:ring-offset-gray-950 dark:placeholder:text-gray-400 dark:focus-visible:ring-cyan-400"
+            >
+              <option value="">When do you want to start?</option>
+              <option value="immediately">Immediately (within 2 weeks)</option>
+              <option value="1-month">Within 1 month</option>
+              <option value="1-3-months">1-3 months</option>
+              <option value="3-6-months">3-6 months</option>
+              <option value="6-plus-months">6+ months</option>
+              <option value="exploring">Just exploring options</option>
+            </select>
+          </div>
+
+          {/* Budget */}
+          <div>
+            <label htmlFor="budget" className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">
+              Budget Range (Optional)
+            </label>
+            <select
+              id="budget"
+              {...register('budget')}
+              className="flex h-12 w-full rounded-lg border border-gray-300 bg-white px-4 py-3 text-base ring-offset-white file:border-0 file:bg-transparent file:text-sm file:font-medium placeholder:text-gray-500 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-cyan-500 focus-visible:ring-offset-2 disabled:cursor-not-allowed disabled:opacity-50 dark:border-gray-700 dark:bg-gray-950 dark:ring-offset-gray-950 dark:placeholder:text-gray-400 dark:focus-visible:ring-cyan-400"
+            >
+              <option value="">Select budget range...</option>
+              <option value="under-10k">Under $10,000</option>
+              <option value="10k-25k">$10,000 - $25,000</option>
+              <option value="25k-50k">$25,000 - $50,000</option>
+              <option value="50k-100k">$50,000 - $100,000</option>
+              <option value="100k-plus">$100,000+</option>
+              <option value="not-sure">Not sure yet</option>
             </select>
           </div>
 

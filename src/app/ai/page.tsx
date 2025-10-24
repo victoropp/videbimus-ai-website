@@ -1,13 +1,35 @@
+import dynamic from 'next/dynamic';
 import { Metadata } from 'next';
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
-import { ChatInterface } from '@/components/ai/chat-interface';
-import { SentimentDemo } from '@/components/ai/demos/sentiment-demo';
-import { SummarizationDemo } from '@/components/ai/demos/summarization-demo';
-import { NERDemo } from '@/components/ai/demos/ner-demo';
-import { QADemo } from '@/components/ai/demos/qa-demo';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Badge } from '@/components/ui/badge';
 import { Bot, Brain, Zap, TrendingUp, MessageSquare, FileText, Heart, Target, Hash, HelpCircle } from 'lucide-react';
+
+// Dynamically import AI demo components to reduce initial bundle size
+const ChatInterface = dynamic(() => import('@/components/ai/chat-interface').then(mod => ({ default: mod.ChatInterface })), {
+  loading: () => <div className="flex items-center justify-center p-8"><div className="animate-spin rounded-full h-8 w-8 border-b-2 border-primary"></div></div>,
+  ssr: false
+});
+
+const SentimentDemo = dynamic(() => import('@/components/ai/demos/sentiment-demo').then(mod => ({ default: mod.SentimentDemo })), {
+  loading: () => <div className="flex items-center justify-center p-8"><div className="animate-spin rounded-full h-8 w-8 border-b-2 border-primary"></div></div>,
+  ssr: false
+});
+
+const SummarizationDemo = dynamic(() => import('@/components/ai/demos/summarization-demo').then(mod => ({ default: mod.SummarizationDemo })), {
+  loading: () => <div className="flex items-center justify-center p-8"><div className="animate-spin rounded-full h-8 w-8 border-b-2 border-primary"></div></div>,
+  ssr: false
+});
+
+const NERDemo = dynamic(() => import('@/components/ai/demos/ner-demo').then(mod => ({ default: mod.NERDemo })), {
+  loading: () => <div className="flex items-center justify-center p-8"><div className="animate-spin rounded-full h-8 w-8 border-b-2 border-primary"></div></div>,
+  ssr: false
+});
+
+const QADemo = dynamic(() => import('@/components/ai/demos/qa-demo').then(mod => ({ default: mod.QADemo })), {
+  loading: () => <div className="flex items-center justify-center p-8"><div className="animate-spin rounded-full h-8 w-8 border-b-2 border-primary"></div></div>,
+  ssr: false
+});
 
 export const metadata: Metadata = {
   title: 'AI Playground | Videbimus AI',
