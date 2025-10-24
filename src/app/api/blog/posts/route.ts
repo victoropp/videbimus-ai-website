@@ -50,7 +50,15 @@ export async function GET(request: NextRequest) {
     const sortOrder = (searchParams.get('sortOrder') as 'asc' | 'desc') || 'desc'
 
     // Build where clause for filtering
-    const where: any = {}
+    const where: {
+      published?: boolean;
+      status?: PostStatus | string;
+      featured?: boolean;
+      category?: { slug: string };
+      postTags?: { some: { tag: { slug: { in: string[] } } } };
+      authorId?: string;
+      OR?: Array<{ title?: { contains: string; mode: 'insensitive' }; content?: { contains: string; mode: 'insensitive' }; excerpt?: { contains: string; mode: 'insensitive' } }>;
+    } = {}
     
     // Only show published posts for public API unless admin
     const session = await getServerSession()

@@ -302,11 +302,11 @@ export function ConsultationRoomsList() {
                     <div className="flex items-center gap-2 ml-4">
                       <Link href={`/consultation/rooms/${room.id}`}>
                         <Button
-                          variant={room.status === 'ACTIVE' ? 'primary' : 'outline'}
+                          variant={room.status === ConsultationRoomStatus.ACTIVE ? 'primary' : 'outline'}
                           size="sm"
-                          className={room.status === 'ACTIVE' ? 'bg-green-600 hover:bg-green-700' : ''}
+                          className={room.status === ConsultationRoomStatus.ACTIVE ? 'bg-green-600 hover:bg-green-700' : ''}
                         >
-                          {room.status === 'ACTIVE' ? (
+                          {room.status === ConsultationRoomStatus.ACTIVE ? (
                             <>
                               <Video className="h-4 w-4 mr-1" />
                               Join Room
@@ -327,17 +327,17 @@ export function ConsultationRoomsList() {
                           </Button>
                         </DropdownMenuTrigger>
                         <DropdownMenuContent align="end">
-                          {room.status === 'SCHEDULED' && (
+                          {room.status === ConsultationRoomStatus.SCHEDULED && (
                             <DropdownMenuItem
-                              onClick={() => handleStatusChange(room.id, 'ACTIVE')}
+                              onClick={() => handleStatusChange(room.id, ConsultationRoomStatus.ACTIVE)}
                             >
                               <Video className="h-4 w-4 mr-2" />
                               Start Session
                             </DropdownMenuItem>
                           )}
-                          {room.status === 'ACTIVE' && (
+                          {room.status === ConsultationRoomStatus.ACTIVE && (
                             <DropdownMenuItem
-                              onClick={() => handleStatusChange(room.id, 'COMPLETED')}
+                              onClick={() => handleStatusChange(room.id, ConsultationRoomStatus.COMPLETED)}
                             >
                               <CheckCircle className="h-4 w-4 mr-2" />
                               End Session
@@ -347,9 +347,9 @@ export function ConsultationRoomsList() {
                             <Edit className="h-4 w-4 mr-2" />
                             Edit Room
                           </DropdownMenuItem>
-                          {room.status !== 'ACTIVE' && (
+                          {room.status !== ConsultationRoomStatus.ACTIVE && (
                             <DropdownMenuItem
-                              onClick={() => handleStatusChange(room.id, 'CANCELLED')}
+                              onClick={() => handleStatusChange(room.id, ConsultationRoomStatus.CANCELLED)}
                               className="text-red-600"
                             >
                               <Trash2 className="h-4 w-4 mr-2" />

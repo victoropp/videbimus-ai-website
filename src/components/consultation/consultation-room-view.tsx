@@ -416,7 +416,7 @@ export function ConsultationRoomView({ room, currentUser }: ConsultationRoomView
                     value={messageInput}
                     onChange={(e) => setMessageInput(e.target.value)}
                     onKeyPress={handleKeyPress}
-                    disabled={sendMessage.isLoading}
+                    disabled={sendMessage.isPending}
                   />
                   <Button
                     variant="ghost"
@@ -428,7 +428,7 @@ export function ConsultationRoomView({ room, currentUser }: ConsultationRoomView
                 </div>
                 <Button
                   onClick={handleSendMessage}
-                  disabled={!messageInput.trim() || sendMessage.isLoading}
+                  disabled={!messageInput.trim() || sendMessage.isPending}
                   size="sm"
                 >
                   <Send className="h-4 w-4" />
