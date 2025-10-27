@@ -14,20 +14,15 @@ import type { NavItem } from '@/types'
 const navigation: NavItem[] = [
   { name: 'Home', href: '/' },
   { name: 'About', href: '/about' },
-  { 
-    name: 'Services', 
+  {
+    name: 'Services',
     href: '/services',
     description: 'AI & Data Science Solutions'
   },
-  { 
-    name: 'AI Playground', 
+  {
+    name: 'AI Playground',
     href: '/ai',
     description: 'Interactive AI Demos'
-  },
-  { 
-    name: 'Collaboration', 
-    href: '/collaboration',
-    description: 'Virtual Collaboration Hub'
   },
   { name: 'Case Studies', href: '/case-studies' },
   { name: 'Blog', href: '/blog' },

@@ -245,21 +245,21 @@ export function ConsultationRoomView({ room, currentUser }: ConsultationRoomView
             {/* Video Controls */}
             <div className="flex items-center gap-1 bg-gray-100 rounded-lg p-1">
               <Button
-                variant={isVideoEnabled ? "default" : "ghost"}
+                variant={isVideoEnabled ? "primary" : "ghost"}
                 size="sm"
                 onClick={() => setIsVideoEnabled(!isVideoEnabled)}
               >
                 {isVideoEnabled ? <Video className="h-4 w-4" /> : <VideoOff className="h-4 w-4" />}
               </Button>
               <Button
-                variant={isAudioEnabled ? "default" : "ghost"}
+                variant={isAudioEnabled ? "primary" : "ghost"}
                 size="sm"
                 onClick={() => setIsAudioEnabled(!isAudioEnabled)}
               >
                 {isAudioEnabled ? <Mic className="h-4 w-4" /> : <MicOff className="h-4 w-4" />}
               </Button>
               <Button
-                variant={isScreenSharing ? "default" : "ghost"}
+                variant={isScreenSharing ? "primary" : "ghost"}
                 size="sm"
                 onClick={() => setIsScreenSharing(!isScreenSharing)}
               >
@@ -416,7 +416,7 @@ export function ConsultationRoomView({ room, currentUser }: ConsultationRoomView
                     value={messageInput}
                     onChange={(e) => setMessageInput(e.target.value)}
                     onKeyPress={handleKeyPress}
-                    disabled={sendMessage.isLoading}
+                    disabled={sendMessage.isPending}
                   />
                   <Button
                     variant="ghost"
@@ -428,7 +428,7 @@ export function ConsultationRoomView({ room, currentUser }: ConsultationRoomView
                 </div>
                 <Button
                   onClick={handleSendMessage}
-                  disabled={!messageInput.trim() || sendMessage.isLoading}
+                  disabled={!messageInput.trim() || sendMessage.isPending}
                   size="sm"
                 >
                   <Send className="h-4 w-4" />

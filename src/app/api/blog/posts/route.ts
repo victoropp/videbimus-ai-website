@@ -21,24 +21,44 @@ const createPostSchema = z.object({
   publishedAt: z.string().optional().transform((val) => val ? new Date(val) : undefined),
 })
 
+// Helper function for safe integer parsing
+const parsePositiveInt = (value: string | null, defaultValue: number): number => {
+  const parsed = parseInt(value || String(defaultValue));
+  return Number.isNaN(parsed) || parsed < 1 ? defaultValue : parsed;
+};
+
 // GET /api/blog/posts - Get blog posts with search and filtering
 export async function GET(request: NextRequest) {
   try {
     const { searchParams } = new URL(request.url)
-    
+
     const query = searchParams.get('query') || undefined
     const category = searchParams.get('category') || undefined
     const tags = searchParams.get('tags')?.split(',').filter(Boolean) || []
     const author = searchParams.get('author') || undefined
     const status = (searchParams.get('status') as PostStatus) || undefined
     const featured = searchParams.get('featured') === 'true' ? true : undefined
-    const page = parseInt(searchParams.get('page') || '1')
-    const limit = Math.min(parseInt(searchParams.get('limit') || '10'), 50) // Max 50 posts per request
-    const sortBy = (searchParams.get('sortBy') as any) || 'createdAt'
+    const page = parsePositiveInt(searchParams.get('page'), 1);
+    const limit = Math.min(parsePositiveInt(searchParams.get('limit'), 10), 50);
+
+    // Type-safe sortBy validation
+    type SortField = 'createdAt' | 'updatedAt' | 'title' | 'views' | 'publishedAt';
+    const sortByParam = searchParams.get('sortBy') as SortField | null;
+    const validSorts: SortField[] = ['createdAt', 'updatedAt', 'title', 'views', 'publishedAt'];
+    const sortBy: SortField = sortByParam && validSorts.includes(sortByParam) ? sortByParam : 'createdAt';
+
     const sortOrder = (searchParams.get('sortOrder') as 'asc' | 'desc') || 'desc'
 
     // Build where clause for filtering
-    const where: any = {}
+    const where: {
+      published?: boolean;
+      status?: PostStatus | string;
+      featured?: boolean;
+      category?: { slug: string };
+      postTags?: { some: { tag: { slug: { in: string[] } } } };
+      authorId?: string;
+      OR?: Array<{ title?: { contains: string; mode: 'insensitive' }; content?: { contains: string; mode: 'insensitive' }; excerpt?: { contains: string; mode: 'insensitive' } }>;
+    } = {}
     
     // Only show published posts for public API unless admin
     const session = await getServerSession()
@@ -211,7 +231,7 @@ export async function POST(request: NextRequest) {
       )
     }
 
-    // Create the post
+    // Create the post with tags in a transaction
     const postData: any = {
       title: data.title,
       slug: data.slug,
@@ -222,7 +242,7 @@ export async function POST(request: NextRequest) {
       authorId: session.user.id,
       readTime: Math.ceil(data.content.split(' ').length / 200)
     };
-    
+
     // Add optional fields only if they are defined
     if (data.excerpt !== undefined) postData.excerpt = data.excerpt;
     if (data.publishedAt !== undefined) postData.publishedAt = data.publishedAt;
@@ -230,36 +250,62 @@ export async function POST(request: NextRequest) {
     if (data.seoTitle !== undefined) postData.seoTitle = data.seoTitle;
     if (data.seoDescription !== undefined) postData.seoDescription = data.seoDescription;
 
-    const post = await prisma.blogPost.create({
-      data: postData,
-      include: {
-        author: {
-          select: {
-            id: true,
-            name: true,
-            email: true,
-            image: true,
-            role: true
-          }
-        },
-        category: true,
-        postTags: {
-          include: {
-            tag: true
+    // Use transaction to ensure atomicity
+    const post = await prisma.$transaction(async (tx) => {
+      // Create the blog post
+      const newPost = await tx.blogPost.create({
+        data: postData,
+        include: {
+          author: {
+            select: {
+              id: true,
+              name: true,
+              email: true,
+              image: true,
+              role: true
+            }
+          },
+          category: true,
+          postTags: {
+            include: {
+              tag: true
+            }
           }
         }
-      }
-    })
+      });
 
-    // Handle tag associations if tagIds were provided
-    if (data.tagIds && data.tagIds.length > 0) {
-      await prisma.blogPostTag.createMany({
-        data: data.tagIds.map(tagId => ({
-          postId: post.id,
-          tagId: tagId
-        }))
-      })
-    }
+      // Handle tag associations if tagIds were provided
+      if (data.tagIds && data.tagIds.length > 0) {
+        await tx.blogPostTag.createMany({
+          data: data.tagIds.map(tagId => ({
+            postId: newPost.id,
+            tagId: tagId
+          }))
+        });
+      }
+
+      // Return the post with tags included
+      return await tx.blogPost.findUnique({
+        where: { id: newPost.id },
+        include: {
+          author: {
+            select: {
+              id: true,
+              name: true,
+              email: true,
+              image: true,
+              role: true
+            }
+          },
+          category: true,
+          postTags: {
+            include: {
+              tag: true
+            }
+          }
+        }
+      });
+    })
 
     // Revision tracking not implemented yet
     // await prisma.blogRevision.create({

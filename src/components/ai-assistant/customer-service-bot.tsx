@@ -69,7 +69,19 @@ const BUSINESS_CONTEXT = {
     'Data Engineering',
     'Business Intelligence'
   ],
-  industries: ['Healthcare', 'Finance', 'Manufacturing', 'Retail', 'Technology'],
+  industries: ['Oil & Gas (Petroverse)', 'Insurance (INSURE360)', 'Healthcare', 'Finance', 'Manufacturing', 'Retail', 'Small Business'],
+  caseStudies: {
+    petroverse: {
+      name: 'Petroverse - Oil & Gas AI Platform',
+      industry: 'Oil & Gas',
+      results: ['45% downtime reduction', '60% faster equipment diagnostics', '25% cost savings', '99.2% safety compliance']
+    },
+    insure360: {
+      name: 'INSURE360 - Insurance Automation',
+      industry: 'Insurance',
+      results: ['70% faster claims processing', '98.5% fraud detection accuracy', '50% cost reduction', '95% customer satisfaction']
+    }
+  },
   stats: {
     projectsCompleted: '150+',
     clientSatisfaction: '98%',

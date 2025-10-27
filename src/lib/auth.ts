@@ -1,17 +1,26 @@
 import { authService } from '@/lib/services/auth'
+import { auth } from '@/auth'
 
 export const authOptions = authService.getNextAuthConfig()
 
+/**
+ * Gets the authenticated user session from NextAuth
+ * Returns null if user is not authenticated
+ */
 export async function getServerAuthSession() {
-  // Simplified auth check that bypasses the Next.js 15 headers async issue
-  // Return a mock session for development to prevent blocking
-  return {
-    user: { 
-      id: 'dev-user',
-      email: 'dev@videbimusai.com',
-      name: 'Development User'
-    },
-    expires: new Date(Date.now() + 30 * 24 * 60 * 60 * 1000).toISOString()
+  try {
+    const session = await auth()
+
+    // Return null if no session exists (user not authenticated)
+    if (!session || !session.user) {
+      return null
+    }
+
+    return session
+  } catch (error) {
+    console.error('Failed to get server auth session:', error)
+    // Return null on error to deny access
+    return null
   }
 }
 

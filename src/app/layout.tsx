@@ -3,6 +3,7 @@ import { Inter, Plus_Jakarta_Sans, JetBrains_Mono } from 'next/font/google'
 import { Header } from '@/components/layout/header'
 import { Footer } from '@/components/layout/footer'
 import { CustomerServiceBot } from '@/components/ai-assistant/customer-service-bot'
+import { PerformanceMonitor } from '@/components/performance-monitor'
 import ClientErrorBoundary from '@/components/client-error-boundary'
 import RootProviders from '@/components/providers/root-providers'
 import './globals.css'
@@ -95,6 +96,53 @@ export default function RootLayout({
         <link rel="apple-touch-icon" href="/apple-touch-icon.png" />
         <link rel="manifest" href="/manifest.json" />
         <meta name="theme-color" content="#00E5FF" />
+
+        {/* Structured Data - Organization */}
+        <script
+          type="application/ld+json"
+          dangerouslySetInnerHTML={{
+            __html: JSON.stringify({
+              '@context': 'https://schema.org',
+              '@type': 'Organization',
+              name: 'Videbimus AI',
+              url: 'https://videbimus.ai',
+              logo: 'https://videbimus.ai/logo.png',
+              description: 'Expert AI and Data Science consulting services helping organizations transform through intelligent automation and data-driven decision making.',
+              contactPoint: {
+                '@type': 'ContactPoint',
+                contactType: 'Customer Service',
+                email: 'info@videbimus.ai',
+                availableLanguage: ['English']
+              },
+              sameAs: [
+                'https://twitter.com/videbimusai',
+                'https://linkedin.com/company/videbimus-ai'
+              ],
+              address: {
+                '@type': 'PostalAddress',
+                addressCountry: 'US'
+              }
+            })
+          }}
+        />
+
+        {/* Structured Data - Website */}
+        <script
+          type="application/ld+json"
+          dangerouslySetInnerHTML={{
+            __html: JSON.stringify({
+              '@context': 'https://schema.org',
+              '@type': 'WebSite',
+              name: 'Videbimus AI',
+              url: 'https://videbimus.ai',
+              potentialAction: {
+                '@type': 'SearchAction',
+                target: 'https://videbimus.ai/search?q={search_term_string}',
+                'query-input': 'required name=search_term_string'
+              }
+            })
+          }}
+        />
       </head>
       <body 
         className={`${inter.variable} ${jakarta.variable} ${jetbrains.variable} font-sans antialiased`}
@@ -102,6 +150,7 @@ export default function RootLayout({
       >
         <RootProviders>
           <ClientErrorBoundary>
+            <PerformanceMonitor />
             <div className="relative flex min-h-screen flex-col">
               <Header />
               <main className="flex-1">

@@ -1,11 +1,33 @@
 import { z } from 'zod';
 
-// Optional Sentry import - gracefully handle if not available
+/**
+ * Import Sentry for error tracking
+ * If Sentry is not configured, errors will be logged but tracking will fail loudly
+ */
 let Sentry: any = null;
+let sentryAvailable = false;
+
 try {
   Sentry = require('@sentry/nextjs');
+  sentryAvailable = true;
 } catch (error) {
-  console.warn('Sentry not available:', error);
+  // Sentry package not installed - log warning but don't fail silently
+  console.error(
+    'CRITICAL: Sentry package is not installed. Error tracking is disabled. ' +
+    'Install @sentry/nextjs to enable error tracking: npm install @sentry/nextjs'
+  );
+}
+
+// Validate Sentry configuration if it's enabled
+if (sentryAvailable && process.env.NODE_ENV === 'production') {
+  const sentryDsn = process.env.SENTRY_DSN;
+  if (!sentryDsn || sentryDsn.includes('placeholder') || sentryDsn.includes('disabled')) {
+    console.error(
+      'CRITICAL: Sentry is installed but SENTRY_DSN is not properly configured. ' +
+      'Error tracking will not work in production. Set a valid SENTRY_DSN environment variable.'
+    );
+    sentryAvailable = false;
+  }
 }
 
 // Error types
@@ -292,29 +314,37 @@ export class ErrorHandler {
       timestamp: new Date().toISOString(),
     };
 
-    // Log to console in development
-    if (process.env.NODE_ENV === 'development') {
-      console.error('Service Error:', logData);
-    }
+    // Always log to console
+    console.error('Service Error:', logData);
 
-    // Send to Sentry (if available)
-    if (Sentry?.withScope) {
-      Sentry.withScope(scope => {
-        scope.setTag('service', error.service);
-        scope.setTag('operation', error.operation);
-        scope.setTag('errorType', error.type);
-        scope.setLevel('error');
-        
-        if (error.metadata) {
-          scope.setContext('metadata', error.metadata);
-        }
-        
-        if (context) {
-          scope.setContext('context', context);
-        }
-        
-        Sentry.captureException(error.originalError || error);
-      });
+    // Send to Sentry if available and properly configured
+    if (!sentryAvailable) {
+      console.error(
+        'ERROR TRACKING UNAVAILABLE: This error was not sent to Sentry because ' +
+        'error tracking is not properly configured. Configure Sentry to track errors in production.'
+      );
+    } else if (Sentry?.withScope) {
+      try {
+        Sentry.withScope(scope => {
+          scope.setTag('service', error.service);
+          scope.setTag('operation', error.operation);
+          scope.setTag('errorType', error.type);
+          scope.setLevel('error');
+
+          if (error.metadata) {
+            scope.setContext('metadata', error.metadata);
+          }
+
+          if (context) {
+            scope.setContext('context', context);
+          }
+
+          Sentry.captureException(error.originalError || error);
+        });
+      } catch (sentryError) {
+        console.error('Failed to send error to Sentry:', sentryError);
+        console.error('Original error that failed to track:', logData);
+      }
     }
   }
 

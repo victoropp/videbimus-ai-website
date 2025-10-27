@@ -9,6 +9,36 @@ import type { CaseStudy } from '@/types'
 
 const caseStudies: CaseStudy[] = [
   {
+    id: 'petroverse-oil-gas',
+    title: 'Petroverse: AI-Powered Oil & Gas Operations',
+    description: 'Comprehensive AI platform for predictive maintenance, production optimization, and real-time operational intelligence in the Oil & Gas industry.',
+    client: 'Petroverse',
+    industry: 'Oil & Gas',
+    image: '/case-studies/petroverse-oil-gas.jpg',
+    tags: ['Predictive Maintenance', 'IoT Integration', 'Production Optimization', 'Safety Monitoring'],
+    results: [
+      { metric: 'Downtime Reduction', value: '45%' },
+      { metric: 'Equipment Diagnostics', value: '60% Faster' },
+      { metric: 'Cost Savings', value: '25%' },
+      { metric: 'Safety Compliance', value: '99.2%' }
+    ]
+  },
+  {
+    id: 'insure360-insurance',
+    title: 'INSURE360: Insurance Automation Platform',
+    description: 'End-to-end AI-powered insurance platform automating claims processing, fraud detection, and risk assessment with industry-leading accuracy.',
+    client: 'INSURE360',
+    industry: 'Insurance',
+    image: '/case-studies/insure360-insurance.jpg',
+    tags: ['Claims Automation', 'Fraud Detection', 'NLP', 'Risk Assessment'],
+    results: [
+      { metric: 'Claims Processing', value: '70% Faster' },
+      { metric: 'Fraud Detection', value: '98.5%' },
+      { metric: 'Cost Reduction', value: '50%' },
+      { metric: 'Customer Satisfaction', value: '95%' }
+    ]
+  },
+  {
     id: 'techcorp-automation',
     title: 'Manufacturing Process Optimization',
     description: 'AI-powered predictive maintenance and quality control system that reduced downtime by 60% and improved product quality by 40%.',

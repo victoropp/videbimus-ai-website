@@ -49,9 +49,49 @@ export const knowledgeBase: KnowledgeItem[] = [
     id: "industries",
     category: "Services",
     question: "What industries do you work with?",
-    answer: "We work across diverse sectors including manufacturing, healthcare, finance, retail, logistics, and energy. Our team adapts our AI expertise to meet specific industry needs and regulatory requirements.",
+    answer: "We specialize in Oil & Gas (Petroverse project), Insurance (INSURE360), manufacturing, healthcare, finance, retail, logistics, and energy. We also serve small businesses across various sectors. Our team adapts our AI expertise to meet specific industry needs and regulatory requirements.",
     keywords: ["industries", "sectors", "verticals", "work with", "experience"],
     tags: ["industries", "services"]
+  },
+  {
+    id: "petroverse",
+    category: "Case Studies",
+    question: "What is Petroverse?",
+    answer: "Petroverse is our flagship Oil & Gas AI solution that provides intelligent data analysis, predictive maintenance for drilling equipment, and real-time operational insights. It helps oil and gas companies reduce downtime by 45%, improve safety compliance, and optimize production workflows through advanced machine learning and IoT integration.",
+    keywords: ["petroverse", "oil and gas", "petroleum", "energy", "drilling", "case study"],
+    tags: ["case-studies", "oil-gas", "petroverse"]
+  },
+  {
+    id: "insure360",
+    category: "Case Studies",
+    question: "What is INSURE360?",
+    answer: "INSURE360 is our comprehensive AI-powered insurance platform that automates claims processing, fraud detection, and risk assessment. It reduces claims processing time by 70%, improves fraud detection accuracy to 98.5%, and provides personalized policy recommendations. The system processes thousands of claims daily with intelligent document analysis and automated decision-making.",
+    keywords: ["insure360", "insurance", "claims", "fraud detection", "case study"],
+    tags: ["case-studies", "insurance", "insure360"]
+  },
+  {
+    id: "oil-gas-services",
+    category: "Industry Solutions",
+    question: "What AI services do you offer for Oil & Gas companies?",
+    answer: "For Oil & Gas, we provide: Predictive maintenance for drilling equipment, Production optimization through ML models, Reservoir analysis and forecasting, Safety compliance monitoring, Real-time operational dashboards, Supply chain optimization, and Environmental monitoring. Our Petroverse solution is specifically designed for this industry.",
+    keywords: ["oil", "gas", "petroleum", "energy", "drilling", "upstream", "downstream"],
+    tags: ["industries", "oil-gas", "solutions"]
+  },
+  {
+    id: "insurance-services",
+    category: "Industry Solutions",
+    question: "What AI services do you offer for Insurance companies?",
+    answer: "For Insurance, we provide: Automated claims processing and adjudication, Fraud detection and prevention systems, Risk assessment and underwriting automation, Customer churn prediction, Policy recommendation engines, Document processing with OCR and NLP, and Chatbots for customer service. Our INSURE360 platform covers end-to-end insurance operations.",
+    keywords: ["insurance", "claims", "underwriting", "policy", "actuarial"],
+    tags: ["industries", "insurance", "solutions"]
+  },
+  {
+    id: "small-business-ai",
+    category: "Services",
+    question: "Do you work with small businesses?",
+    answer: "Absolutely! We offer tailored AI solutions for small and medium businesses including: Affordable AI chatbots and customer service automation, Social media and marketing automation, Sales forecasting and inventory optimization, Document processing and workflow automation, and Customer analytics. We have flexible pricing starting from $5,000 for small business packages.",
+    keywords: ["small business", "smb", "startup", "affordable", "budget"],
+    tags: ["services", "small-business", "pricing"]
   },
   {
     id: "implementation-time",
@@ -93,9 +133,41 @@ export const knowledgeBase: KnowledgeItem[] = [
     id: "pricing",
     category: "Pricing",
     question: "How much do your services cost?",
-    answer: "Our pricing varies based on project scope and complexity. We offer free 30-minute consultations to understand your needs and provide custom proposals with detailed timeline and investment requirements. Contact us for a personalized quote.",
+    answer: "Our pricing varies based on project scope and complexity. Typical ranges: Small Business AI Solutions start at $5,000-$15,000, AI Discovery & Strategy packages range from $25,000-$50,000, Full Implementation projects are $100,000-$500,000+, and Enterprise Transformations are custom quoted based on scale. We offer free 30-minute consultations to understand your needs and provide detailed proposals.",
     keywords: ["cost", "price", "pricing", "how much", "budget"],
     tags: ["pricing", "consultation"]
+  },
+  {
+    id: "pricing-discovery",
+    category: "Pricing",
+    question: "How much does an AI Discovery project cost?",
+    answer: "AI Discovery & Strategy projects typically range from $25,000 to $50,000 depending on the scope. This includes AI readiness assessment, strategic roadmap development, use case identification, POC development, and ROI projections. The project duration is 2-4 weeks.",
+    keywords: ["discovery", "strategy", "assessment", "cost", "price"],
+    tags: ["pricing", "discovery"]
+  },
+  {
+    id: "pricing-implementation",
+    category: "Pricing",
+    question: "What does AI Implementation cost?",
+    answer: "AI Implementation projects typically start at $100,000 and can range up to $500,000+ depending on complexity, data infrastructure requirements, and integration needs. This includes custom model development, system integration, team training, and 3-6 months of implementation support. We provide detailed cost breakdowns in our proposals.",
+    keywords: ["implementation", "development", "cost", "price"],
+    tags: ["pricing", "implementation"]
+  },
+  {
+    id: "roi-timeline",
+    category: "Business",
+    question: "How quickly will I see ROI?",
+    answer: "Most clients see measurable results within 3-6 months and achieve full ROI within 12-18 months. Our rapid implementation approach focuses on quick wins first - we target 6-8 weeks to MVP (Minimum Viable Product) so you can start seeing value immediately. Typical ROI ranges from 200-400% within the first 18 months.",
+    keywords: ["roi", "timeline", "payback", "return", "results"],
+    tags: ["business", "roi", "timeline"]
+  },
+  {
+    id: "consultation-booking",
+    category: "Consultation",
+    question: "How do I book a consultation?",
+    answer: "Booking a free consultation is easy! You can: 1) Fill out our contact form at videbimusai.com/contact, 2) Email us at consulting@videbimusai.com, 3) Call us at +44 7442 852 675, or 4) Message us on WhatsApp at +233 248 769 377. We typically respond within 24 hours and can schedule a call at your convenience.",
+    keywords: ["book", "schedule", "consultation", "appointment", "meeting"],
+    tags: ["consultation", "booking"]
   },
 
   // Support & Contact

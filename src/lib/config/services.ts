@@ -193,8 +193,49 @@ export const serviceConfigSchema = z.object({
 
 export type ServiceConfig = z.infer<typeof serviceConfigSchema>;
 
+/**
+ * Validates that critical environment variables are set
+ * Called before loading service configuration
+ */
+function validateRequiredEnvVars(): void {
+  const required = [
+    'DATABASE_URL',
+    'REDIS_URL',
+    'OPENAI_API_KEY',
+    'ANTHROPIC_API_KEY',
+    'HUGGINGFACE_API_KEY',
+    'PINECONE_API_KEY',
+    'PINECONE_ENVIRONMENT',
+    'RESEND_API_KEY',
+    'AWS_ACCESS_KEY_ID',
+    'AWS_SECRET_ACCESS_KEY',
+    'AWS_S3_BUCKET',
+    'DAILY_API_KEY',
+    'NEXTAUTH_SECRET',
+    'ENCRYPTION_KEY',
+  ]
+
+  const missing: string[] = []
+
+  for (const varName of required) {
+    if (!process.env[varName] || process.env[varName]?.trim() === '') {
+      missing.push(varName)
+    }
+  }
+
+  if (missing.length > 0) {
+    throw new Error(
+      `Required environment variables are missing: ${missing.join(', ')}. ` +
+      'Please configure all required variables before starting the application.'
+    )
+  }
+}
+
 // Load configuration from environment variables
 export function loadServiceConfig(): ServiceConfig {
+  // Validate required environment variables first
+  validateRequiredEnvVars()
+
   const config = {
     nodeEnv: process.env.NODE_ENV as 'development' | 'staging' | 'production',
     appUrl: process.env.APP_URL || process.env.NEXTAUTH_URL || 'http://localhost:3000',

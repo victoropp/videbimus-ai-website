@@ -297,10 +297,13 @@ export class EnhancedAIProviders {
           console.log(`Attempting ${providerName} (attempt ${attempt}/${provider.maxRetries})`);
           
           const result = await this.callProvider(providerName, client, request);
-          
-          if (result) {
+
+          if (result && result.content) {
             return {
-              ...result,
+              content: result.content,
+              provider: result.provider || providerName,
+              model: result.model || request.model,
+              tokensUsed: result.tokensUsed,
               responseTime: Date.now() - startTime,
               confidence: this.calculateConfidence(result.content, providerName)
             };

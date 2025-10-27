@@ -1,0 +1,20 @@
+#!/bin/sh
+. "$(dirname "$0")/_/husky.sh"
+
+echo "Running pre-push checks..."
+
+# Run full test suite
+echo "Running full test suite..."
+npm run test:run || {
+  echo "Tests failed. Please fix failing tests before pushing."
+  exit 1
+}
+
+# Run build to ensure no build errors
+echo "Building project..."
+npm run build || {
+  echo "Build failed. Please fix build errors before pushing."
+  exit 1
+}
+
+echo "All pre-push checks passed!"

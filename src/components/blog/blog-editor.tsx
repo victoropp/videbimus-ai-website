@@ -2,6 +2,7 @@
 
 import { useState, useRef, useCallback } from 'react'
 import dynamic from 'next/dynamic'
+import Image from 'next/image'
 import { Button } from '@/components/ui/button'
 import { Input } from '@/components/ui/input'
 import { Label } from '@/components/ui/label'
@@ -12,16 +13,15 @@ import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card'
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs'
 import { Switch } from '@/components/ui/switch'
 import { Separator } from '@/components/ui/separator'
-import { 
-  Bold, 
-  Italic, 
-  Underline, 
-  List, 
-  ListOrdered, 
-  Quote, 
-  Code, 
-  Link, 
-  Image, 
+import {
+  Bold,
+  Italic,
+  Underline,
+  List,
+  ListOrdered,
+  Quote,
+  Code,
+  Link,
   Eye,
   Save,
   Upload,
@@ -505,11 +505,13 @@ export default function BlogEditor({
                   placeholder="Image URL or upload image above"
                 />
                 {formData.featuredImage && (
-                  <div className="relative">
-                    <img
+                  <div className="relative w-full h-32">
+                    <Image
                       src={formData.featuredImage}
                       alt="Featured image preview"
-                      className="w-full h-32 object-cover rounded border"
+                      fill
+                      className="object-cover rounded border"
+                      sizes="(max-width: 768px) 100vw, (max-width: 1200px) 50vw, 33vw"
                     />
                   </div>
                 )}

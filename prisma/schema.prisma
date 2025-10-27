@@ -128,6 +128,8 @@ model Project {
   tasks         Task[]
   invoices      Invoice[]
 
+  @@index([userId, status])
+  @@index([status, createdAt])
   @@map("projects")
 }
 
@@ -168,6 +170,8 @@ model Consultation {
   files   ConsultationFile[]
   room    ConsultationRoom? // One-to-one with consultation room
 
+  @@index([userId, status])
+  @@index([status, scheduledAt])
   @@map("consultations")
 }
 
@@ -188,8 +192,8 @@ model ConsultationRoom {
   
   // Status management
   status        ConsultationRoomStatus @default(SCHEDULED)
-  
-  // Settings and configuration
+
+  // Settings and configuration (Json used for flexible room-specific settings like video quality, recording preferences, etc.)
   settings      Json              @default("{}")
   
   // Optional consultation link
@@ -232,24 +236,26 @@ model ConsultationMessage {
   senderId    String
   content     String
   messageType String   @default("text") // text, file, system, action_item
-  metadata    Json     @default("{}")
-  
+  metadata    Json     @default("{}") // Flexible metadata for file attachments, action item references, etc.
+
   // Status tracking
   isEdited    Boolean  @default(false)
   editedAt    DateTime?
   isDeleted   Boolean  @default(false)
   deletedAt   DateTime?
-  
+
   createdAt   DateTime @default(now())
-  
+
   // Relations
   room        ConsultationRoom @relation(fields: [roomId], references: [id], onDelete: Cascade)
   sender      User             @relation("SentMessages", fields: [senderId], references: [id], onDelete: Cascade)
-  
+
   @@index([roomId])
   @@index([senderId])
   @@index([createdAt])
   @@index([messageType])
+  @@index([roomId, createdAt])
+  @@index([senderId, createdAt])
   @@map("consultation_messages")
 }
 
@@ -367,7 +373,7 @@ model ConsultationParticipant {
   
   // Role and permissions
   role            String   @default("participant") // host, consultant, client, participant, observer
-  permissions     Json     @default("{\"canEdit\": false, \"canShare\": false}")
+  permissions     Json     @default("{\"canEdit\": false, \"canShare\": false}") // Granular permissions for room features
   
   // Participation tracking
   joinedAt        DateTime @default(now())
@@ -404,7 +410,7 @@ model ConsultationAnalytics {
   
   // Engagement metrics
   avgResponseTimeSeconds  Int?
-  toolUsage               Json?    // Usage time per tool
+  toolUsage               Json?    // Usage time per tool (chat, whiteboard, documents, etc.)
   clientSatisfactionScore Float?   // 1.00 to 5.00
   
   // Technical metrics
@@ -484,6 +490,7 @@ model ProjectFile {
   // Relations
   project Project @relation(fields: [projectId], references: [id], onDelete: Cascade)
 
+  @@index([projectId, createdAt])
   @@map("project_files")
 }
 
@@ -500,6 +507,7 @@ model ConsultationFile {
   // Relations
   consultation Consultation @relation(fields: [consultationId], references: [id], onDelete: Cascade)
 
+  @@index([consultationId, createdAt])
   @@map("consultation_files")
 }
 
@@ -581,13 +589,17 @@ model BlogPost {
   // Relations
   author   User      @relation(fields: [authorId], references: [id], onDelete: Cascade)
   category Category? @relation(fields: [categoryId], references: [id], onDelete: SetNull)
-  
+
   // New blog relations
   postTags     BlogPostTag[]
   comments     BlogComment[]
   images       BlogImage[]
   revisions    BlogRevision[]
 
+  @@index([published, createdAt])
+  @@index([authorId, published])
+  @@index([status, createdAt])
+  @@index([featured, published])
   @@map("blog_posts")
 }
 
@@ -614,6 +626,7 @@ model Category {
   parent    Category?  @relation("CategoryHierarchy", fields: [parentId], references: [id])
   children  Category[] @relation("CategoryHierarchy")
 
+  @@index([isActive, orderIndex])
   @@map("categories")
 }
 
