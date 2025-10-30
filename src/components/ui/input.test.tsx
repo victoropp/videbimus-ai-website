@@ -5,20 +5,20 @@ import { Input } from './input'
 describe('Input', () => {
   it('renders correctly with default props', () => {
     render(<Input />)
-    
+
     const input = screen.getByRole('textbox')
     expect(input).toBeInTheDocument()
     expect(input).toHaveClass(
       'flex',
-      'h-9',
+      'h-12',
       'w-full',
-      'rounded-md',
+      'rounded-lg',
       'border',
-      'border-input',
-      'bg-transparent',
-      'px-3',
-      'py-1',
-      'text-sm'
+      'border-gray-300',
+      'bg-white',
+      'px-4',
+      'py-3',
+      'text-base'
     )
   })
 
@@ -37,14 +37,14 @@ describe('Input', () => {
   })
 
   it('applies different input types correctly', () => {
-    const { rerender } = render(<Input type="email" />)
+    const { rerender, container } = render(<Input type="email" />)
     let input = screen.getByRole('textbox')
     expect(input).toHaveAttribute('type', 'email')
-    
+
     rerender(<Input type="password" />)
-    input = screen.getByLabelText('', { selector: 'input[type="password"]' })
+    input = container.querySelector('input[type="password"]') as HTMLInputElement
     expect(input).toHaveAttribute('type', 'password')
-    
+
     rerender(<Input type="number" />)
     input = screen.getByRole('spinbutton')
     expect(input).toHaveAttribute('type', 'number')

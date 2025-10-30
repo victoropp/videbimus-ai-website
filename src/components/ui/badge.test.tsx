@@ -5,13 +5,13 @@ import { Badge } from './badge'
 describe('Badge', () => {
   it('renders correctly with default props', () => {
     render(<Badge>Default Badge</Badge>)
-    
+
     const badge = screen.getByText('Default Badge')
     expect(badge).toBeInTheDocument()
     expect(badge).toHaveClass(
       'inline-flex',
       'items-center',
-      'rounded-md',
+      'rounded-full',
       'border',
       'px-2.5',
       'py-0.5',
@@ -22,30 +22,30 @@ describe('Badge', () => {
 
   it('applies default variant correctly', () => {
     render(<Badge>Default</Badge>)
-    
+
     const badge = screen.getByText('Default')
-    expect(badge).toHaveClass('border-transparent', 'bg-primary', 'text-primary-foreground')
+    expect(badge).toHaveClass('border-transparent', 'bg-primary-500', 'text-white')
   })
 
   it('applies secondary variant correctly', () => {
     render(<Badge variant="secondary">Secondary</Badge>)
-    
+
     const badge = screen.getByText('Secondary')
-    expect(badge).toHaveClass('border-transparent', 'bg-secondary', 'text-secondary-foreground')
+    expect(badge).toHaveClass('border-transparent', 'bg-gray-100', 'text-gray-900')
   })
 
   it('applies destructive variant correctly', () => {
     render(<Badge variant="destructive">Destructive</Badge>)
-    
+
     const badge = screen.getByText('Destructive')
-    expect(badge).toHaveClass('border-transparent', 'bg-destructive', 'text-destructive-foreground')
+    expect(badge).toHaveClass('border-transparent', 'bg-red-500', 'text-white')
   })
 
   it('applies outline variant correctly', () => {
     render(<Badge variant="outline">Outline</Badge>)
-    
+
     const badge = screen.getByText('Outline')
-    expect(badge).toHaveClass('text-foreground')
+    expect(badge).toHaveClass('text-gray-950')
   })
 
   it('applies custom className', () => {
@@ -106,9 +106,9 @@ describe('Badge', () => {
   })
 
   it('handles empty content gracefully', () => {
-    render(<Badge></Badge>)
-    
-    const badge = screen.getByRole('generic')
+    const { container } = render(<Badge></Badge>)
+
+    const badge = container.querySelector('.inline-flex')
     expect(badge).toBeInTheDocument()
     expect(badge).toBeEmptyDOMElement()
   })
@@ -120,9 +120,9 @@ describe('Badge', () => {
 
     rerender(<Badge variant="secondary">Test</Badge>)
     const secondaryBadge = screen.getByText('Test')
-    
+
     // Check that sizing classes are consistent
-    const sizingClasses = ['inline-flex', 'items-center', 'rounded-md', 'px-2.5', 'py-0.5', 'text-xs', 'font-semibold']
+    const sizingClasses = ['inline-flex', 'items-center', 'rounded-full', 'px-2.5', 'py-0.5', 'text-xs', 'font-semibold']
     sizingClasses.forEach(className => {
       expect(defaultBadge).toHaveClass(className)
       expect(secondaryBadge).toHaveClass(className)
@@ -131,16 +131,16 @@ describe('Badge', () => {
 
   it('combines multiple variants and custom classes correctly', () => {
     render(
-      <Badge 
-        variant="outline" 
+      <Badge
+        variant="outline"
         className="hover:bg-gray-100 cursor-pointer"
       >
         Interactive Badge
       </Badge>
     )
-    
+
     const badge = screen.getByText('Interactive Badge')
-    expect(badge).toHaveClass('text-foreground') // outline variant
+    expect(badge).toHaveClass('text-gray-950') // outline variant
     expect(badge).toHaveClass('hover:bg-gray-100', 'cursor-pointer') // custom classes
   })
 })

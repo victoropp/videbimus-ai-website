@@ -1,49 +1,49 @@
 import { describe, it, expect } from 'vitest'
 import { render, screen } from '@/test/utils'
-import Hero from './hero'
+import { Hero } from './hero'
 
 describe('Hero', () => {
   it('renders hero section correctly', () => {
     render(<Hero />)
-    
-    // Check for main heading
+
+    // Check for main heading with new pain-focused messaging
     const heading = screen.getByRole('heading', { level: 1 })
     expect(heading).toBeInTheDocument()
-    expect(heading).toHaveTextContent(/AI-Powered Solutions/i)
+    expect(heading).toHaveTextContent(/Stop Drowning in Data|Start Making Better Decisions/i)
   })
 
   it('displays company tagline', () => {
     render(<Hero />)
-    
-    const tagline = screen.getByText(/Next-Generation AI Technology/i)
+
+    const tagline = screen.getByText(/Your Data Is Already Costing You Money/i)
     expect(tagline).toBeInTheDocument()
   })
 
   it('contains call-to-action buttons', () => {
     render(<Hero />)
-    
-    const getStartedButton = screen.getByRole('link', { name: /get started/i })
-    const learnMoreButton = screen.getByRole('link', { name: /learn more/i })
-    
-    expect(getStartedButton).toBeInTheDocument()
-    expect(learnMoreButton).toBeInTheDocument()
+
+    const ctaButton = screen.getByRole('link', { name: /Show Me How|Free Consultation/i })
+    const secondaryButton = screen.getByRole('link', { name: /See Real Results|Case Studies/i })
+
+    expect(ctaButton).toBeInTheDocument()
+    expect(secondaryButton).toBeInTheDocument()
   })
 
   it('has proper navigation links', () => {
     render(<Hero />)
-    
-    const getStartedButton = screen.getByRole('link', { name: /get started/i })
-    const learnMoreButton = screen.getByRole('link', { name: /learn more/i })
-    
-    expect(getStartedButton).toHaveAttribute('href', '/contact')
-    expect(learnMoreButton).toHaveAttribute('href', '/about')
+
+    const ctaButton = screen.getByRole('link', { name: /Show Me How|Free Consultation/i })
+    const secondaryButton = screen.getByRole('link', { name: /See Real Results|Case Studies/i })
+
+    expect(ctaButton).toHaveAttribute('href', '/contact')
+    expect(secondaryButton).toHaveAttribute('href', '/case-studies')
   })
 
   it('displays key features or benefits', () => {
     render(<Hero />)
-    
-    // Look for common hero content
-    const description = screen.getByText(/Transform your business/i)
+
+    // Look for new outcome-focused content
+    const description = screen.getByText(/cut operational costs by 45%|automate repetitive work/i)
     expect(description).toBeInTheDocument()
   })
 

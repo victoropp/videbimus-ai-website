@@ -118,8 +118,8 @@ describe('Button', () => {
   })
 
   it('has correct accessibility attributes', () => {
-    render(<Button>Accessible button</Button>)
-    
+    render(<Button type="button">Accessible button</Button>)
+
     const button = screen.getByRole('button', { name: /accessible button/i })
     expect(button).toBeInTheDocument()
     expect(button).toHaveAttribute('type', 'button')

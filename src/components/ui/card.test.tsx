@@ -6,10 +6,10 @@ describe('Card Components', () => {
   describe('Card', () => {
     it('renders correctly with default props', () => {
       render(<Card>Card content</Card>)
-      
+
       const card = screen.getByText('Card content')
       expect(card).toBeInTheDocument()
-      expect(card).toHaveClass('rounded-xl', 'border', 'bg-card', 'text-card-foreground', 'shadow')
+      expect(card).toHaveClass('rounded-xl', 'border', 'text-gray-950', 'shadow')
     })
 
     it('applies custom className', () => {
@@ -47,11 +47,11 @@ describe('Card Components', () => {
   describe('CardTitle', () => {
     it('renders as h3 by default with correct styling', () => {
       render(<CardTitle>Card Title</CardTitle>)
-      
+
       const title = screen.getByText('Card Title')
       expect(title).toBeInTheDocument()
       expect(title.tagName).toBe('H3')
-      expect(title).toHaveClass('font-semibold', 'leading-none', 'tracking-tight')
+      expect(title).toHaveClass('text-2xl', 'font-semibold', 'leading-none', 'tracking-tight')
     })
 
     it('applies custom className', () => {
@@ -65,11 +65,11 @@ describe('Card Components', () => {
   describe('CardDescription', () => {
     it('renders as p by default with correct styling', () => {
       render(<CardDescription>Card description</CardDescription>)
-      
+
       const description = screen.getByText('Card description')
       expect(description).toBeInTheDocument()
       expect(description.tagName).toBe('P')
-      expect(description).toHaveClass('text-sm', 'text-muted-foreground')
+      expect(description).toHaveClass('text-sm', 'text-gray-500')
     })
 
     it('applies custom className', () => {

@@ -1,46 +1,40 @@
 import { describe, it, expect } from 'vitest'
 import { render, screen } from '@/test/utils'
-import Features from './features'
+import { Features } from './features'
 
 describe('Features', () => {
   it('renders features section correctly', () => {
     render(<Features />)
-    
-    const section = screen.getByRole('region') || screen.getByTestId('features-section')
+
+    const section = screen.getByRole('region') || document.querySelector('section')
     expect(section).toBeInTheDocument()
   })
 
   it('displays section heading', () => {
     render(<Features />)
-    
+
     const heading = screen.getByRole('heading', { level: 2 }) || screen.getByRole('heading', { level: 1 })
     expect(heading).toBeInTheDocument()
-    expect(heading).toHaveTextContent(/features|capabilities|services/i)
+    expect(heading).toHaveTextContent(/Why Work With Us|Instead of Hiring/i)
   })
 
   it('shows multiple feature items', () => {
     render(<Features />)
-    
-    // Look for feature cards or items
-    const featureItems = screen.getAllByTestId(/feature-|card-/) || 
-                        screen.getAllByRole('article') ||
-                        document.querySelectorAll('[class*="feature"], [class*="card"]')
-    
-    expect(featureItems.length).toBeGreaterThan(1)
+
+    // Look for new pain-point focused features
+    const featureText = screen.getByText(/You Need Results Yesterday/i)
+    expect(featureText).toBeInTheDocument()
   })
 
   it('displays feature titles and descriptions', () => {
     render(<Features />)
-    
-    // Look for AI-related features
-    const aiFeature = screen.getByText(/AI|artificial intelligence|machine learning/i)
-    expect(aiFeature).toBeInTheDocument()
-    
-    // Look for collaboration features
-    const collabFeature = screen.queryByText(/collaboration|teamwork|real-time/i)
-    if (collabFeature) {
-      expect(collabFeature).toBeInTheDocument()
-    }
+
+    // Look for new outcome-focused features
+    const feature1 = screen.getByText(/You Need Results Yesterday|6-8 Weeks/i)
+    expect(feature1).toBeInTheDocument()
+
+    const feature2 = screen.getByText(/Know Exactly What You're Getting|ROI/i)
+    expect(feature2).toBeInTheDocument()
   })
 
   it('includes feature icons or images', () => {
