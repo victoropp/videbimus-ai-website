@@ -4,7 +4,7 @@ import { getServerAuthSession } from '@/lib/auth'
 import { ConsultationDashboard } from '@/components/consultation/consultation-dashboard'
 
 export const metadata: Metadata = {
-  title: 'Consultation Dashboard | VidebimusAI',
+  title: 'Consultation Dashboard | Videbimus AI',
   description: 'Manage your consultations, rooms, and collaboration sessions.',
 }
 

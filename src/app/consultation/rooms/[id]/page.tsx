@@ -16,12 +16,12 @@ export async function generateMetadata({ params }: ConsultationRoomPageProps): P
     const room = await api.consultation.getRoomById({ id: params.id })
     
     return {
-      title: `${room.name} | Consultation Room | VidebimusAI`,
+      title: `${room.name} | Consultation Room | Videbimus AI`,
       description: room.description || `Consultation room: ${room.name}`,
     }
   } catch {
     return {
-      title: 'Consultation Room | VidebimusAI',
+      title: 'Consultation Room | Videbimus AI',
       description: 'Consultation room collaboration space.',
     }
   }
@@ -39,7 +39,7 @@ export default async function ConsultationRoomPage({ params }: ConsultationRoomP
     
     return (
       <div className="h-screen flex flex-col">
-        <ConsultationRoomView room={room} currentUser={session.user} />
+        <ConsultationRoomView room={room as any} currentUser={session.user} />
       </div>
     )
   } catch (error) {

@@ -16,12 +16,12 @@ export async function generateMetadata({ params }: ConsultationPageProps): Promi
     const consultation = await api.consultation.getById({ id: params.id })
     
     return {
-      title: `${consultation.title} | Consultation | VidebimusAI`,
+      title: `${consultation.title} | Consultation | Videbimus AI`,
       description: consultation.description || `Consultation: ${consultation.title}`,
     }
   } catch {
     return {
-      title: 'Consultation | VidebimusAI',
+      title: 'Consultation | Videbimus AI',
       description: 'Consultation management and details.',
     }
   }
@@ -39,7 +39,7 @@ export default async function ConsultationPage({ params }: ConsultationPageProps
     
     return (
       <div className="container mx-auto py-8 px-4">
-        <ConsultationView consultation={consultation} currentUser={session.user} />
+        <ConsultationView consultation={consultation as any} currentUser={session.user} />
       </div>
     )
   } catch (error) {

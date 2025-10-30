@@ -2,7 +2,7 @@ import { Metadata } from 'next'
 import { ConsultationBookingForm } from '@/components/consultation/consultation-booking-form'
 
 export const metadata: Metadata = {
-  title: 'Book Consultation | VidebimusAI',
+  title: 'Book Consultation | Videbimus AI',
   description: 'Schedule a consultation session with our experts.',
 }
 

@@ -4,7 +4,7 @@ import { getServerAuthSession } from '@/lib/auth'
 import { ConsultationRoomsList } from '@/components/consultation/consultation-rooms-list'
 
 export const metadata: Metadata = {
-  title: 'Consultation Rooms | VidebimusAI',
+  title: 'Consultation Rooms | Videbimus AI',
   description: 'View and manage your consultation rooms.',
 }
 
