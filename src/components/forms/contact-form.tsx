@@ -11,14 +11,14 @@ import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/com
 import type { ContactFormData } from '@/types'
 
 const services = [
-  { value: 'discovery', label: 'AI Discovery & Strategy' },
-  { value: 'implementation', label: 'AI Implementation & Integration' },
-  { value: 'transformation', label: 'Enterprise AI Transformation' },
-  { value: 'ml', label: 'Machine Learning Solutions' },
-  { value: 'data-engineering', label: 'Data Engineering & Analytics' },
-  { value: 'automation', label: 'AI Automation Services' },
-  { value: 'training', label: 'Training & Education' },
-  { value: 'other', label: 'Other / Not Sure' },
+  { value: 'discovery', label: 'Not sure—need help figuring it out' },
+  { value: 'implementation', label: 'Fix one specific problem (predictive maintenance, automation, etc.)' },
+  { value: 'transformation', label: 'Multiple problems—need comprehensive solution' },
+  { value: 'ml', label: 'Industry-specific (Oil & Gas, Insurance, Manufacturing)' },
+  { value: 'data-engineering', label: 'Data is a mess—can\'t make decisions' },
+  { value: 'automation', label: 'Too much manual work eating team time' },
+  { value: 'training', label: 'Train my team on AI' },
+  { value: 'other', label: 'Something else' },
 ]
 
 type FormState = 'idle' | 'loading' | 'success' | 'error'
@@ -68,9 +68,9 @@ export function ContactForm() {
             <div className="inline-flex h-16 w-16 items-center justify-center rounded-full bg-green-100 dark:bg-green-900 text-green-600 dark:text-green-400 mb-4 mx-auto">
               <CheckCircle className="h-8 w-8" />
             </div>
-            <CardTitle className="text-xl mb-2">Message Sent!</CardTitle>
+            <CardTitle className="text-xl mb-2">Got It—We'll Be in Touch</CardTitle>
             <CardDescription className="text-base">
-              Thank you for your interest in VidebimusAI! Our team will review your request and respond within 24 hours to schedule your free 30-minute consultation. Check your email for confirmation.
+              Thanks for reaching out! We'll review what you sent and get back to you within 24 hours to set up that 30-minute call. No sales pitch—just honest conversation about whether we can help.
             </CardDescription>
           </CardContent>
         </Card>
@@ -81,9 +81,9 @@ export function ContactForm() {
   return (
     <Card>
       <CardHeader>
-        <CardTitle>Get Started Today</CardTitle>
+        <CardTitle>Let's Figure Out If We Can Help</CardTitle>
         <CardDescription>
-          Fill out the form below and we'll get back to you within 24 hours to schedule your free consultation.
+          Tell us what's costing you money or time. We'll get back to you in 24 hours with honest feedback on whether AI can fix it—and what it would cost.
         </CardDescription>
       </CardHeader>
       <CardContent>
@@ -176,7 +176,7 @@ export function ContactForm() {
           {/* Service */}
           <div>
             <label htmlFor="service" className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">
-              Service Interest
+              What's the Problem?
             </label>
             <select
               id="service"
@@ -195,20 +195,20 @@ export function ContactForm() {
           {/* Timeline */}
           <div>
             <label htmlFor="timeline" className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">
-              Project Timeline
+              How Urgent Is This?
             </label>
             <select
               id="timeline"
               {...register('timeline')}
               className="flex h-12 w-full rounded-lg border border-gray-300 bg-white px-4 py-3 text-base ring-offset-white file:border-0 file:bg-transparent file:text-sm file:font-medium placeholder:text-gray-500 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-cyan-500 focus-visible:ring-offset-2 disabled:cursor-not-allowed disabled:opacity-50 dark:border-gray-700 dark:bg-gray-950 dark:ring-offset-gray-950 dark:placeholder:text-gray-400 dark:focus-visible:ring-cyan-400"
             >
-              <option value="">When do you want to start?</option>
-              <option value="immediately">Immediately (within 2 weeks)</option>
-              <option value="1-month">Within 1 month</option>
-              <option value="1-3-months">1-3 months</option>
-              <option value="3-6-months">3-6 months</option>
-              <option value="6-plus-months">6+ months</option>
-              <option value="exploring">Just exploring options</option>
+              <option value="">When do you need this fixed?</option>
+              <option value="immediately">Yesterday—bleeding money now</option>
+              <option value="1-month">Within a month</option>
+              <option value="1-3-months">Next quarter</option>
+              <option value="3-6-months">Planning for later this year</option>
+              <option value="6-plus-months">Thinking ahead (6+ months)</option>
+              <option value="exploring">Just exploring—no rush</option>
             </select>
           </div>
 
@@ -235,16 +235,16 @@ export function ContactForm() {
           {/* Message */}
           <div>
             <label htmlFor="message" className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">
-              Project Details *
+              What's the Actual Problem? *
             </label>
             <Textarea
               id="message"
               error={!!errors.message}
-              {...register('message', { 
-                required: 'Project details are required',
-                minLength: { value: 10, message: 'Please provide more details (minimum 10 characters)' }
+              {...register('message', {
+                required: 'Please tell us what problem you need solved',
+                minLength: { value: 10, message: 'A bit more detail helps—what's costing you money or time?' }
               })}
-              placeholder="Tell us about your AI goals, challenges, and what you're looking to achieve..."
+              placeholder="Example: 'Equipment keeps failing with zero warning—costing us $200K each time' or 'Claims processing takes 7-10 days, customers are furious' or 'Not sure where to start—just know we're wasting time on manual work...'"
               rows={4}
             />
             {errors.message && (
