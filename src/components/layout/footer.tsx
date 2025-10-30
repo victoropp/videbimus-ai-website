@@ -42,8 +42,7 @@ export function Footer() {
               <span className="font-display text-xl font-bold">Videbimus AI</span>
             </Link>
             <p className="text-gray-400 mb-6 max-w-md">
-              Transforming businesses through intelligent automation, predictive analytics, 
-              and data-driven decision making.
+              We turn your messy data into money-saving automation. No 6-figure budgets. No year-long projects. Just results.
             </p>
             
             {/* Contact Info */}

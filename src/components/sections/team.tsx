@@ -7,12 +7,12 @@ import { Card, CardContent } from '@/components/ui/card'
 import { Button } from '@/components/ui/button'
 import type { TeamMember } from '@/types'
 
-const team: TeamMember[] = [
+const team: Partial<TeamMember>[] = [
   {
     id: '1',
     name: 'Victor Collins Oppon',
     role: 'Founder & CEO',
-    bio: 'FCCA, MBA, BSc. Experienced leader in AI and data science consulting with expertise in transforming businesses through intelligent automation and data-driven strategies.',
+    bio: 'Started as an accountant, got tired of watching businesses waste money on problems data could solve. Built Videbimus to help companies actually use their data instead of drowning in it. When not working, probably debugging something.',
     image: '/team/victor-collins-oppon.jpg',
     linkedin: 'https://www.linkedin.com/in/victor-collins-oppon-fcca-mba-bsc-01541019/'
   },
@@ -20,7 +20,7 @@ const team: TeamMember[] = [
     id: '2',
     name: 'Sai Raj Ali',
     role: 'Chief Technology Officer',
-    bio: 'Innovative technology leader with deep expertise in AI architecture, machine learning systems, and enterprise-scale implementations.',
+    bio: 'The guy who makes the impossible actually work. Spent years at tech companies watching "AI projects" fail. Now builds systems that ship in weeks, not years. Loves a good technical challenge—and coffee.',
     image: '/team/sai-raj-ali.jpg',
     linkedin: 'https://www.linkedin.com/in/sairajdream/'
   },
@@ -28,7 +28,7 @@ const team: TeamMember[] = [
     id: '3',
     name: 'Shawanah Ally',
     role: 'Head of Data Science',
-    bio: 'Data science expert specializing in predictive analytics, statistical modeling, and developing data-driven solutions for complex business challenges.',
+    bio: 'Turns messy spreadsheets into predictions you can trust. Has a gift for explaining complex stats without making your eyes glaze over. Previously: made models for companies that couldn\'t afford to be wrong.',
     image: '/team/shawanah-ally.jpg',
     linkedin: 'https://www.linkedin.com/in/sally01/'
   },
@@ -36,7 +36,7 @@ const team: TeamMember[] = [
     id: '4',
     name: 'Rukayat Salau',
     role: 'AI Strategy Director',
-    bio: 'Strategic AI consultant with expertise in developing and implementing comprehensive AI transformation roadmaps for enterprise clients.',
+    bio: 'The person who figures out what you actually need (vs what you think you need). Saved clients millions by saying "no" to shiny features that don\'t move the needle. Asks the hard questions upfront.',
     image: '/team/rukayat-salau.jpg',
     linkedin: 'https://www.linkedin.com/in/rukayatsalau/'
   }
@@ -75,10 +75,10 @@ export function Team() {
           className="text-center mb-16"
         >
           <h2 className="font-display text-3xl font-bold tracking-tight text-gray-900 dark:text-white sm:text-4xl mb-4">
-            Meet Our Expert Team
+            The People Who'll Actually Answer Your Calls
           </h2>
           <p className="mx-auto max-w-2xl text-lg text-gray-600 dark:text-gray-300">
-            World-class AI researchers, data scientists, and engineers from top tech companies and universities
+            No junior teams. No offshoring. Just experienced professionals who've done this 50+ times and understand your business.
           </p>
         </motion.div>
 

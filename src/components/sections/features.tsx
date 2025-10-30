@@ -15,39 +15,39 @@ import { Card, CardContent } from '@/components/ui/card'
 const features = [
   {
     icon: Zap,
-    title: 'Rapid Implementation',
-    description: 'Get your AI solutions up and running in weeks, not months. Our proven methodologies ensure fast time-to-value.',
-    metrics: '6-8 weeks to MVP'
+    title: 'You Need Results Yesterday, Not Next Year',
+    description: 'Tired of "6-month implementations" that take 18? We ship working solutions in 6-8 weeks. See it, use it, benefit from it—fast.',
+    metrics: 'Live in 6-8 Weeks'
   },
   {
     icon: TrendingUp,
-    title: 'Measurable ROI',
-    description: 'Track real business impact with comprehensive analytics and KPI monitoring. Average 200%+ ROI within 18 months.',
-    metrics: '200%+ Average ROI'
+    title: 'Know Exactly What You\'re Getting',
+    description: 'No vague promises. We show you the numbers before we start: how much you\'ll save, when you\'ll break even, what ROI looks like.',
+    metrics: '3x Return (Typical)'
   },
   {
     icon: Shield,
-    title: 'Enterprise Security',
-    description: 'Industry best practices with bank-level encryption, GDPR compliance, and enterprise-grade security for maximum data protection.',
-    metrics: '99.9% Uptime SLA'
+    title: 'Your Data Isn\'t Going Anywhere',
+    description: 'Worried about security? Good. So are we. Bank-level encryption, your servers if you want, zero data sharing. Period.',
+    metrics: 'Zero Breaches Ever'
   },
   {
     icon: Users,
-    title: 'Expert Team',
-    description: 'Work directly with AI architects, data scientists, and domain experts with proven track records.',
-    metrics: '50+ Implementations'
+    title: 'Talk to People Who Get It',
+    description: 'No junior teams learning on your dime. You work with people who\'ve done this 50+ times and actually understand your business.',
+    metrics: '50+ Projects Done'
   },
   {
     icon: Clock,
-    title: '24/7 Support',
-    description: 'Round-the-clock monitoring, support, and optimization to ensure your AI systems perform flawlessly.',
-    metrics: '24/7 Monitoring'
+    title: 'We Don\'t Disappear After Launch',
+    description: 'Something breaks at 2 AM? We\'re there. Need adjustments? We stick around. Think of us as part of your team.',
+    metrics: 'Always Available'
   },
   {
     icon: Award,
-    title: 'Industry Recognition',
-    description: 'Trusted by Fortune 500 companies and recognized by leading industry analysts for excellence.',
-    metrics: 'Fortune 500 Trusted'
+    title: 'Other Companies Trust Us. You Can Too.',
+    description: 'We\'ve saved oil & gas operations millions, cut insurance claims time by 70%, and helped 20+ businesses like yours succeed.',
+    metrics: '20+ Happy Clients'
   }
 ]
 
@@ -84,11 +84,11 @@ export function Features() {
           className="text-center mb-16"
         >
           <h2 className="font-display text-3xl font-bold tracking-tight text-gray-900 dark:text-white sm:text-4xl mb-4">
-            Why Choose Videbimus AI?
+            Why Work With Us Instead of Hiring or Doing It Yourself?
           </h2>
           <p className="mx-auto max-w-2xl text-lg text-gray-600 dark:text-gray-300">
-            We combine cutting-edge AI technology with proven business expertise to deliver 
-            transformational results for your organization
+            Hiring data scientists costs $150K+/year (plus 6 months to find them). DIY takes forever and usually fails.
+            We get you results in weeks for a fraction of the cost.
           </p>
         </motion.div>
 
@@ -144,20 +144,20 @@ export function Features() {
         >
           <div className="grid grid-cols-2 md:grid-cols-4 gap-8 text-center">
             <div>
-              <div className="text-3xl font-bold text-gray-900 dark:text-white mb-2">99.9%</div>
-              <div className="text-sm text-gray-600 dark:text-gray-400">System Uptime</div>
+              <div className="text-3xl font-bold text-gray-900 dark:text-white mb-2">45%</div>
+              <div className="text-sm text-gray-600 dark:text-gray-400">Average Cost Cut</div>
+            </div>
+            <div>
+              <div className="text-3xl font-bold text-gray-900 dark:text-white mb-2">$50K+</div>
+              <div className="text-sm text-gray-600 dark:text-gray-400">Saved Per Month</div>
+            </div>
+            <div>
+              <div className="text-3xl font-bold text-gray-900 dark:text-white mb-2">6-8 Weeks</div>
+              <div className="text-sm text-gray-600 dark:text-gray-400">To Go Live</div>
             </div>
             <div>
               <div className="text-3xl font-bold text-gray-900 dark:text-white mb-2">20+</div>
-              <div className="text-sm text-gray-600 dark:text-gray-400">Enterprises Helped</div>
-            </div>
-            <div>
-              <div className="text-3xl font-bold text-gray-900 dark:text-white mb-2">200%</div>
-              <div className="text-sm text-gray-600 dark:text-gray-400">Average ROI</div>
-            </div>
-            <div>
-              <div className="text-3xl font-bold text-gray-900 dark:text-white mb-2">24/7</div>
-              <div className="text-sm text-gray-600 dark:text-gray-400">Expert Support</div>
+              <div className="text-sm text-gray-600 dark:text-gray-400">Businesses Helped</div>
             </div>
           </div>
         </motion.div>

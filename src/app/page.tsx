@@ -7,27 +7,29 @@ import { Team } from '@/components/sections/team'
 import { CTA } from '@/components/sections/cta'
 
 export const metadata: Metadata = {
-  title: 'Home',
-  description: 'Transform your business with expert AI and Data Science consulting services. From strategy to implementation, we help organizations unlock the power of artificial intelligence.',
+  title: 'Cut Costs 45% & Automate Manual Work | Videbimus AI',
+  description: 'Stop wasting money on manual processes. SMBs and growing companies save $50K+/month by automating operations and leveraging business data—no complexity, real results in 6-8 weeks.',
   keywords: [
-    'AI consulting',
-    'Data Science services',
-    'Machine Learning consulting',
-    'AI transformation',
-    'Predictive analytics',
-    'Business intelligence',
-    'AI strategy',
-    'Data analytics'
+    'reduce operational costs',
+    'business process automation',
+    'cut business expenses',
+    'automate manual tasks',
+    'business data analytics',
+    'small business AI',
+    'improve efficiency',
+    'save time and money',
+    'business automation solutions',
+    'data-driven insights'
   ],
   openGraph: {
-    title: 'Videbimus AI - Transform Your Business with AI & Data Science',
-    description: 'Expert AI and Data Science consulting services. From strategy to implementation, we help organizations unlock the power of artificial intelligence.',
+    title: 'Stop Drowning in Data. Start Making Better Decisions | Videbimus AI',
+    description: 'Your team is burning hours on manual tasks. We help companies cut costs 45%, automate repetitive work, and turn data into profit—without 6-figure budgets.',
     images: [
       {
         url: '/og-home.jpg',
         width: 1200,
         height: 630,
-        alt: 'Videbimus AI - AI & Data Science Consulting Services'
+        alt: 'Videbimus AI - Turn Your Data Into Profit'
       }
     ]
   }

@@ -28,11 +28,11 @@ export function CTA() {
           className="text-center mb-12"
         >
           <h2 className="font-display text-3xl font-bold tracking-tight text-white sm:text-4xl lg:text-5xl mb-6">
-            Ready to Transform Your Business with AI?
+            Still Paying People to Do What Software Could Do Better?
           </h2>
           <p className="mx-auto max-w-2xl text-lg text-gray-200 mb-8">
-            Partner with experienced AI professionals who bring decades of expertise from leading tech companies. 
-            Get started with a free consultation today.
+            Every month you wait is another $50K down the drain. Let's fix your biggest cost leak first—free 30-min call,
+            no sales pitch, just show you what's possible.
           </p>
         </motion.div>
 
@@ -45,25 +45,25 @@ export function CTA() {
         >
           <div className="text-center p-6 rounded-lg bg-white/10 backdrop-blur-sm border border-white/20">
             <Calendar className="h-8 w-8 text-cyan-400 mx-auto mb-4" />
-            <h3 className="font-semibold text-white mb-2">Free Consultation</h3>
+            <h3 className="font-semibold text-white mb-2">Step 1: Show Us Your Pain</h3>
             <p className="text-gray-200 text-sm">
-              30-minute discovery call to understand your AI opportunities
+              30-minute call. We listen, ask questions, and find your money leak.
             </p>
           </div>
-          
+
           <div className="text-center p-6 rounded-lg bg-white/10 backdrop-blur-sm border border-white/20">
             <MessageCircle className="h-8 w-8 text-purple-400 mx-auto mb-4" />
-            <h3 className="font-semibold text-white mb-2">Custom Proposal</h3>
+            <h3 className="font-semibold text-white mb-2">Step 2: See It Working</h3>
             <p className="text-gray-200 text-sm">
-              Tailored solution design with timeline and investment details
+              We build a quick proof—you see real results with your own data.
             </p>
           </div>
-          
+
           <div className="text-center p-6 rounded-lg bg-white/10 backdrop-blur-sm border border-white/20">
             <Phone className="h-8 w-8 text-green-400 mx-auto mb-4" />
-            <h3 className="font-semibold text-white mb-2">Quick Start</h3>
+            <h3 className="font-semibold text-white mb-2">Step 3: Start Saving</h3>
             <p className="text-gray-200 text-sm">
-              Begin your AI journey with proven methodologies and expert guidance
+              Launch in weeks. Your team uses it. You count the money you're not wasting.
             </p>
           </div>
         </motion.div>
@@ -81,11 +81,11 @@ export function CTA() {
             className="bg-white text-primary-900 hover:bg-gray-100 shadow-xl hover:shadow-2xl hover:-translate-y-1 transition-all group"
           >
             <Link href="/contact">
-              Schedule Free Consultation
+              Yes, Find My Money Leak (It's Free)
               <ArrowRight className="ml-2 h-5 w-5 transition-transform group-hover:translate-x-1" />
             </Link>
           </Button>
-          
+
           <Button
             asChild
             variant="outline"
@@ -93,7 +93,7 @@ export function CTA() {
             className="border-white/30 text-white hover:bg-white/10 hover:border-white/50"
           >
             <Link href="/case-studies">
-              View Success Stories
+              See What Others Saved
             </Link>
           </Button>
         </motion.div>
@@ -109,15 +109,15 @@ export function CTA() {
           <div className="flex items-center justify-center space-x-8 text-white/80 text-sm">
             <div className="flex items-center space-x-2">
               <div className="w-2 h-2 bg-green-400 rounded-full"></div>
-              <span>Enterprise-Grade Security</span>
+              <span>No Long-Term Contracts</span>
             </div>
             <div className="flex items-center space-x-2">
               <div className="w-2 h-2 bg-green-400 rounded-full"></div>
-              <span>GDPR Compliant</span>
+              <span>Your Data Stays Yours</span>
             </div>
             <div className="flex items-center space-x-2">
               <div className="w-2 h-2 bg-green-400 rounded-full"></div>
-              <span>24/7 Support</span>
+              <span>We're Available 24/7</span>
             </div>
           </div>
         </motion.div>

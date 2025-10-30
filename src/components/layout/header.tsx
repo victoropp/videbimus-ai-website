@@ -66,7 +66,7 @@ export function Header() {
         <div className="hidden md:flex items-center space-x-4">
           <ThemeToggle />
           <Button asChild>
-            <Link href="/contact">Get Started</Link>
+            <Link href="/contact">Find My Money Leak</Link>
           </Button>
         </div>
 

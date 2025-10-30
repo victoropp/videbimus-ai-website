@@ -5,13 +5,13 @@ import { Star, Quote } from 'lucide-react'
 import { Card, CardContent } from '@/components/ui/card'
 import type { Testimonial } from '@/types'
 
-const testimonials: Testimonial[] = [
+const testimonials: Partial<Testimonial>[] = [
   {
     id: '1',
     name: 'John Thompson',
     role: 'Operations Director',
     company: 'Petroverse - Oil & Gas',
-    content: 'The AI-powered predictive maintenance system from Videbimus has been transformative for our drilling operations. We\'ve reduced equipment downtime by 45% and achieved 99.2% safety compliance. The ROI was clear within 4 months.',
+    content: 'Honestly? I was skeptical. We\'d tried "predictive maintenance" before and it was a disaster. But our equipment failures were costing us $200K every time something broke. Videbimus showed us a working demo with our own data in week 2. Now we catch problems before they happen. Downtime is down 45%. My boss asked me why we didn\'t do this sooner.',
     image: '/testimonials/john-thompson.jpg',
     rating: 5
   },
@@ -20,7 +20,7 @@ const testimonials: Testimonial[] = [
     name: 'Lisa Martinez',
     role: 'Chief Technology Officer',
     company: 'INSURE360 - Insurance',
-    content: 'Their insurance automation platform is exceptional. Claims processing is now 70% faster, fraud detection accuracy improved to 98.5%, and our operational costs dropped by 50%. This has revolutionized how we serve our customers.',
+    content: 'Claims were taking 3-4 weeks and our customers were furious. Every call was "where\'s my money?" We couldn\'t hire fast enough. Videbimus automated the whole thing—now it\'s 3-4 DAYS. Fraud detection caught stuff our team missed. Best part? Our adjusters aren\'t drowning anymore. They actually like their jobs again.',
     image: '/testimonials/lisa-martinez.jpg',
     rating: 5
   },
@@ -29,7 +29,7 @@ const testimonials: Testimonial[] = [
     name: 'Sarah Chen',
     role: 'Chief Technology Officer',
     company: 'TechCorp Industries',
-    content: 'Videbimus AI transformed our entire data infrastructure. Their team delivered a comprehensive ML platform that increased our operational efficiency by 40% and reduced costs by $2M annually.',
+    content: 'We had data everywhere—spreadsheets, old databases, nothing talked to each other. I spent 6 months trying to hire a data team. Couldn\'t find anyone good. Videbimus came in, organized the chaos, built us a system that actually works. Saved us $2M in year one. Worth every penny.',
     image: '/testimonials/sarah-chen.jpg',
     rating: 5
   },
@@ -38,7 +38,7 @@ const testimonials: Testimonial[] = [
     name: 'Michael Rodriguez',
     role: 'Head of Data Science',
     company: 'FinanceFlow',
-    content: 'The fraud detection system they built has been a game-changer. We\'ve reduced false positives by 60% while catching 95% more actual fraud attempts. The ROI was evident within 3 months.',
+    content: 'Our fraud system was flagging everything. Legitimate customers got blocked, actual fraud slipped through. It was embarrassing. Videbimus rebuilt it from scratch. False alarms dropped 60%, real fraud detection went UP. Paid for itself in 3 months just from what we stopped losing.',
     image: '/testimonials/michael-rodriguez.jpg',
     rating: 5
   },
@@ -47,7 +47,7 @@ const testimonials: Testimonial[] = [
     name: 'Dr. Emily Watson',
     role: 'VP of Innovation',
     company: 'HealthTech Solutions',
-    content: 'Their expertise in healthcare AI is unmatched. The clinical decision support system they developed has improved patient outcomes by 25% while reducing diagnostic time by half.',
+    content: 'Healthcare moves slow. Regulations, compliance, everyone\'s scared of liability. Videbimus got it. They didn\'t promise magic—they showed us what was possible within our constraints. Clinical decision support that actually helps doctors without getting in the way. Patient outcomes improved 25%. That\'s lives saved.',
     image: '/testimonials/emily-watson.jpg',
     rating: 5
   },
@@ -56,7 +56,7 @@ const testimonials: Testimonial[] = [
     name: 'James Liu',
     role: 'CEO',
     company: 'RetailMax',
-    content: 'The personalization engine Videbimus AI created for us increased our conversion rates by 35% and customer lifetime value by 50%. Their team understood our business from day one.',
+    content: 'We were showing every customer the same products. Conversion rate was garbage. Tried building personalization in-house—9 months, nothing worked. Videbimus shipped in 8 weeks. Conversions up 35%, people are buying MORE stuff. My CMO keeps asking "can we do this for email too?" Yes. We can.',
     image: '/testimonials/james-liu.jpg',
     rating: 5
   }
@@ -95,10 +95,10 @@ export function Testimonials() {
           className="text-center mb-16"
         >
           <h2 className="font-display text-3xl font-bold tracking-tight text-gray-900 dark:text-white sm:text-4xl mb-4">
-            Trusted by Industry Leaders
+            Real People, Real Problems, Real Results
           </h2>
           <p className="mx-auto max-w-2xl text-lg text-gray-600 dark:text-gray-300">
-            See how organizations across industries have transformed their operations with our AI solutions
+            They were skeptical too. Here's what happened when they gave us a shot.
           </p>
         </motion.div>
 

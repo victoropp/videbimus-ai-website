@@ -18,28 +18,28 @@ import { Button } from '@/components/ui/button'
 const services = [
   {
     icon: Search,
-    title: 'AI Discovery & Strategy',
-    description: 'AI readiness assessment, strategic roadmap development, and proof of concept validation.',
+    title: 'Quick Win Package',
+    description: 'Not sure where to start? We find your biggest money leak and show you exactly how to fix it—fast.',
     duration: '2-4 weeks',
-    features: ['AI Readiness Assessment', 'Strategic Roadmap', 'POC Development', 'ROI Analysis'],
+    features: ['Find Your Hidden Costs', 'See What\'s Possible (Live Demo)', 'Get Your Custom Roadmap', 'Know Your Real ROI'],
     href: '/services#discovery',
     color: 'from-blue-500 to-cyan-500'
   },
   {
     icon: Cog,
-    title: 'AI Implementation',
-    description: 'Custom AI solution development, system integration, and team enablement.',
-    duration: '3-6 months',
-    features: ['Custom AI Solutions', 'System Integration', 'Team Training', 'Ongoing Support'],
+    title: 'Build & Launch',
+    description: 'Turn that plan into reality. Your team gets a working solution that saves time and money from day one.',
+    duration: '6-12 weeks',
+    features: ['Build Your Solution', 'Plug Into Your Systems', 'Train Your Team', 'We Stick Around'],
     href: '/services#implementation',
     color: 'from-purple-500 to-pink-500'
   },
   {
     icon: Building2,
-    title: 'Enterprise Transformation',
-    description: 'End-to-end AI platform development and AI Center of Excellence establishment.',
-    duration: '6-18 months',
-    features: ['Enterprise AI Platform', 'Center of Excellence', 'Governance Framework', '24/7 Support'],
+    title: 'Scale Across Your Business',
+    description: 'Already seeing results? Let\'s multiply them across every department that needs it.',
+    duration: '3-12 months',
+    features: ['Company-Wide Platform', 'Your Own Automation Hub', 'Rock-Solid Security', 'Always-On Support'],
     href: '/services#transformation',
     color: 'from-green-500 to-emerald-500'
   }
@@ -48,26 +48,26 @@ const services = [
 const specializedServices = [
   {
     icon: Brain,
-    title: 'Machine Learning',
-    description: 'Predictive analytics, deep learning applications, and recommendation systems.',
+    title: 'Predict What\'s Next',
+    description: 'Stop guessing. Know which customers will buy, what inventory you\'ll need, or when equipment will break—before it happens.',
     href: '/services#ml'
   },
   {
     icon: BarChart3,
-    title: 'Data Engineering',
-    description: 'Data pipeline development, business intelligence, and data quality frameworks.',
+    title: 'Clean Up Your Data Mess',
+    description: 'Data trapped in spreadsheets and disconnected systems? We organize it so you can actually use it.',
     href: '/services#data-engineering'
   },
   {
     icon: Bot,
-    title: 'AI Automation',
-    description: 'RPA, conversational AI, and intelligent decision systems.',
+    title: 'Let Robots Do The Boring Stuff',
+    description: 'Your team shouldn\'t be copy-pasting data or answering the same questions all day. Automate the grunt work.',
     href: '/services#automation'
   },
   {
     icon: GraduationCap,
-    title: 'Training & Education',
-    description: 'Corporate training programs, custom curriculum, and certification.',
+    title: 'Make Your Team Confident',
+    description: 'No tech background? No problem. We teach your team to use these tools without the jargon.',
     href: '/services#training'
   }
 ]
@@ -105,10 +105,10 @@ export function ServicesOverview() {
           className="text-center mb-16"
         >
           <h2 className="font-display text-3xl font-bold tracking-tight text-gray-900 dark:text-white sm:text-4xl mb-4">
-            Our AI & Data Science Services
+            Three Ways We Help You Save Money & Work Smarter
           </h2>
           <p className="mx-auto max-w-2xl text-lg text-gray-600 dark:text-gray-300">
-            Comprehensive solutions designed to transform your organization at every stage of your AI journey
+            Whether you're just curious or ready to automate your entire operation, we meet you where you are
           </p>
         </motion.div>
 
@@ -178,10 +178,10 @@ export function ServicesOverview() {
           className="text-center mb-12"
         >
           <h3 className="font-display text-2xl font-bold text-gray-900 dark:text-white mb-4">
-            Specialized Services
+            Common Problems We Solve
           </h3>
           <p className="text-gray-600 dark:text-gray-300 max-w-2xl mx-auto">
-            Industry-specific solutions and expert consulting across all aspects of AI and data science
+            Real business challenges our clients face every day—and how we help them overcome them
           </p>
         </motion.div>
 

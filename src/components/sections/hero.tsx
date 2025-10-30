@@ -61,7 +61,7 @@ export function Hero() {
           >
             <div className="inline-flex items-center rounded-full bg-gradient-to-r from-cyan-500/10 to-purple-500/10 px-4 py-2 text-sm font-medium text-gray-700 dark:text-gray-300 border border-cyan-500/20 dark:border-cyan-400/20">
               <Sparkles className="mr-2 h-4 w-4 text-cyan-500" />
-              Transforming Business with AI & Data Science
+              Your Data Is Already Costing You Money. We Turn It Into Profit.
             </div>
           </motion.div>
 
@@ -72,9 +72,9 @@ export function Hero() {
             transition={{ duration: 0.6, delay: 0.2 }}
             className="font-display text-4xl font-bold tracking-tight text-gray-900 dark:text-white sm:text-6xl lg:text-7xl mb-6"
           >
-            Unlock the Power of{' '}
+            Stop Drowning in Data.{' '}
             <span className="text-gradient animate-pulse">
-              Artificial Intelligence
+              Start Making Better Decisions.
             </span>
           </motion.h1>
 
@@ -85,8 +85,9 @@ export function Hero() {
             transition={{ duration: 0.6, delay: 0.3 }}
             className="mx-auto max-w-2xl text-lg leading-8 text-gray-600 dark:text-gray-300 sm:text-xl mb-10"
           >
-            We help organizations transform through intelligent automation, predictive analytics, 
-            and data-driven decision making. From AI strategy to implementation.
+            Your team is burning hours on manual tasks while competitors move faster.
+            We help SMBs and growing companies cut operational costs by 45%, automate repetitive work,
+            and actually use the mountains of data you're sitting on—without the complexity or 6-figure price tag.
           </motion.p>
 
           {/* CTA buttons */}
@@ -102,11 +103,11 @@ export function Hero() {
               className="group relative overflow-hidden"
             >
               <Link href="/contact">
-                Get Started Today
+                Show Me How (Free Consultation)
                 <ArrowRight className="ml-2 h-5 w-5 transition-transform group-hover:translate-x-1" />
               </Link>
             </Button>
-            
+
             <Button
               asChild
               variant="ghost"
@@ -115,7 +116,7 @@ export function Hero() {
             >
               <Link href="/case-studies">
                 <Play className="mr-2 h-5 w-5" />
-                View Case Studies
+                See Real Results
               </Link>
             </Button>
           </motion.div>
@@ -128,16 +129,16 @@ export function Hero() {
             className="grid grid-cols-1 sm:grid-cols-3 gap-8 text-center"
           >
             <div className="flex flex-col items-center">
-              <div className="text-3xl font-bold text-gray-900 dark:text-white mb-2">200%+</div>
-              <div className="text-sm text-gray-600 dark:text-gray-400">Average ROI</div>
+              <div className="text-3xl font-bold text-gray-900 dark:text-white mb-2">45%</div>
+              <div className="text-sm text-gray-600 dark:text-gray-400">Avg Cost Reduction (First 90 Days)</div>
             </div>
             <div className="flex flex-col items-center">
-              <div className="text-3xl font-bold text-gray-900 dark:text-white mb-2">50+</div>
-              <div className="text-sm text-gray-600 dark:text-gray-400">AI Implementations</div>
+              <div className="text-3xl font-bold text-gray-900 dark:text-white mb-2">6-8 Weeks</div>
+              <div className="text-sm text-gray-600 dark:text-gray-400">To First Working Solution</div>
             </div>
             <div className="flex flex-col items-center">
-              <div className="text-3xl font-bold text-gray-900 dark:text-white mb-2">24/7</div>
-              <div className="text-sm text-gray-600 dark:text-gray-400">Enterprise Support</div>
+              <div className="text-3xl font-bold text-gray-900 dark:text-white mb-2">$50K+</div>
+              <div className="text-sm text-gray-600 dark:text-gray-400">Saved Per Month (Typical Client)</div>
             </div>
           </motion.div>
         </motion.div>
