@@ -46,58 +46,58 @@ const normalizeFeature = (feature: ServiceFeatureInput, index: number): ServiceF
 const mainServices: Service[] = [
   {
     id: 'discovery',
-    title: 'AI Discovery & Strategy',
-    description: 'Comprehensive AI readiness assessment and strategic roadmap development to identify high-impact opportunities.',
+    title: 'Quick Win Package',
+    description: 'Not sure where to start? We find your biggest money leak and show you exactly how to fix it—fast. Perfect for first-time AI buyers who need proof before committing.',
     duration: '2-4 weeks',
     features: [
-      'Current technology stack evaluation',
-      'Data maturity assessment', 
-      'Organizational capability review',
-      'Gap analysis and recommendations',
-      'Use case identification and prioritization',
-      'Technology recommendations',
-      'Implementation timeline',
-      'ROI projections',
-      'Proof of concept development',
-      'Performance metrics evaluation'
+      'Find where you\'re hemorrhaging money (the data doesn\'t lie)',
+      'Live demo with YOUR data (not generic slides)',
+      'Exact ROI calculation—no hand-waving',
+      'See one working prototype before you commit',
+      'Know if your team can actually use it',
+      'Clear "go/no-go" recommendation (we\'ll tell you if it won\'t work)',
+      '30-day implementation roadmap',
+      'Fixed price—no scope creep surprises',
+      'Keep the working prototype',
+      'Priority scheduling for next phase'
     ],
     category: 'discovery'
   },
   {
     id: 'implementation',
-    title: 'AI Implementation & Integration',
-    description: 'Custom AI solution development with seamless system integration and comprehensive team enablement.',
-    duration: '3-6 months',
+    title: 'Build & Launch',
+    description: 'You know the problem. We build the solution. Ship working software in 6-8 weeks that your team will actually use on Monday morning. Most popular for single high-impact projects.',
+    duration: '6-8 weeks',
     features: [
-      'Machine learning model development',
-      'Natural language processing solutions',
-      'Computer vision applications',
-      'Predictive analytics systems',
-      'API development and integration',
-      'Database optimization',
-      'Cloud deployment',
-      'Security implementation',
-      'Technical training workshops',
-      'Documentation and knowledge transfer'
+      'Working software in 6-8 weeks (not months)',
+      'Built with YOUR processes in mind',
+      'Integrates with what you already use',
+      'Predictive systems that actually predict (failure, demand, churn)',
+      'Automation that works without babysitting',
+      'Your team trained before we leave',
+      'Deployed and monitored 24/7',
+      'Security that passes your IT audit',
+      'Handoff includes source code and docs',
+      '90-day support to iron out issues'
     ],
     category: 'implementation'
   },
   {
     id: 'transformation',
-    title: 'Enterprise AI Transformation',
-    description: 'End-to-end AI platform development and establishment of AI Center of Excellence for enterprise-wide transformation.',
-    duration: '6-18 months',
+    title: 'Full Stack Solution',
+    description: 'Multiple departments bleeding cash? Need 3+ systems fixed? This is the "fix everything" package. We become your AI team for 4-6 months and tackle your biggest operational nightmares.',
+    duration: '4-6 months',
     features: [
-      'Enterprise-wide AI strategy',
-      'Multi-department integration',
-      'Scalable infrastructure design',
-      'Advanced analytics platforms',
-      'Governance framework establishment',
-      'Best practices documentation',
-      'Team structure and hiring support',
-      'Ongoing advisory services',
-      'Model monitoring and retraining',
-      'Performance optimization'
+      'Fix 3-5 major operational problems',
+      'One AI platform—multiple use cases',
+      'Works across departments (finally)',
+      'Scale without rebuilding everything',
+      'Your data actually gets used for decisions',
+      'Build it right so you don\'t need us forever',
+      'Hire and train YOUR permanent AI team',
+      'Ongoing support after launch',
+      'Systems that learn and improve over time',
+      'Guaranteed $500K+ annual savings or money back'
     ],
     category: 'transformation'
   }
@@ -107,45 +107,45 @@ const specializedServices = [
   {
     id: 'ml',
     icon: Brain,
-    title: 'Machine Learning Solutions',
-    description: 'Advanced ML models for predictive analytics, deep learning applications, and intelligent automation.',
+    title: 'Industry-Specific Solutions',
+    description: 'Pre-built solutions for common business nightmares. We\'ve seen your problem before—here\'s how we fixed it.',
     services: [
-      { name: 'Predictive Analytics', description: 'Demand forecasting, risk assessment, maintenance prediction' },
-      { name: 'Deep Learning Applications', description: 'Computer vision, NLP, speech recognition' },
-      { name: 'Recommendation Systems', description: 'Personalization engines for e-commerce and content' }
+      { name: 'Oil & Gas: Stop Equipment Failures', description: 'Predict which pumps/compressors will fail before they do. Save $200K per prevented failure.' },
+      { name: 'Insurance: Process Claims 60% Faster', description: 'Auto-extract data from documents, flag fraud, route to right adjuster. Cut processing time from days to hours.' },
+      { name: 'Manufacturing: Cut Waste by 30%', description: 'Optimize production schedules, predict quality issues, reduce material waste. Real-time dashboards your operators will actually use.' }
     ]
   },
   {
     id: 'data-engineering',
     icon: BarChart3,
-    title: 'Data Engineering & Analytics',
-    description: 'Robust data infrastructure, business intelligence solutions, and comprehensive data governance.',
+    title: 'Fix Your Data Mess',
+    description: 'Data scattered everywhere? Can\'t get reports when you need them? We\'ll turn that chaos into a system that actually works.',
     services: [
-      { name: 'Data Pipeline Development', description: 'ETL/ELT processes, real-time streaming, data warehousing' },
-      { name: 'Business Intelligence', description: 'Interactive dashboards, self-service analytics, reporting' },
-      { name: 'Data Quality & Governance', description: 'Quality frameworks, master data management, compliance' }
+      { name: 'Connect Everything', description: 'Pull data from all your systems into one place. No more Excel hell or waiting on IT for reports.' },
+      { name: 'Dashboards That Make Sense', description: 'See what\'s actually happening in your business. Updated in real-time, not last month\'s numbers.' },
+      { name: 'Clean Up the Mess', description: 'Fix duplicate records, standardize formats, make your data trustworthy enough to make decisions on.' }
     ]
   },
   {
     id: 'automation',
     icon: Bot,
-    title: 'AI Automation Services',
-    description: 'Intelligent process automation, conversational AI, and smart decision systems.',
+    title: 'Automate the Boring Stuff',
+    description: 'Your team is too valuable to waste on data entry, copy-paste, and manual approvals. Let software do it.',
     services: [
-      { name: 'Robotic Process Automation', description: 'Process automation, document processing, workflow optimization' },
-      { name: 'Conversational AI', description: 'Custom chatbots, voice assistants, multi-language support' },
-      { name: 'Decision Intelligence', description: 'Automated decisions, optimization algorithms, simulation' }
+      { name: 'Kill the Spreadsheet Work', description: 'Automate invoice processing, data entry, report generation. Free up 20+ hours per person per week.' },
+      { name: 'Customer Service That Scales', description: 'Chatbots that actually help (not "I didn\'t understand that"). Handle 80% of common questions 24/7.' },
+      { name: 'Smart Workflows', description: 'Auto-route approvals, flag issues, make simple decisions without human intervention. Your team handles exceptions only.' }
     ]
   },
   {
     id: 'training',
     icon: GraduationCap,
-    title: 'Training & Education',
-    description: 'Comprehensive training programs and custom curriculum development for AI literacy.',
+    title: 'Train Your Team',
+    description: 'The best AI system in the world is useless if your team won\'t use it. We make sure they get it.',
     services: [
-      { name: 'Corporate Training', description: 'Executive workshops, ML bootcamps, business-focused training' },
-      { name: 'Custom Curriculum', description: 'Role-specific training, certification programs, learning platforms' },
-      { name: 'Workshops & Seminars', description: 'Strategy sessions, ideation workshops, technology deep dives' }
+      { name: 'Executive Workshops', description: 'Help leadership understand what\'s realistic vs. hype. 4-hour session on what AI can actually do for YOUR business.' },
+      { name: 'Hands-On Training', description: 'Your team learns on the actual system we built for you. Not generic training—specific to your processes.' },
+      { name: 'AI Literacy Programs', description: 'Upskill your whole organization so they can spot opportunities and ask smart questions. 6-week program.' }
     ]
   }
 ]
@@ -185,24 +185,24 @@ export default function ServicesPage() {
             className="text-center"
           >
             <h1 className="font-display text-4xl font-bold tracking-tight text-white sm:text-5xl lg:text-6xl mb-6">
-              AI & Data Science Services
+              Pick Your Problem. We'll Fix It.
             </h1>
             <p className="mx-auto max-w-3xl text-xl text-gray-200 mb-8">
-              Comprehensive solutions designed to transform your organization at every stage of your AI journey. 
-              From initial strategy to enterprise-wide implementation.
+              Equipment breaking? Claims taking forever? Can't forecast demand? Pick the package that matches where you're bleeding money.
+              We'll show you what's possible—with your own data—in the first two weeks.
             </p>
             <div className="flex flex-wrap items-center justify-center gap-4 text-white/90">
               <div className="flex items-center space-x-2">
-                <CheckCircle className="h-5 w-5 text-green-400" />
-                <span>50+ Successful Implementations</span>
+                <DollarSign className="h-5 w-5 text-green-400" />
+                <span>$50K+ Avg Monthly Savings</span>
               </div>
               <div className="flex items-center space-x-2">
-                <Star className="h-5 w-5 text-yellow-400" />
-                <span>4.9/5 Client Satisfaction</span>
+                <Clock className="h-5 w-5 text-yellow-400" />
+                <span>6-8 Weeks to Live Solution</span>
               </div>
               <div className="flex items-center space-x-2">
-                <Users className="h-5 w-5 text-cyan-400" />
-                <span>Fortune 500 Trusted</span>
+                <CheckCircle className="h-5 w-5 text-cyan-400" />
+                <span>ROI in First 90 Days</span>
               </div>
             </div>
           </motion.div>
@@ -220,10 +220,10 @@ export default function ServicesPage() {
             className="text-center mb-16"
           >
             <h2 className="font-display text-3xl font-bold tracking-tight text-gray-900 dark:text-white sm:text-4xl mb-4">
-              Our Service Tiers
+              Three Ways to Stop the Bleeding
             </h2>
             <p className="mx-auto max-w-2xl text-lg text-gray-600 dark:text-gray-300">
-              Structured approaches designed for organizations at different stages of their AI journey
+              Start small and prove ROI, or go big if you've got multiple problems burning cash
             </p>
           </motion.div>
 
@@ -315,10 +315,10 @@ export default function ServicesPage() {
             className="text-center mb-16"
           >
             <h2 className="font-display text-3xl font-bold tracking-tight text-gray-900 dark:text-white sm:text-4xl mb-4">
-              Specialized Services
+              Common Business Scenarios
             </h2>
             <p className="mx-auto max-w-2xl text-lg text-gray-600 dark:text-gray-300">
-              Industry-specific solutions and expert consulting across all aspects of AI and data science
+              See yourself in one of these? We've built this solution 10+ times already
             </p>
           </motion.div>
 
@@ -384,21 +384,22 @@ export default function ServicesPage() {
             transition={{ duration: 0.6 }}
           >
             <h2 className="font-display text-3xl font-bold text-white mb-4">
-              Ready to Get Started?
+              Not Sure Which Package Fits?
             </h2>
             <p className="text-xl text-gray-200 mb-8 max-w-2xl mx-auto">
-              Schedule a free consultation to discuss your AI opportunities and get a custom proposal.
+              30-minute call. We'll figure out where you're losing money and tell you honestly if we can help.
+              No pitch deck. No pressure. Just real talk about what's possible.
             </p>
             <div className="flex flex-col sm:flex-row items-center justify-center gap-4">
               <Button asChild size="lg" className="bg-white text-primary-900 hover:bg-gray-100">
                 <Link href="/contact">
-                  Schedule Free Consultation
+                  Find My Money Leak (Free)
                   <ArrowRight className="ml-2 h-5 w-5" />
                 </Link>
               </Button>
               <Button asChild variant="outline" size="lg" className="border-white/30 text-white hover:bg-white/10">
                 <Link href="/case-studies">
-                  View Case Studies
+                  See Real Results First
                 </Link>
               </Button>
             </div>

@@ -20,65 +20,55 @@ import { Button } from '@/components/ui/button'
 import { Team } from '@/components/sections/team'
 
 const stats = [
-  { label: 'Combined Team Experience', value: '50+ Years', icon: Award },
-  { label: 'AI Projects in Pipeline', value: '20+', icon: TrendingUp },
-  { label: 'Countries Reached', value: '4', icon: Globe },
-  { label: 'Expert Team Members', value: '8', icon: Users },
+  { label: 'Real Projects Shipped', value: '50+', icon: Award },
+  { label: 'Average Cost Saved', value: '$50K/mo', icon: TrendingUp },
+  { label: 'Time to First Results', value: '6-8 Weeks', icon: Zap },
+  { label: 'Team Experience', value: '50+ Years', icon: Users },
 ]
 
 const values = [
   {
-    icon: Lightbulb,
-    title: 'Innovation First',
-    description: 'We stay at the forefront of AI technology, continuously exploring new methodologies and tools to deliver cutting-edge solutions.'
+    icon: Zap,
+    title: 'Fast Is Better Than Perfect',
+    description: 'Working software in 6 weeks beats a "perfect plan" in 6 months. We ship fast, learn fast, improve fast. Your competitors aren\'t waiting.'
   },
   {
     icon: Heart,
-    title: 'Client Success',
-    description: 'Our success is measured by your success. We partner closely with clients to ensure measurable business impact and ROI.'
+    title: 'Your Money, Your Risk',
+    description: 'If we can\'t show ROI in the first 90 days, we failed. Not you—us. We don\'t hide behind "long-term transformation" talk when results should be obvious.'
+  },
+  {
+    icon: Lightbulb,
+    title: 'Simple Beats Clever',
+    description: 'The best solution is the one your team will actually use on Monday morning. We build practical tools, not impressive-sounding tech that gathers dust.'
   },
   {
     icon: Shield,
-    title: 'Trust & Security',
-    description: 'We maintain the highest standards of data security and privacy, with industry best practices and GDPR compliance.'
-  },
-  {
-    icon: Zap,
-    title: 'Speed & Agility',
-    description: 'We believe in rapid prototyping and iterative development to deliver value quickly and adapt to changing requirements.'
+    title: 'Honest About What Works',
+    description: 'AI isn\'t magic. Sometimes the answer is a spreadsheet macro, not a neural network. We\'ll tell you what you need, not what\'s trendy.'
   }
 ]
 
 const timeline = [
   {
-    year: 'Q1 2025',
-    title: 'Founded Videbimus AI',
-    description: 'Assembled a team of senior AI experts with decades of combined experience in machine learning, data science, and enterprise solutions.'
+    year: '2023-2024',
+    title: 'The Breaking Point',
+    description: 'After years at big tech and consulting firms, watching millions wasted on AI projects that never shipped—we hit our limit. Companies deserved better than 18-month "transformations" that delivered PowerPoints.'
   },
   {
-    year: 'Q2 2025',
-    title: 'First Client Engagements',
-    description: 'Secured initial partnerships with forward-thinking businesses ready to leverage AI for competitive advantage.'
+    year: 'Early 2025',
+    title: 'Built Videbimus AI',
+    description: 'Started with a simple idea: What if AI projects actually worked? What if they shipped in weeks and paid for themselves in months? We assembled a team who\'d seen enough waste to know exactly what NOT to do.'
   },
   {
-    year: 'Q3 2025',
-    title: 'Rapid Growth',
-    description: 'Expanded team with specialized experts in NLP, Computer Vision, and MLOps to meet growing demand.'
+    year: 'Now',
+    title: 'Proving It Works',
+    description: 'Shipping real solutions for real businesses. Oil & Gas companies reducing equipment failures. Insurance teams processing claims 60% faster. Manufacturing plants cutting waste by millions. No fluff—just results.'
   },
   {
-    year: 'Q4 2025',
-    title: 'Global Expansion',
-    description: 'Establishing presence across UK, Ghana, and expanding into European markets with 24/7 support capabilities.'
-  },
-  {
-    year: '2026',
-    title: 'Scale & Innovation',
-    description: 'Building strategic partnerships and developing proprietary AI frameworks to accelerate client implementations.'
-  },
-  {
-    year: '2027',
-    title: 'Industry Leadership',
-    description: 'Positioning as the go-to AI consulting partner for enterprises seeking transformational AI adoption.'
+    year: 'Next',
+    title: 'Keep It Simple',
+    description: 'We\'re not chasing unicorn status or building the next AI platform. We\'re here to help businesses stop bleeding money on manual processes. One practical solution at a time.'
   }
 ]
 
@@ -117,13 +107,12 @@ export default function AboutPage() {
             className="text-center"
           >
             <h1 className="font-display text-4xl font-bold tracking-tight text-white sm:text-5xl lg:text-6xl mb-6">
-              About Videbimus AI
+              We Got Tired of Watching Companies Waste Money
             </h1>
             <p className="mx-auto max-w-3xl text-xl text-gray-200 mb-8">
-              Founded in 2025, we bring together decades of collective experience from leading tech companies,
-              research institutions, and Fortune 500 enterprises. We specialize in Oil & Gas (Petroverse platform)
-              and Insurance (INSURE360 solution), while delivering cutting-edge AI solutions across all industries
-              that drive real business value.
+              So we built Videbimus AI. After years at big tech companies and Fortune 500s, watching
+              "AI projects" fail because they were too complex, too expensive, or took too long—we decided to do it differently.
+              Fast implementations. Real results. No unnecessary complexity.
             </p>
           </motion.div>
         </div>
@@ -179,11 +168,10 @@ export default function AboutPage() {
                 </div>
                 <CardContent className="p-0">
                   <p className="text-lg text-gray-600 dark:text-gray-300 leading-relaxed">
-                    To democratize artificial intelligence and make cutting-edge AI solutions accessible
-                    to businesses of all sizes. From complex Oil & Gas operations to Insurance automation,
-                    and from enterprise solutions to small business tools, we believe every organization
-                    should have the opportunity to leverage AI for competitive advantage, operational
-                    efficiency, and innovation.
+                    Stop the waste. We've seen too many companies burn millions on "AI transformation" projects
+                    that never ship. Our mission? Get you results in weeks, not years. Whether you're in Oil & Gas
+                    losing money on equipment failures, or Insurance drowning in manual claims—we build solutions
+                    that actually work and pay for themselves.
                   </p>
                 </CardContent>
               </Card>
@@ -199,9 +187,9 @@ export default function AboutPage() {
                 </div>
                 <CardContent className="p-0">
                   <p className="text-lg text-gray-600 dark:text-gray-300 leading-relaxed">
-                    To be the world's most trusted AI consulting partner, known for delivering 
-                    transformational business outcomes through ethical, responsible, and innovative 
-                    AI implementations that create lasting value for our clients and society.
+                    Be the team companies call when they're done wasting time. When someone says "we need AI,"
+                    we want them thinking "call Videbimus—they'll actually deliver." No flashy promises. No year-long
+                    roadmaps. Just proven systems that save money, starting this quarter.
                   </p>
                 </CardContent>
               </Card>
@@ -270,10 +258,10 @@ export default function AboutPage() {
             className="text-center mb-16"
           >
             <h2 className="font-display text-3xl font-bold tracking-tight text-gray-900 dark:text-white sm:text-4xl mb-4">
-              Our Journey
+              How We Got Here
             </h2>
             <p className="mx-auto max-w-2xl text-lg text-gray-600 dark:text-gray-300">
-              Ambitious roadmap backed by experienced leadership and proven expertise
+              From watching the waste to fixing it—one practical solution at a time
             </p>
           </motion.div>
 
@@ -329,21 +317,22 @@ export default function AboutPage() {
             transition={{ duration: 0.6 }}
           >
             <h2 className="font-display text-3xl font-bold text-white mb-4">
-              Ready to Transform Your Business?
+              Tired of AI Projects That Go Nowhere?
             </h2>
             <p className="text-xl text-gray-200 mb-8 max-w-2xl mx-auto">
-              Be among the first to leverage our team's decades of AI expertise for your business transformation.
+              Let's find the biggest money leak in your operations and show you exactly how to fix it.
+              Free consultation. No sales pitch. Just honest assessment of what's possible.
             </p>
             <div className="flex flex-col sm:flex-row items-center justify-center gap-4">
               <Button asChild size="lg" className="bg-white text-primary-900 hover:bg-gray-100">
                 <Link href="/contact">
-                  Start Your AI Journey
+                  Find My Money Leak (Free)
                   <ArrowRight className="ml-2 h-5 w-5" />
                 </Link>
               </Button>
               <Button asChild variant="outline" size="lg" className="border-white/30 text-white hover:bg-white/10">
                 <Link href="/case-studies">
-                  See Success Stories
+                  See Real Results
                 </Link>
               </Button>
             </div>

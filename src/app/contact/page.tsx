@@ -8,22 +8,22 @@ import { ContactForm } from '@/components/forms/contact-form'
 const contactMethods = [
   {
     icon: Mail,
-    title: 'Email Us',
-    description: 'Send us an email and we\'ll respond within 24 hours',
+    title: 'Email (Detailed Questions)',
+    description: 'Got a complex situation? Email us the details—we\'ll respond in 24 hours with real answers',
     contact: 'consulting@videbimusai.com',
     action: 'mailto:consulting@videbimusai.com'
   },
   {
     icon: Phone,
-    title: 'Call Us',
-    description: 'Speak directly with our AI experts',
+    title: 'Call (Quick Chat)',
+    description: 'Want to talk it through? Call us. Real people answer, not a menu tree',
     contact: '+44 7442 852 675',
     action: 'tel:+447442852675'
   },
   {
     icon: MessageCircle,
-    title: 'WhatsApp',
-    description: 'Message us on WhatsApp for quick responses',
+    title: 'WhatsApp (Fast Response)',
+    description: 'Easiest way to reach us. Message us and we\'ll get back to you same-day',
     contact: '+233 248 769 377',
     action: 'https://wa.me/233248769377'
   }
@@ -32,50 +32,50 @@ const contactMethods = [
 const processSteps = [
   {
     step: 1,
-    title: 'Discovery Call',
-    description: '30-minute consultation to understand your needs and AI opportunities',
+    title: 'Real Talk (30 min)',
+    description: 'Tell us where it hurts. We\'ll tell you if we can fix it—and what it actually costs. No vague "transformation" talk.',
     duration: '30 minutes',
     icon: Phone
   },
   {
     step: 2,
-    title: 'Proposal Development',
-    description: 'Custom solution design with detailed timeline and investment requirements',
-    duration: '3-5 business days',
+    title: 'Show You What\'s Possible',
+    description: 'We build a quick prototype with YOUR data (not generic demos). See if it actually solves your problem before spending big.',
+    duration: '1-2 weeks',
     icon: Users
   },
   {
     step: 3,
-    title: 'Project Kickoff',
-    description: 'Team introductions, project setup, and initial planning phase',
-    duration: '1 week',
+    title: 'Fixed-Price Proposal',
+    description: 'Exact timeline. Exact cost. No scope creep surprises. You know what you\'re getting before day one.',
+    duration: '3-5 days',
     icon: Calendar
   },
   {
     step: 4,
-    title: 'Implementation',
-    description: 'Iterative development with regular updates and continuous optimization',
-    duration: 'Varies by project',
+    title: 'Ship Working Software',
+    description: 'We build it, your team tests it, we fix issues. You get software that actually works on Monday morning—not vaporware.',
+    duration: '6-8 weeks typical',
     icon: CheckCircle
   }
 ]
 
 const faqs = [
   {
-    question: 'How long does a typical AI project take?',
-    answer: 'Project timelines vary based on complexity. Discovery projects typically take 2-4 weeks, implementation projects 3-6 months, and enterprise transformations 6-18 months.'
+    question: 'How do I know this won\'t turn into another expensive IT project that goes nowhere?',
+    answer: 'Fair question—we\'ve seen those disasters too. That\'s why we show you a working prototype with YOUR data in week 2. If it doesn\'t work, we tell you. If it does, you see it before committing big money. Fixed-price quotes mean no surprise costs. And we ship in 6-8 weeks, not "6 months that becomes 18 months."'
   },
   {
-    question: 'What industries do you work with?',
-    answer: 'Our team brings experience from diverse sectors including manufacturing, healthcare, finance, retail, logistics, and energy. We adapt our expertise to your specific industry needs.'
+    question: 'What if my team won\'t use it?',
+    answer: 'This is the #1 reason AI projects fail. We build tools your team will actually want to use on Monday morning—not complex systems that require a PhD to operate. We train your people before we leave, and the first 90 days include support to iron out real-world issues. If your team isn\'t using it, we failed.'
   },
   {
-    question: 'Do you provide ongoing support after implementation?',
-    answer: 'Yes, we offer comprehensive support packages including 24/7 monitoring, model retraining, performance optimization, and quarterly business reviews.'
+    question: 'Do I need clean data or a big IT infrastructure first?',
+    answer: 'No. Messy data is normal—we\'ll help you clean what matters. And we work with what you have: Excel, old databases, whatever. If you need infrastructure upgrades, we\'ll tell you upfront (and help you get budget approval with real numbers). We don\'t make you "get ready" for 6 months before starting.'
   },
   {
-    question: 'What\'s the typical ROI for AI projects?',
-    answer: 'Based on industry benchmarks and our team\'s previous experience, AI projects typically achieve 200%+ ROI within 18 months, with significant cost reductions and revenue increases depending on the use case.'
+    question: 'What does this actually cost?',
+    answer: 'Honest answer: Discovery package (2-4 weeks, includes working prototype) typically runs $15K-$25K. Full implementation (6-8 weeks to working software) runs $75K-$150K depending on complexity. Enterprise solutions (multiple systems, 4-6 months) start around $300K. We give you exact numbers after understanding your problem—no "it depends" hand-waving.'
   }
 ]
 
@@ -114,24 +114,24 @@ export default function ContactPage() {
             className="text-center"
           >
             <h1 className="font-display text-4xl font-bold tracking-tight text-white sm:text-5xl lg:text-6xl mb-6">
-              Let's Transform Your Business Together
+              Let's Find Where You're Losing Money
             </h1>
             <p className="mx-auto max-w-3xl text-xl text-gray-200 mb-8">
-              Ready to unlock the power of AI for your organization? Schedule a free consultation 
-              with our experienced team and discover how we can help you achieve your goals.
+              30-minute call. Zero pressure. We'll look at your operation and tell you honestly where AI can help—and where it can't.
+              Equipment failures? Manual processes eating your team's time? Claims taking forever? Let's talk specifics.
             </p>
             <div className="flex flex-wrap items-center justify-center gap-6 text-white/90">
               <div className="flex items-center space-x-2">
                 <Clock className="h-5 w-5 text-cyan-400" />
-                <span>Free 30-min consultation</span>
+                <span>30-min honest assessment</span>
               </div>
               <div className="flex items-center space-x-2">
                 <CheckCircle className="h-5 w-5 text-green-400" />
-                <span>No obligation</span>
+                <span>No pitch deck, just real talk</span>
               </div>
               <div className="flex items-center space-x-2">
                 <Users className="h-5 w-5 text-purple-400" />
-                <span>Expert guidance</span>
+                <span>Talk to people who've shipped this before</span>
               </div>
             </div>
           </motion.div>
@@ -235,9 +235,9 @@ export default function ContactPage() {
               {/* Process */}
               <Card>
                 <CardHeader>
-                  <CardTitle>Our Process</CardTitle>
+                  <CardTitle>What Happens Next</CardTitle>
                   <CardDescription>
-                    Here's what happens after you reach out to us
+                    No mystery—here's exactly how we work
                   </CardDescription>
                 </CardHeader>
                 <CardContent className="space-y-6">
@@ -283,10 +283,10 @@ export default function ContactPage() {
             className="text-center mb-16"
           >
             <h2 className="font-display text-3xl font-bold tracking-tight text-gray-900 dark:text-white sm:text-4xl mb-4">
-              Frequently Asked Questions
+              Questions You're Probably Asking
             </h2>
             <p className="mx-auto max-w-2xl text-lg text-gray-600 dark:text-gray-300">
-              Common questions about our AI consulting services and process
+              The real concerns decision-makers have (we've heard them all before)
             </p>
           </motion.div>
 
@@ -326,23 +326,24 @@ export default function ContactPage() {
             transition={{ duration: 0.6 }}
           >
             <h2 className="font-display text-3xl font-bold text-white mb-4">
-              Still Have Questions?
+              Want to Know What This Would Actually Cost?
             </h2>
             <p className="text-xl text-gray-200 mb-6 max-w-2xl mx-auto">
-              Our AI experts are here to help. No question is too big or small.
+              Fill out the form above or call us. We'll give you real numbers after understanding your specific problem.
+              Not "it depends"—actual ballpark figures so you know if it makes sense for your budget.
             </p>
             <div className="flex items-center justify-center space-x-8 text-white/90">
               <div className="flex items-center space-x-2">
                 <CheckCircle className="h-5 w-5 text-green-400" />
-                <span>Free consultation</span>
+                <span>Real pricing, not "contact for quote"</span>
               </div>
               <div className="flex items-center space-x-2">
                 <CheckCircle className="h-5 w-5 text-green-400" />
-                <span>No sales pressure</span>
+                <span>We'll tell you if it won't work</span>
               </div>
               <div className="flex items-center space-x-2">
                 <CheckCircle className="h-5 w-5 text-green-400" />
-                <span>Expert advice</span>
+                <span>No pressure to buy anything</span>
               </div>
             </div>
           </motion.div>
