@@ -242,9 +242,9 @@ export function ContactForm() {
               error={!!errors.message}
               {...register('message', {
                 required: 'Please tell us what problem you need solved',
-                minLength: { value: 10, message: 'A bit more detail helps—what's costing you money or time?' }
+                minLength: { value: 10, message: "A bit more detail helps - what's costing you money or time?" }
               })}
-              placeholder="Example: 'Equipment keeps failing with zero warning—costing us $200K each time' or 'Claims processing takes 7-10 days, customers are furious' or 'Not sure where to start—just know we're wasting time on manual work...'"
+              placeholder="Example: 'Equipment keeps failing with zero warning - costing us $200K each time' or 'Claims processing takes 7-10 days, customers are furious' or 'Not sure where to start - just know we're wasting time on manual work...'"
               rows={4}
             />
             {errors.message && (
