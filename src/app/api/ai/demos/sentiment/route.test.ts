@@ -2,11 +2,25 @@ import { describe, it, expect, vi, beforeEach } from 'vitest'
 import { POST } from './route'
 import { NextRequest } from 'next/server'
 
-// Mock the sentiment analysis function
-const mockAnalyzeSentiment = vi.fn()
+// Use vi.hoisted to ensure the mock function is created before it's used in vi.mock
+const { mockFn } = vi.hoisted(() => {
+  return {
+    mockFn: vi.fn()
+  }
+})
 
+// Mock the AI providers to prevent OpenAI client instantiation
+vi.mock('@/lib/ai/providers', () => ({
+  openai: {},
+  anthropic: {},
+  google: {},
+  mistral: {},
+  aiConfig: {},
+}))
+
+// Mock the sentiment analysis module
 vi.mock('@/lib/ai/demos', () => ({
-  analyzeSentiment: mockAnalyzeSentiment,
+  analyzeSentiment: mockFn,
 }))
 
 // Helper function to create a mock NextRequest
@@ -23,6 +37,7 @@ const createMockRequest = (body: any): NextRequest => {
 }
 
 describe('/api/ai/demos/sentiment', () => {
+
   beforeEach(() => {
     vi.clearAllMocks()
   })
@@ -39,7 +54,7 @@ describe('/api/ai/demos/sentiment', () => {
         },
       }
 
-      mockAnalyzeSentiment.mockResolvedValue(mockResult)
+      mockFn.mockResolvedValue(mockResult)
 
       const request = createMockRequest({
         text: 'I love this product! It works amazingly well.',
@@ -50,10 +65,10 @@ describe('/api/ai/demos/sentiment', () => {
 
       expect(response.status).toBe(200)
       expect(data).toEqual(mockResult)
-      expect(mockAnalyzeSentiment).toHaveBeenCalledWith(
+      expect(mockFn).toHaveBeenCalledWith(
         'I love this product! It works amazingly well.'
       )
-      expect(mockAnalyzeSentiment).toHaveBeenCalledTimes(1)
+      expect(mockFn).toHaveBeenCalledTimes(1)
     })
 
     it('analyzes negative sentiment correctly', async () => {
@@ -67,7 +82,7 @@ describe('/api/ai/demos/sentiment', () => {
         },
       }
 
-      mockAnalyzeSentiment.mockResolvedValue(mockResult)
+      mockFn.mockResolvedValue(mockResult)
 
       const request = createMockRequest({
         text: 'This is terrible and I hate it completely.',
@@ -78,7 +93,7 @@ describe('/api/ai/demos/sentiment', () => {
 
       expect(response.status).toBe(200)
       expect(data).toEqual(mockResult)
-      expect(mockAnalyzeSentiment).toHaveBeenCalledWith(
+      expect(mockFn).toHaveBeenCalledWith(
         'This is terrible and I hate it completely.'
       )
     })
@@ -94,7 +109,7 @@ describe('/api/ai/demos/sentiment', () => {
         },
       }
 
-      mockAnalyzeSentiment.mockResolvedValue(mockResult)
+      mockFn.mockResolvedValue(mockResult)
 
       const request = createMockRequest({
         text: 'The weather is cloudy today.',
@@ -105,7 +120,7 @@ describe('/api/ai/demos/sentiment', () => {
 
       expect(response.status).toBe(200)
       expect(data).toEqual(mockResult)
-      expect(mockAnalyzeSentiment).toHaveBeenCalledWith(
+      expect(mockFn).toHaveBeenCalledWith(
         'The weather is cloudy today.'
       )
     })
@@ -121,7 +136,7 @@ describe('/api/ai/demos/sentiment', () => {
       expect(response.status).toBe(400)
       expect(data.error).toBe('Invalid request data')
       expect(data.details).toBeDefined()
-      expect(mockAnalyzeSentiment).not.toHaveBeenCalled()
+      expect(mockFn).not.toHaveBeenCalled()
     })
 
     it('rejects missing text field', async () => {
@@ -135,7 +150,7 @@ describe('/api/ai/demos/sentiment', () => {
       expect(response.status).toBe(400)
       expect(data.error).toBe('Invalid request data')
       expect(data.details).toBeDefined()
-      expect(mockAnalyzeSentiment).not.toHaveBeenCalled()
+      expect(mockFn).not.toHaveBeenCalled()
     })
 
     it('rejects text that is too long', async () => {
@@ -151,7 +166,7 @@ describe('/api/ai/demos/sentiment', () => {
       expect(response.status).toBe(400)
       expect(data.error).toBe('Invalid request data')
       expect(data.details).toBeDefined()
-      expect(mockAnalyzeSentiment).not.toHaveBeenCalled()
+      expect(mockFn).not.toHaveBeenCalled()
     })
 
     it('accepts text at maximum length', async () => {
@@ -163,7 +178,7 @@ describe('/api/ai/demos/sentiment', () => {
         scores: { positive: 0.2, negative: 0.2, neutral: 0.6 },
       }
 
-      mockAnalyzeSentiment.mockResolvedValue(mockResult)
+      mockFn.mockResolvedValue(mockResult)
 
       const request = createMockRequest({
         text: maxText,
@@ -174,7 +189,7 @@ describe('/api/ai/demos/sentiment', () => {
 
       expect(response.status).toBe(200)
       expect(data).toEqual(mockResult)
-      expect(mockAnalyzeSentiment).toHaveBeenCalledWith(maxText)
+      expect(mockFn).toHaveBeenCalledWith(maxText)
     })
 
     it('rejects non-string text input', async () => {
@@ -188,11 +203,11 @@ describe('/api/ai/demos/sentiment', () => {
       expect(response.status).toBe(400)
       expect(data.error).toBe('Invalid request data')
       expect(data.details).toBeDefined()
-      expect(mockAnalyzeSentiment).not.toHaveBeenCalled()
+      expect(mockFn).not.toHaveBeenCalled()
     })
 
     it('handles sentiment analysis service errors', async () => {
-      mockAnalyzeSentiment.mockRejectedValue(new Error('AI service unavailable'))
+      mockFn.mockRejectedValue(new Error('AI service unavailable'))
 
       const consoleSpy = vi.spyOn(console, 'error').mockImplementation(() => {})
 
@@ -209,7 +224,7 @@ describe('/api/ai/demos/sentiment', () => {
         'Sentiment analysis error:',
         expect.any(Error)
       )
-      expect(mockAnalyzeSentiment).toHaveBeenCalledWith('This should cause an error.')
+      expect(mockFn).toHaveBeenCalledWith('This should cause an error.')
 
       consoleSpy.mockRestore()
     })
@@ -229,7 +244,7 @@ describe('/api/ai/demos/sentiment', () => {
 
       expect(response.status).toBe(500)
       expect(data.error).toBe('Sentiment analysis failed')
-      expect(mockAnalyzeSentiment).not.toHaveBeenCalled()
+      expect(mockFn).not.toHaveBeenCalled()
     })
 
     it('handles special characters and emojis in text', async () => {
@@ -245,7 +260,7 @@ describe('/api/ai/demos/sentiment', () => {
         },
       }
 
-      mockAnalyzeSentiment.mockResolvedValue(mockResult)
+      mockFn.mockResolvedValue(mockResult)
 
       const request = createMockRequest({
         text: textWithEmojis,
@@ -256,7 +271,7 @@ describe('/api/ai/demos/sentiment', () => {
 
       expect(response.status).toBe(200)
       expect(data).toEqual(mockResult)
-      expect(mockAnalyzeSentiment).toHaveBeenCalledWith(textWithEmojis)
+      expect(mockFn).toHaveBeenCalledWith(textWithEmojis)
     })
 
     it('handles multi-language text', async () => {
@@ -272,7 +287,7 @@ describe('/api/ai/demos/sentiment', () => {
         },
       }
 
-      mockAnalyzeSentiment.mockResolvedValue(mockResult)
+      mockFn.mockResolvedValue(mockResult)
 
       const request = createMockRequest({
         text: multiLanguageText,
@@ -283,7 +298,7 @@ describe('/api/ai/demos/sentiment', () => {
 
       expect(response.status).toBe(200)
       expect(data).toEqual(mockResult)
-      expect(mockAnalyzeSentiment).toHaveBeenCalledWith(multiLanguageText)
+      expect(mockFn).toHaveBeenCalledWith(multiLanguageText)
     })
 
     it('handles whitespace-only text', async () => {
@@ -298,10 +313,10 @@ describe('/api/ai/demos/sentiment', () => {
       // or processed as neutral sentiment
       if (response.status === 400) {
         expect(data.error).toBe('Invalid request data')
-        expect(mockAnalyzeSentiment).not.toHaveBeenCalled()
+        expect(mockFn).not.toHaveBeenCalled()
       } else {
         expect(response.status).toBe(200)
-        expect(mockAnalyzeSentiment).toHaveBeenCalled()
+        expect(mockFn).toHaveBeenCalled()
       }
     })
   })
@@ -325,7 +340,7 @@ describe('/api/ai/demos/sentiment', () => {
     })
 
     it('logs service errors', async () => {
-      mockAnalyzeSentiment.mockRejectedValue(new Error('Service error'))
+      mockFn.mockRejectedValue(new Error('Service error'))
       const consoleSpy = vi.spyOn(console, 'error').mockImplementation(() => {})
 
       const request = createMockRequest({

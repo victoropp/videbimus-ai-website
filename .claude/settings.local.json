@@ -1,20 +1,13 @@
 {
   "permissions": {
     "allow": [
-      "Bash(do perl -i -0pe 's/data: \\{([^}]*)\\},(\\s+)(include|select|where)/data: {\\1} as any,\\2\\3/gs' \"$file\")",
-      "Bash(do sed -i 's/data: input,$/data: input as any,/g' \"$file\")",
-      "Bash(cat:*)",
-      "Bash(npx tsc:*)",
-      "Bash(npm run dev:*)",
-      "Bash(start http://localhost:3002)",
-      "Bash(git add:*)",
-      "Bash(npm run test:run:*)",
-      "Bash(git commit:*)",
-      "Bash(find:*)",
-      "Bash(start http://localhost:3003)",
-      "Bash(start http://localhost:3004)",
-      "Bash(git log:*)",
-      "Bash(git reset:*)"
+      "Bash(powershell -Command:*)",
+      "Bash(powershell -ExecutionPolicy Bypass -File:*)",
+      "Bash(where:*)",
+      "Bash(node optimize-images.mjs:*)",
+      "Bash(start http://localhost:3000)",
+      "Bash(start http://localhost:3001)",
+      "Bash(git push:*)"
     ],
     "deny": [],
     "ask": []

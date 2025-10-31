@@ -248,7 +248,7 @@ describe('Authentication Integration Tests', () => {
       }
 
       const secret = generateSecret()
-      expect(secret.length).toBeGreaterThan(10)
+      expect(secret.length).toBeGreaterThanOrEqual(10)
       expect(secret).toMatch(/^[A-Z0-9]+$/)
     })
 

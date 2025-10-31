@@ -8,6 +8,22 @@ import { expect, afterEach, vi } from 'vitest'
 import { cleanup } from '@testing-library/react'
 import '@testing-library/jest-dom/vitest'
 
+// Mock NextAuth
+vi.mock('next-auth/react', () => ({
+  SessionProvider: ({ children }: { children: React.ReactNode }) => children,
+  useSession: vi.fn(() => ({
+    data: null,
+    status: 'unauthenticated',
+  })),
+  signIn: vi.fn(),
+  signOut: vi.fn(),
+}))
+
+// Mock tRPC Provider
+vi.mock('@/lib/trpc/provider', () => ({
+  TRPCProvider: ({ children }: { children: React.ReactNode }) => children,
+}))
+
 // Cleanup after each test
 afterEach(() => {
   cleanup()

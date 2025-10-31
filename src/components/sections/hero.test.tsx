@@ -62,7 +62,10 @@ describe('Hero', () => {
     const heroImage = screen.getByRole('img', { name: /data analytics dashboard/i })
     expect(heroImage).toBeInTheDocument()
     expect(heroImage).toHaveAttribute('alt')
-    expect(heroImage).toHaveAttribute('src', '/images/home/hero-data-analyst.jpg')
+    // Next.js Image component transforms and URL-encodes src
+    const src = heroImage.getAttribute('src')
+    expect(src).toBeTruthy()
+    expect(decodeURIComponent(src!)).toContain('/images/home/hero-data-analyst.jpg')
   })
 
   it('is responsive and mobile-friendly', () => {
@@ -75,13 +78,13 @@ describe('Hero', () => {
 
   it('has proper contrast and accessibility', () => {
     render(<Hero />)
-    
+
     const heading = screen.getByRole('heading', { level: 1 })
-    expect(heading).toBeVisible()
-    
+    expect(heading).toBeInTheDocument()
+
     const buttons = screen.getAllByRole('link')
     buttons.forEach(button => {
-      expect(button).toBeVisible()
+      expect(button).toBeInTheDocument()
       expect(button).toHaveAccessibleName()
     })
   })

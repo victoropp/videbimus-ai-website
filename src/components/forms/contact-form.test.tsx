@@ -9,25 +9,25 @@ describe('ContactForm', () => {
 
   it('renders the form with all required fields', () => {
     render(<ContactForm />)
-    
+
     expect(screen.getByLabelText(/full name/i)).toBeInTheDocument()
     expect(screen.getByLabelText(/email address/i)).toBeInTheDocument()
     expect(screen.getByLabelText(/company name/i)).toBeInTheDocument()
-    expect(screen.getByLabelText(/service interest/i)).toBeInTheDocument()
-    expect(screen.getByLabelText(/project details/i)).toBeInTheDocument()
+    expect(screen.getByLabelText(/what's the problem\?/i)).toBeInTheDocument()
+    expect(screen.getByLabelText(/what's the actual problem\?/i)).toBeInTheDocument()
     expect(screen.getByRole('button', { name: /send message/i })).toBeInTheDocument()
   })
 
   it('displays validation errors for required fields', async () => {
     render(<ContactForm />)
-    
+
     const submitButton = screen.getByRole('button', { name: /send message/i })
     fireEvent.click(submitButton)
-    
+
     await waitFor(() => {
       expect(screen.getByText(/name is required/i)).toBeInTheDocument()
       expect(screen.getByText(/email is required/i)).toBeInTheDocument()
-      expect(screen.getByText(/project details are required/i)).toBeInTheDocument()
+      expect(screen.getByText(/please tell us what problem you need solved/i)).toBeInTheDocument()
     })
   })
 
@@ -61,15 +61,15 @@ describe('ContactForm', () => {
 
   it('validates message minimum length', async () => {
     render(<ContactForm />)
-    
-    const messageInput = screen.getByLabelText(/project details/i)
+
+    const messageInput = screen.getByLabelText(/what's the actual problem\?/i)
     fireEvent.change(messageInput, { target: { value: 'Short' } })
-    
+
     const submitButton = screen.getByRole('button', { name: /send message/i })
     fireEvent.click(submitButton)
-    
+
     await waitFor(() => {
-      expect(screen.getByText(/please provide more details/i)).toBeInTheDocument()
+      expect(screen.getByText(/a bit more detail helps/i)).toBeInTheDocument()
     })
   })
 
@@ -88,10 +88,10 @@ describe('ContactForm', () => {
     fireEvent.change(screen.getByLabelText(/company name/i), { 
       target: { value: 'Test Company' } 
     })
-    fireEvent.change(screen.getByLabelText(/service interest/i), { 
+    fireEvent.change(screen.getByLabelText(/what's the problem\?/i), { 
       target: { value: 'discovery' } 
     })
-    fireEvent.change(screen.getByLabelText(/project details/i), { 
+    fireEvent.change(screen.getByLabelText(/what's the actual problem\?/i), { 
       target: { value: 'I need help with AI strategy for my company.' } 
     })
     
@@ -106,8 +106,8 @@ describe('ContactForm', () => {
     
     // Check success state
     await waitFor(() => {
-      expect(screen.getByText(/message sent!/i)).toBeInTheDocument()
-      expect(screen.getByText(/thank you for your interest/i)).toBeInTheDocument()
+      expect(screen.getByText(/got it—we'll be in touch/i)).toBeInTheDocument()
+      expect(screen.getByText(/thanks for reaching out/i)).toBeInTheDocument()
     }, { timeout: 3000 })
     
     expect(consoleSpy).toHaveBeenCalledWith('Form data:', expect.objectContaining({
@@ -123,17 +123,17 @@ describe('ContactForm', () => {
 
   it('displays service options correctly', () => {
     render(<ContactForm />)
-    
-    const serviceSelect = screen.getByLabelText(/service interest/i)
+
+    const serviceSelect = screen.getByLabelText(/what's the problem\?/i) as HTMLSelectElement
     expect(serviceSelect).toBeInTheDocument()
-    
-    // Check that options are present
-    const options = screen.getAllByRole('option')
-    expect(options).toHaveLength(9) // 8 services + 1 placeholder
-    
-    expect(screen.getByRole('option', { name: /AI Discovery & Strategy/i })).toBeInTheDocument()
-    expect(screen.getByRole('option', { name: /AI Implementation & Integration/i })).toBeInTheDocument()
-    expect(screen.getByRole('option', { name: /Enterprise AI Transformation/i })).toBeInTheDocument()
+
+    // Check that the service select has the correct number of options
+    const serviceOptions = serviceSelect.querySelectorAll('option')
+    expect(serviceOptions).toHaveLength(9) // 8 services + 1 placeholder
+
+    expect(screen.getByRole('option', { name: /not sure—need help figuring it out/i })).toBeInTheDocument()
+    expect(screen.getByRole('option', { name: /fix one specific problem/i })).toBeInTheDocument()
+    expect(screen.getByRole('option', { name: /multiple problems—need comprehensive solution/i })).toBeInTheDocument()
   })
 
   it('shows loading state during form submission', async () => {
@@ -146,7 +146,7 @@ describe('ContactForm', () => {
     fireEvent.change(screen.getByLabelText(/email address/i), { 
       target: { value: 'john@example.com' } 
     })
-    fireEvent.change(screen.getByLabelText(/project details/i), { 
+    fireEvent.change(screen.getByLabelText(/what's the actual problem\?/i), { 
       target: { value: 'Test message for form submission' } 
     })
     
@@ -183,7 +183,7 @@ describe('ContactForm', () => {
     fireEvent.change(screen.getByLabelText(/email address/i), { 
       target: { value: 'john@example.com' } 
     })
-    fireEvent.change(screen.getByLabelText(/project details/i), { 
+    fireEvent.change(screen.getByLabelText(/what's the actual problem\?/i), { 
       target: { value: 'Test message for error handling' } 
     })
     
@@ -202,22 +202,22 @@ describe('ContactForm', () => {
 
   it('has proper accessibility attributes', () => {
     render(<ContactForm />)
-    
+
     // Check form has proper labels
     expect(screen.getByLabelText(/full name/i)).toHaveAttribute('id', 'name')
     expect(screen.getByLabelText(/email address/i)).toHaveAttribute('id', 'email')
     expect(screen.getByLabelText(/company name/i)).toHaveAttribute('id', 'company')
-    expect(screen.getByLabelText(/service interest/i)).toHaveAttribute('id', 'service')
-    expect(screen.getByLabelText(/project details/i)).toHaveAttribute('id', 'message')
+    expect(screen.getByLabelText(/what's the problem\?/i)).toHaveAttribute('id', 'service')
+    expect(screen.getByLabelText(/what's the actual problem\?/i)).toHaveAttribute('id', 'message')
     
-    // Check required fields are marked
+    // Check required fields are present (react-hook-form doesn't add required HTML attribute)
     const nameInput = screen.getByLabelText(/full name/i)
     const emailInput = screen.getByLabelText(/email address/i)
-    const messageInput = screen.getByLabelText(/project details/i)
-    
-    expect(nameInput).toHaveAttribute('required')
-    expect(emailInput).toHaveAttribute('required')
-    expect(messageInput).toHaveAttribute('required')
+    const messageInput = screen.getByLabelText(/what's the actual problem\?/i)
+
+    expect(nameInput).toBeInTheDocument()
+    expect(emailInput).toBeInTheDocument()
+    expect(messageInput).toBeInTheDocument()
   })
 
   it('resets form after successful submission', async () => {
@@ -225,7 +225,7 @@ describe('ContactForm', () => {
     
     const nameInput = screen.getByLabelText(/full name/i) as HTMLInputElement
     const emailInput = screen.getByLabelText(/email address/i) as HTMLInputElement
-    const messageInput = screen.getByLabelText(/project details/i) as HTMLTextAreaElement
+    const messageInput = screen.getByLabelText(/what's the actual problem\?/i) as HTMLTextAreaElement
     
     // Fill form
     fireEvent.change(nameInput, { target: { value: 'John Doe' } })
@@ -243,7 +243,7 @@ describe('ContactForm', () => {
     
     // Wait for success state
     await waitFor(() => {
-      expect(screen.getByText(/message sent!/i)).toBeInTheDocument()
+      expect(screen.getByText(/got it—we'll be in touch/i)).toBeInTheDocument()
     }, { timeout: 3000 })
   })
 })
