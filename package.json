@@ -7,7 +7,8 @@
   "license": "PROPRIETARY",
   "scripts": {
     "dev": "next dev",
-    "build": "node_modules/.bin/prisma generate && next build",
+    "build": "npm run prisma:generate && next build",
+    "prisma:generate": "prisma generate",
     "start": "next start",
     "lint": "next lint",
     "type-check": "tsc --noEmit",
