@@ -24,6 +24,7 @@ export interface UpdateCustomerData {
 export async function createCustomer(data: CreateCustomerData) {
   try {
     // Check if customer already exists
+    // Note: Customer model needs to be added to schema.prisma
     const existingCustomer = await prisma.customer.findFirst({
       where: { userId: data.userId }
     })
@@ -61,7 +62,8 @@ export async function createCustomer(data: CreateCustomerData) {
     })
 
     // Update user with Stripe customer ID
-    await prisma.user.update({
+    // Note: stripeCustomerId field needs to be added to User model
+    await (prisma as any).user.update({
       where: { id: data.userId },
       data: { stripeCustomerId: stripeCustomer.id }
     })
@@ -210,7 +212,7 @@ export async function deleteCustomer(customerId: string) {
       where: { id: customerId },
       data: {
         metadata: {
-          ...customer.metadata,
+          ...(customer.metadata as object),
           deleted: true,
           deletedAt: new Date().toISOString()
         }

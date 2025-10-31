@@ -63,7 +63,7 @@ export const caseStudiesRouter = createTRPCRouter({
       }
 
       const [caseStudies, total] = await Promise.all([
-        ctx.db.caseStudyEntry.findMany({
+        ctx.prisma.caseStudyEntry.findMany({
           where: whereClause,
           include: {
             author: {
@@ -83,7 +83,7 @@ export const caseStudiesRouter = createTRPCRouter({
           take: input.limit,
           skip: input.offset,
         }),
-        ctx.db.caseStudyEntry.count({ where: whereClause }),
+        ctx.prisma.caseStudyEntry.count({ where: whereClause }),
       ])
 
       return {
@@ -96,11 +96,11 @@ export const caseStudiesRouter = createTRPCRouter({
   getBySlug: publicProcedure
     .input(z.object({ slug: z.string() }))
     .query(async ({ ctx, input }) => {
-      const caseStudy = await ctx.db.caseStudyEntry.findUnique({
+      const caseStudy = await ctx.prisma.caseStudyEntry.findUnique({
         where: { 
           slug: input.slug,
           status: 'PUBLISHED',
-        },
+        } as any,
         include: {
           author: {
             select: {
@@ -110,7 +110,7 @@ export const caseStudiesRouter = createTRPCRouter({
             },
           },
           files: true,
-        },
+        } as any,
       })
 
       if (!caseStudy) {
@@ -126,7 +126,7 @@ export const caseStudiesRouter = createTRPCRouter({
   getById: protectedProcedure
     .input(z.object({ id: z.string() }))
     .query(async ({ ctx, input }) => {
-      const caseStudy = await ctx.db.caseStudyEntry.findUnique({
+      const caseStudy = await ctx.prisma.caseStudyEntry.findUnique({
         where: { id: input.id },
         include: {
           author: {
@@ -137,7 +137,7 @@ export const caseStudiesRouter = createTRPCRouter({
             },
           },
           files: true,
-        },
+        } as any,
       })
 
       if (!caseStudy) {
@@ -148,7 +148,7 @@ export const caseStudiesRouter = createTRPCRouter({
       }
 
       // Check permissions
-      if (ctx.user.role !== 'ADMIN' && caseStudy.authorId !== ctx.user.id) {
+      if (ctx.session.user.role !== 'ADMIN' && caseStudy.authorId !== ctx.session.user.id) {
         throw new TRPCError({
           code: 'FORBIDDEN',
           message: 'Access denied',
@@ -164,7 +164,7 @@ export const caseStudiesRouter = createTRPCRouter({
     .mutation(async ({ ctx, input }) => {
       const data = {
         ...input,
-        authorId: ctx.user.id,
+        authorId: ctx.session.user.id,
       }
 
       // Generate slug if not provided
@@ -173,7 +173,7 @@ export const caseStudiesRouter = createTRPCRouter({
       }
 
       // Check if slug is unique
-      const existing = await ctx.db.caseStudyEntry.findUnique({
+      const existing = await ctx.prisma.caseStudyEntry.findUnique({
         where: { slug: data.slug },
       })
 
@@ -186,8 +186,8 @@ export const caseStudiesRouter = createTRPCRouter({
         data.publishedAt = new Date()
       }
 
-      return ctx.db.caseStudyEntry.create({
-        data,
+      return ctx.prisma.caseStudyEntry.create({
+        data: data as any,
         include: {
           author: {
             select: {
@@ -196,17 +196,17 @@ export const caseStudiesRouter = createTRPCRouter({
               email: true,
             },
           },
-        },
+        } as any,
       })
     }),
 
   update: protectedProcedure
     .input(z.object({
       id: z.string(),
-      data: updateCaseStudySchema,
+      data: updateCaseStudySchema as any,
     }))
     .mutation(async ({ ctx, input }) => {
-      const caseStudy = await ctx.db.caseStudyEntry.findUnique({
+      const caseStudy = await ctx.prisma.caseStudyEntry.findUnique({
         where: { id: input.id },
       })
 
@@ -218,7 +218,7 @@ export const caseStudiesRouter = createTRPCRouter({
       }
 
       // Check permissions
-      if (ctx.user.role !== 'ADMIN' && caseStudy.authorId !== ctx.user.id) {
+      if (ctx.session.user.role !== 'ADMIN' && caseStudy.authorId !== ctx.session.user.id) {
         throw new TRPCError({
           code: 'FORBIDDEN',
           message: 'Access denied',
@@ -229,7 +229,7 @@ export const caseStudiesRouter = createTRPCRouter({
 
       // Handle slug update
       if (updateData.slug && updateData.slug !== caseStudy.slug) {
-        const existing = await ctx.db.caseStudyEntry.findUnique({
+        const existing = await ctx.prisma.caseStudyEntry.findUnique({
           where: { slug: updateData.slug },
         })
 
@@ -246,9 +246,9 @@ export const caseStudiesRouter = createTRPCRouter({
         updateData.publishedAt = new Date()
       }
 
-      return ctx.db.caseStudyEntry.update({
+      return ctx.prisma.caseStudyEntry.update({
         where: { id: input.id },
-        data: updateData,
+        data: updateData as any,
         include: {
           author: {
             select: {
@@ -257,14 +257,14 @@ export const caseStudiesRouter = createTRPCRouter({
               email: true,
             },
           },
-        },
+        } as any,
       })
     }),
 
   delete: protectedProcedure
     .input(z.object({ id: z.string() }))
     .mutation(async ({ ctx, input }) => {
-      const caseStudy = await ctx.db.caseStudyEntry.findUnique({
+      const caseStudy = await ctx.prisma.caseStudyEntry.findUnique({
         where: { id: input.id },
       })
 
@@ -276,14 +276,14 @@ export const caseStudiesRouter = createTRPCRouter({
       }
 
       // Check permissions
-      if (ctx.user.role !== 'ADMIN' && caseStudy.authorId !== ctx.user.id) {
+      if (ctx.session.user.role !== 'ADMIN' && caseStudy.authorId !== ctx.session.user.id) {
         throw new TRPCError({
           code: 'FORBIDDEN',
           message: 'Access denied',
         })
       }
 
-      return ctx.db.caseStudyEntry.delete({
+      return ctx.prisma.caseStudyEntry.delete({
         where: { id: input.id },
       })
     }),
@@ -295,7 +295,7 @@ export const caseStudiesRouter = createTRPCRouter({
       status: z.enum(['DRAFT', 'PUBLISHED', 'ARCHIVED']).default('PUBLISHED'),
     }))
     .query(async ({ ctx, input }) => {
-      return ctx.db.caseStudyEntry.findMany({
+      return ctx.prisma.caseStudyEntry.findMany({
         where: {
           status: input.status,
           OR: [
@@ -305,7 +305,7 @@ export const caseStudiesRouter = createTRPCRouter({
             { industry: { contains: input.query, mode: 'insensitive' } },
             { tags: { hasSome: [input.query] } },
           ],
-        },
+        } as any,
         include: {
           author: {
             select: {
@@ -314,7 +314,7 @@ export const caseStudiesRouter = createTRPCRouter({
               email: true,
             },
           },
-        },
+        } as any,
         orderBy: [
           { featured: 'desc' },
           { publishedAt: 'desc' },
@@ -324,7 +324,7 @@ export const caseStudiesRouter = createTRPCRouter({
 
   getIndustries: publicProcedure
     .query(async ({ ctx }) => {
-      const industries = await ctx.db.caseStudyEntry.findMany({
+      const industries = await ctx.prisma.caseStudyEntry.findMany({
         where: { status: 'PUBLISHED' },
         select: { industry: true },
         distinct: ['industry'],
@@ -335,7 +335,7 @@ export const caseStudiesRouter = createTRPCRouter({
 
   getTags: publicProcedure
     .query(async ({ ctx }) => {
-      const caseStudies = await ctx.db.caseStudyEntry.findMany({
+      const caseStudies = await ctx.prisma.caseStudyEntry.findMany({
         where: { status: 'PUBLISHED' },
         select: { tags: true },
       })
@@ -347,13 +347,13 @@ export const caseStudiesRouter = createTRPCRouter({
   getStats: adminProcedure
     .query(async ({ ctx }) => {
       const [total, published, draft, archived] = await Promise.all([
-        ctx.db.caseStudyEntry.count(),
-        ctx.db.caseStudyEntry.count({ where: { status: 'PUBLISHED' } }),
-        ctx.db.caseStudyEntry.count({ where: { status: 'DRAFT' } }),
-        ctx.db.caseStudyEntry.count({ where: { status: 'ARCHIVED' } }),
+        ctx.prisma.caseStudyEntry.count(),
+        ctx.prisma.caseStudyEntry.count({ where: { status: 'PUBLISHED' } }),
+        ctx.prisma.caseStudyEntry.count({ where: { status: 'DRAFT' } }),
+        ctx.prisma.caseStudyEntry.count({ where: { status: 'ARCHIVED' } }),
       ])
 
-      const industryStats = await ctx.db.caseStudyEntry.groupBy({
+      const industryStats = await ctx.prisma.caseStudyEntry.groupBy({
         by: ['industry'],
         _count: true,
         where: { status: 'PUBLISHED' },
@@ -364,7 +364,7 @@ export const caseStudiesRouter = createTRPCRouter({
         published,
         draft,
         archived,
-        featured: await ctx.db.caseStudyEntry.count({ where: { featured: true, status: 'PUBLISHED' } }),
+        featured: await ctx.prisma.caseStudyEntry.count({ where: { featured: true, status: 'PUBLISHED' } }),
         industryStats: industryStats.map(stat => ({
           industry: stat.industry,
           count: stat._count,
@@ -382,13 +382,13 @@ export const caseStudiesRouter = createTRPCRouter({
     }))
     .mutation(async ({ ctx, input }) => {
       const updates = input.items.map(item =>
-        ctx.db.caseStudyEntry.update({
+        ctx.prisma.caseStudyEntry.update({
           where: { id: item.id },
           data: { sortOrder: item.sortOrder },
         })
       )
 
-      await ctx.db.$transaction(updates)
+      await ctx.prisma.$transaction(updates)
       return { success: true }
     }),
 
@@ -398,7 +398,7 @@ export const caseStudiesRouter = createTRPCRouter({
       featured: z.boolean(),
     }))
     .mutation(async ({ ctx, input }) => {
-      return ctx.db.caseStudyEntry.update({
+      return ctx.prisma.caseStudyEntry.update({
         where: { id: input.id },
         data: { featured: input.featured },
       })

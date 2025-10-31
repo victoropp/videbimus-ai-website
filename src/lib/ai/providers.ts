@@ -325,11 +325,12 @@ export class UniversalAIClient {
         return completion;
       }
 
+      const chatCompletion = completion as any;
       return {
         choices: [{
           message: {
             role: 'assistant',
-            content: completion.choices[0]?.message?.content || '',
+            content: chatCompletion.choices[0]?.message?.content || '',
           },
         }],
       };
@@ -364,11 +365,12 @@ export class UniversalAIClient {
         return completion;
       }
 
+      const chatCompletion = completion as any;
       return {
         choices: [{
           message: {
             role: 'assistant',
-            content: completion.choices[0]?.message?.content || '',
+            content: chatCompletion.choices[0]?.message?.content || '',
           },
         }],
       };
@@ -391,7 +393,7 @@ export class UniversalAIClient {
       const response = await cohere.chat({
         model,
         message: messages[messages.length - 1].content,
-        chatHistory: formattedMessages.slice(0, -1),
+        chatHistory: formattedMessages.slice(0, -1) as any,
         temperature,
         maxTokens,
       });
@@ -466,7 +468,7 @@ export class UniversalAIClient {
       const prompt = this.formatMessagesForReplicate(messages);
 
       const output = await replicate.run(
-        modelId,
+        modelId as any,
         {
           input: {
             prompt,

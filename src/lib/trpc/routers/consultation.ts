@@ -139,7 +139,7 @@ export const consultationRouter = createTRPCRouter({
         data: {
           ...input,
           userId: ctx.session.user.id,
-        },
+        } as any,
         include: {
           user: {
             select: {
@@ -153,7 +153,7 @@ export const consultationRouter = createTRPCRouter({
               title: true,
             },
           },
-        },
+        } as any,
       })
 
       return { consultation, message: "Consultation created successfully" }
@@ -214,7 +214,7 @@ export const consultationRouter = createTRPCRouter({
           limit,
           total,
           pages: Math.ceil(total / limit),
-        },
+        } as any,
       }
     }),
 
@@ -226,7 +226,7 @@ export const consultationRouter = createTRPCRouter({
         where: {
           id: input.id,
           userId: ctx.session.user.id,
-        },
+        } as any,
         include: {
           user: {
             select: {
@@ -262,7 +262,7 @@ export const consultationRouter = createTRPCRouter({
             },
           },
           files: true,
-        },
+        } as any,
       })
 
       if (!consultation) {
@@ -286,7 +286,7 @@ export const consultationRouter = createTRPCRouter({
         where: {
           id,
           userId: ctx.session.user.id,
-        },
+        } as any,
       })
 
       if (!existingConsultation) {
@@ -298,7 +298,7 @@ export const consultationRouter = createTRPCRouter({
 
       const consultation = await ctx.prisma.consultation.update({
         where: { id },
-        data: updateData,
+        data: updateData as any,
         include: {
           project: {
             select: {
@@ -311,7 +311,7 @@ export const consultationRouter = createTRPCRouter({
               status: true,
             },
           },
-        },
+        } as any,
       })
 
       return { consultation, message: "Consultation updated successfully" }
@@ -326,7 +326,7 @@ export const consultationRouter = createTRPCRouter({
         where: {
           id: input.id,
           userId: ctx.session.user.id,
-        },
+        } as any,
       })
 
       if (!consultation) {
@@ -365,7 +365,7 @@ export const consultationRouter = createTRPCRouter({
       }
 
       const room = await ctx.prisma.consultationRoom.create({
-        data: input,
+        data: input as any,
         include: {
           client: {
             select: {
@@ -387,7 +387,7 @@ export const consultationRouter = createTRPCRouter({
               type: true,
             },
           },
-        },
+        } as any,
       })
 
       return { room, message: "Consultation room created successfully" }
@@ -459,7 +459,7 @@ export const consultationRouter = createTRPCRouter({
           limit,
           total,
           pages: Math.ceil(total / limit),
-        },
+        } as any,
       }
     }),
 
@@ -474,7 +474,7 @@ export const consultationRouter = createTRPCRouter({
             { clientId: ctx.session.user.id },
             { consultantId: ctx.session.user.id },
           ],
-        },
+        } as any,
         include: {
           client: {
             select: {
@@ -548,7 +548,7 @@ export const consultationRouter = createTRPCRouter({
             },
           },
           analytics: true,
-        },
+        } as any,
       })
 
       if (!room) {
@@ -575,7 +575,7 @@ export const consultationRouter = createTRPCRouter({
             { clientId: ctx.session.user.id },
             { consultantId: ctx.session.user.id },
           ],
-        },
+        } as any,
       })
 
       if (!existingRoom) {
@@ -587,7 +587,7 @@ export const consultationRouter = createTRPCRouter({
 
       const room = await ctx.prisma.consultationRoom.update({
         where: { id },
-        data: updateData,
+        data: updateData as any,
       })
 
       return { room, message: "Room updated successfully" }
@@ -609,7 +609,7 @@ export const consultationRouter = createTRPCRouter({
             { clientId: ctx.session.user.id },
             { consultantId: ctx.session.user.id },
           ],
-        },
+        } as any,
       })
 
       if (!room) {
@@ -623,7 +623,7 @@ export const consultationRouter = createTRPCRouter({
         data: {
           ...input,
           senderId: ctx.session.user.id,
-        },
+        } as any,
         include: {
           sender: {
             select: {
@@ -632,7 +632,7 @@ export const consultationRouter = createTRPCRouter({
               image: true,
             },
           },
-        },
+        } as any,
       })
 
       return { message, success: true }
@@ -654,7 +654,7 @@ export const consultationRouter = createTRPCRouter({
             { clientId: ctx.session.user.id },
             { consultantId: ctx.session.user.id },
           ],
-        },
+        } as any,
       })
 
       if (!room) {
@@ -673,7 +673,7 @@ export const consultationRouter = createTRPCRouter({
               lt: new Date(input.cursor),
             },
           }),
-        },
+        } as any,
         orderBy: { createdAt: "desc" },
         take: input.limit,
         include: {
@@ -684,7 +684,7 @@ export const consultationRouter = createTRPCRouter({
               image: true,
             },
           },
-        },
+        } as any,
       })
 
       return {
@@ -702,7 +702,7 @@ export const consultationRouter = createTRPCRouter({
         where: {
           id: input.id,
           senderId: ctx.session.user.id,
-        },
+        } as any,
       })
 
       if (!existingMessage) {
@@ -718,7 +718,7 @@ export const consultationRouter = createTRPCRouter({
           content: input.content,
           isEdited: true,
           editedAt: new Date(),
-        },
+        } as any,
       })
 
       return { message, success: true }
@@ -733,7 +733,7 @@ export const consultationRouter = createTRPCRouter({
         where: {
           id: input.id,
           senderId: ctx.session.user.id,
-        },
+        } as any,
       })
 
       if (!message) {
@@ -748,7 +748,7 @@ export const consultationRouter = createTRPCRouter({
         data: {
           isDeleted: true,
           deletedAt: new Date(),
-        },
+        } as any,
       })
 
       return { success: true, message: "Message deleted" }
@@ -770,7 +770,7 @@ export const consultationRouter = createTRPCRouter({
             { clientId: ctx.session.user.id },
             { consultantId: ctx.session.user.id },
           ],
-        },
+        } as any,
       })
 
       if (!room) {
@@ -784,7 +784,7 @@ export const consultationRouter = createTRPCRouter({
         data: {
           ...input,
           uploadedBy: ctx.session.user.id,
-        },
+        } as any,
         include: {
           uploader: {
             select: {
@@ -792,7 +792,7 @@ export const consultationRouter = createTRPCRouter({
               email: true,
             },
           },
-        },
+        } as any,
       })
 
       return { document, message: "Document created successfully" }
@@ -810,7 +810,7 @@ export const consultationRouter = createTRPCRouter({
             { clientId: ctx.session.user.id },
             { consultantId: ctx.session.user.id },
           ],
-        },
+        } as any,
       })
 
       if (!room) {
@@ -841,7 +841,7 @@ export const consultationRouter = createTRPCRouter({
               },
             },
           },
-        },
+        } as any,
       })
 
       return documents
@@ -851,7 +851,8 @@ export const consultationRouter = createTRPCRouter({
   updateDocument: protectedProcedure
     .input(updateDocumentSchema)
     .mutation(async ({ ctx, input }) => {
-      const { id, ...updateData } = input
+      const { id, ...rest } = input
+      let updateData = rest
 
       // Verify document access
       const existingDocument = await ctx.prisma.consultationDocument.findFirst({
@@ -863,10 +864,10 @@ export const consultationRouter = createTRPCRouter({
               { consultantId: ctx.session.user.id },
             ],
           },
-        },
+        } as any,
         include: {
           room: true,
-        },
+        } as any,
       })
 
       if (!existingDocument) {
@@ -888,12 +889,12 @@ export const consultationRouter = createTRPCRouter({
           },
         })
 
-        updateData.version = existingDocument.version + 1
+        updateData = { ...updateData, version: existingDocument.version + 1 } as any
       }
 
       const document = await ctx.prisma.consultationDocument.update({
         where: { id },
-        data: updateData,
+        data: updateData as any,
       })
 
       return { document, message: "Document updated successfully" }
@@ -915,7 +916,7 @@ export const consultationRouter = createTRPCRouter({
             { clientId: ctx.session.user.id },
             { consultantId: ctx.session.user.id },
           ],
-        },
+        } as any,
       })
 
       if (!room) {
@@ -929,7 +930,7 @@ export const consultationRouter = createTRPCRouter({
         data: {
           ...input,
           createdBy: ctx.session.user.id,
-        },
+        } as any,
         include: {
           assignee: {
             select: {
@@ -943,7 +944,7 @@ export const consultationRouter = createTRPCRouter({
               email: true,
             },
           },
-        },
+        } as any,
       })
 
       return { actionItem, message: "Action item created successfully" }
@@ -953,7 +954,8 @@ export const consultationRouter = createTRPCRouter({
   updateActionItem: protectedProcedure
     .input(updateActionItemSchema)
     .mutation(async ({ ctx, input }) => {
-      const { id, ...updateData } = input
+      const { id, ...rest } = input
+      let updateData = rest
 
       // Verify action item access
       const existingActionItem = await ctx.prisma.consultationActionItem.findFirst({
@@ -965,7 +967,7 @@ export const consultationRouter = createTRPCRouter({
               { consultantId: ctx.session.user.id },
             ],
           },
-        },
+        } as any,
       })
 
       if (!existingActionItem) {
@@ -977,12 +979,12 @@ export const consultationRouter = createTRPCRouter({
 
       // Set completion date if status is completed
       if (input.status === "completed") {
-        updateData.completedAt = new Date()
+        (updateData as any).completedAt = new Date()
       }
 
       const actionItem = await ctx.prisma.consultationActionItem.update({
         where: { id },
-        data: updateData,
+        data: updateData as any,
       })
 
       return { actionItem, message: "Action item updated successfully" }
@@ -1087,7 +1089,7 @@ export const consultationRouter = createTRPCRouter({
           completedConsultations,
           activeRooms: activeRoomsCount,
           completionRate: totalConsultations > 0 ? (completedConsultations / totalConsultations) * 100 : 0,
-        },
+        } as any,
       }
     }),
 })

@@ -2,6 +2,7 @@
 
 import { motion } from 'framer-motion'
 import Link from 'next/link'
+import Image from 'next/image'
 import { ArrowRight, Play, Sparkles, Zap, Brain } from 'lucide-react'
 import { Button } from '@/components/ui/button'
 
@@ -17,6 +18,20 @@ export function Hero() {
       {/* Animated background elements */}
       <div className="absolute inset-0 hero-bg" />
       <div className="absolute inset-0 grid-bg opacity-50" />
+
+      {/* Hero background image with overlay */}
+      <div className="absolute inset-0 opacity-10 dark:opacity-5">
+        <Image
+          src="/images/home/hero-data-analyst.jpg"
+          alt="Advanced data analytics dashboard showcasing business intelligence and AI-powered insights"
+          fill
+          priority
+          className="object-cover"
+          sizes="100vw"
+          quality={90}
+        />
+        <div className="absolute inset-0 bg-gradient-to-br from-white/90 via-white/80 to-cyan-50/70 dark:from-gray-950/95 dark:via-gray-900/90 dark:to-cyan-950/85" />
+      </div>
       
       {/* Floating icons */}
       {floatingIcons.map(({ icon: Icon, delay, x, y, duration }, index) => (

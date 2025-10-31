@@ -58,7 +58,7 @@ export interface PresignedUrlOptions {
 }
 
 class StorageService {
-  private s3Client: S3Client;
+  private s3Client: any;
   private config: ReturnType<typeof getStorageConfig>;
   private bucketName: string;
 

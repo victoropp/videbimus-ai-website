@@ -5,6 +5,7 @@ try {
 } catch (error) {
   console.warn('Sentry not available:', error);
 }
+import * as os from 'os';
 import { getAnalyticsConfig, isProduction } from '../config/services';
 import { withErrorHandling, ServiceErrorType, CustomServiceError, performHealthCheck } from './error-handler';
 import { aiService } from './ai';
@@ -534,7 +535,7 @@ class MonitoringService {
       nodeVersion: process.version,
       platform: process.platform,
       memory: process.memoryUsage(),
-      loadAverage: process.platform !== 'win32' ? process.loadavg() : undefined,
+      loadAverage: process.platform !== 'win32' ? os.loadavg() : undefined,
     };
   }
 

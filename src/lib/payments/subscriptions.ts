@@ -1,7 +1,12 @@
 import { stripe, STRIPE_CONFIG } from '@/lib/stripe'
 import { prisma } from '@/lib/prisma'
-import { SubscriptionPlan, BillingCycle, SubscriptionStatus } from '@prisma/client'
+import { BillingCycle as PrismaBillingCycle, SubscriptionStatus as PrismaSubscriptionStatus } from '@prisma/client'
 import Stripe from 'stripe'
+
+// Type aliases for use in function signatures
+export type SubscriptionPlan = string
+export type BillingCycle = 'MONTHLY' | 'QUARTERLY' | 'YEARLY'
+export type SubscriptionStatus = 'ACTIVE' | 'CANCELED' | 'PAST_DUE' | 'UNPAID' | 'TRIALING' | 'PAUSED' | 'INCOMPLETE' | 'INCOMPLETE_EXPIRED'
 
 export interface CreateSubscriptionData {
   customerId: string
@@ -71,9 +76,9 @@ export async function createSubscription(data: CreateSubscriptionData) {
       subscriptionParams.default_payment_method = data.paymentMethodId
     }
 
-    // Add coupon if specified
+    // Add coupon if specified (using any cast as coupon is deprecated in newer Stripe API)
     if (data.coupon) {
-      subscriptionParams.coupon = data.coupon
+      (subscriptionParams as any).coupon = data.coupon
     }
 
     const stripeSubscription = await stripe.subscriptions.create(subscriptionParams)
@@ -81,25 +86,27 @@ export async function createSubscription(data: CreateSubscriptionData) {
     // Store subscription in database
     const subscription = await prisma.subscription.create({
       data: {
-        userId: customer.userId,
         customerId: data.customerId,
         stripeSubscriptionId: stripeSubscription.id,
         stripePriceId: planConfig.priceId,
         status: mapStripeStatus(stripeSubscription.status),
         plan: data.plan,
-        billingCycle: data.billingCycle || BillingCycle.MONTHLY,
-        currentPeriodStart: new Date(stripeSubscription.current_period_start * 1000),
-        currentPeriodEnd: new Date(stripeSubscription.current_period_end * 1000),
-        trialStart: stripeSubscription.trial_start ? new Date(stripeSubscription.trial_start * 1000) : null,
-        trialEnd: stripeSubscription.trial_end ? new Date(stripeSubscription.trial_end * 1000) : null,
-        quantity: stripeSubscription.items.data[0]?.quantity || 1,
-        unitAmount: stripeSubscription.items.data[0]?.price?.unit_amount || 0,
-        currency: stripeSubscription.currency,
-        metadata: stripeSubscription.metadata || {}
+        billingCycle: data.billingCycle || PrismaBillingCycle.MONTHLY,
+        currentPeriodStart: new Date((stripeSubscription as any).current_period_start * 1000),
+        currentPeriodEnd: new Date((stripeSubscription as any).current_period_end * 1000),
+        trialStart: (stripeSubscription as any).trial_start ? new Date((stripeSubscription as any).trial_start * 1000) : null,
+        trialEnd: (stripeSubscription as any).trial_end ? new Date((stripeSubscription as any).trial_end * 1000) : null,
+        quantity: (stripeSubscription as any).items.data[0]?.quantity || 1,
+        unitAmount: (stripeSubscription as any).items.data[0]?.price?.unit_amount || 0,
+        currency: (stripeSubscription as any).currency,
+        metadata: (stripeSubscription as any).metadata || {}
       },
       include: {
-        user: true,
-        customer: true,
+        customer: {
+          include: {
+            user: true
+          }
+        },
         subscriptionItems: true
       }
     })
@@ -121,8 +128,8 @@ export async function createSubscription(data: CreateSubscriptionData) {
     return {
       subscription,
       stripeSubscription,
-      clientSecret: (stripeSubscription.latest_invoice as Stripe.Invoice)?.payment_intent 
-        ? ((stripeSubscription.latest_invoice as Stripe.Invoice).payment_intent as Stripe.PaymentIntent).client_secret
+      clientSecret: (stripeSubscription.latest_invoice as any)?.payment_intent
+        ? ((stripeSubscription.latest_invoice as any).payment_intent as Stripe.PaymentIntent).client_secret
         : null
     }
   } catch (error) {
@@ -139,16 +146,15 @@ export async function getSubscription(subscriptionId: string) {
     const subscription = await prisma.subscription.findUnique({
       where: { id: subscriptionId },
       include: {
-        user: true,
-        customer: true,
+        customer: {
+          include: {
+            user: true
+          }
+        },
         subscriptionItems: true,
         invoices: {
           orderBy: { createdAt: 'desc' },
           take: 10
-        },
-        usageRecords: {
-          orderBy: { timestamp: 'desc' },
-          take: 100
         }
       }
     })
@@ -167,7 +173,9 @@ export async function getActiveSubscription(userId: string) {
   try {
     const subscription = await prisma.subscription.findFirst({
       where: {
-        userId,
+        customer: {
+          userId
+        },
         status: { in: ['ACTIVE', 'TRIALING'] }
       },
       include: {
@@ -230,13 +238,16 @@ export async function updateSubscription(subscriptionId: string, data: UpdateSub
         plan: data.plan || subscription.plan,
         quantity: data.quantity || subscription.quantity,
         status: mapStripeStatus(stripeSubscription.status),
-        currentPeriodStart: new Date(stripeSubscription.current_period_start * 1000),
-        currentPeriodEnd: new Date(stripeSubscription.current_period_end * 1000),
-        metadata: stripeSubscription.metadata || {}
+        currentPeriodStart: new Date((stripeSubscription as any).current_period_start * 1000),
+        currentPeriodEnd: new Date((stripeSubscription as any).current_period_end * 1000),
+        metadata: (stripeSubscription as any).metadata || {}
       },
       include: {
-        user: true,
-        customer: true,
+        customer: {
+          include: {
+            user: true
+          }
+        },
         subscriptionItems: true
       }
     })
@@ -268,7 +279,7 @@ export async function cancelSubscription(subscriptionId: string, cancelAtPeriodE
       stripeSubscription = await stripe.subscriptions.update(subscription.stripeSubscriptionId, {
         cancel_at_period_end: true,
         metadata: {
-          ...subscription.metadata,
+          ...(subscription.metadata as object),
           canceledAt: new Date().toISOString()
         }
       })
@@ -340,25 +351,26 @@ export async function reactivateSubscription(subscriptionId: string) {
 export async function getSubscriptionUsage(subscriptionId: string) {
   try {
     const subscription = await prisma.subscription.findUnique({
-      where: { id: subscriptionId },
-      include: {
-        usageRecords: {
-          where: {
-            timestamp: {
-              gte: subscription?.currentPeriodStart,
-              lte: subscription?.currentPeriodEnd
-            }
-          }
-        }
-      }
+      where: { id: subscriptionId }
     })
 
     if (!subscription) {
       throw new Error('Subscription not found')
     }
 
+    // Fetch usage records for current period
+    const usageRecords = await prisma.usageRecord.findMany({
+      where: {
+        subscriptionId,
+        timestamp: {
+          gte: subscription.currentPeriodStart,
+          lte: subscription.currentPeriodEnd
+        }
+      }
+    })
+
     // Aggregate usage by service
-    const usageByService = subscription.usageRecords.reduce((acc, record) => {
+    const usageByService = usageRecords.reduce((acc, record) => {
       if (!acc[record.service]) {
         acc[record.service] = {
           totalTokens: 0,
@@ -369,7 +381,7 @@ export async function getSubscriptionUsage(subscriptionId: string) {
 
       acc[record.service].totalTokens += record.totalTokens || 0
       acc[record.service].totalRequests += 1
-      
+
       // Calculate cost based on service rates
       const rate = STRIPE_CONFIG.usageRates[record.service] || 0
       acc[record.service].totalCost += (record.totalTokens || 0) * rate / 1000
@@ -413,13 +425,13 @@ export async function syncSubscriptionFromStripe(stripeSubscriptionId: string) {
       where: { id: subscription.id },
       data: {
         status: mapStripeStatus(stripeSubscription.status),
-        currentPeriodStart: new Date(stripeSubscription.current_period_start * 1000),
-        currentPeriodEnd: new Date(stripeSubscription.current_period_end * 1000),
-        trialStart: stripeSubscription.trial_start ? new Date(stripeSubscription.trial_start * 1000) : null,
-        trialEnd: stripeSubscription.trial_end ? new Date(stripeSubscription.trial_end * 1000) : null,
-        canceledAt: stripeSubscription.canceled_at ? new Date(stripeSubscription.canceled_at * 1000) : null,
-        cancelAtPeriodEnd: stripeSubscription.cancel_at_period_end || false,
-        metadata: stripeSubscription.metadata || {}
+        currentPeriodStart: new Date((stripeSubscription as any).current_period_start * 1000),
+        currentPeriodEnd: new Date((stripeSubscription as any).current_period_end * 1000),
+        trialStart: (stripeSubscription as any).trial_start ? new Date((stripeSubscription as any).trial_start * 1000) : null,
+        trialEnd: (stripeSubscription as any).trial_end ? new Date((stripeSubscription as any).trial_end * 1000) : null,
+        canceledAt: (stripeSubscription as any).canceled_at ? new Date((stripeSubscription as any).canceled_at * 1000) : null,
+        cancelAtPeriodEnd: (stripeSubscription as any).cancel_at_period_end || false,
+        metadata: (stripeSubscription as any).metadata || {}
       }
     })
 

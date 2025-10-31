@@ -1,5 +1,5 @@
 import { NextRequest } from 'next/server'
-import { getServerSession } from 'next-auth/next'
+import { auth } from '@/auth'
 
 import { prisma } from '@/lib/prisma'
 import crypto from 'crypto'
@@ -97,7 +97,7 @@ export class PaymentSecurity {
     resourceId: string
   ): Promise<{ authorized: boolean; userId?: string }> {
     try {
-      const session = await getServerSession()
+      const session = await auth()
       if (!session?.user?.id) {
         return { authorized: false }
       }
@@ -124,17 +124,17 @@ export class PaymentSecurity {
         case 'subscription':
           const subscription = await prisma.subscription.findUnique({
             where: { id: resourceId },
-            select: { userId: true }
+            select: { customer: { select: { userId: true } } }
           })
-          isOwner = subscription?.userId === session.user.id
+          isOwner = subscription?.customer?.userId === session.user.id
           break
 
         case 'paymentMethod':
-          const paymentMethod = await prisma.paymentMethod.findUnique({
+          const paymentMethod = await prisma.stripePaymentMethod.findUnique({
             where: { id: resourceId },
-            select: { userId: true }
+            select: { customer: { select: { userId: true } } }
           })
-          isOwner = paymentMethod?.userId === session.user.id
+          isOwner = paymentMethod?.customer?.userId === session.user.id
           break
       }
 
@@ -322,9 +322,11 @@ export class PaymentSecurity {
       }
 
       // Check for multiple payment methods added
-      const recentPaymentMethods = await prisma.paymentMethod.count({
+      const recentPaymentMethods = await prisma.stripePaymentMethod.count({
         where: {
-          userId,
+          customer: {
+            userId
+          },
           createdAt: { gte: last24Hours }
         }
       })
@@ -337,7 +339,9 @@ export class PaymentSecurity {
       // Check for unusual subscription changes
       const subscriptionChanges = await prisma.subscription.count({
         where: {
-          userId,
+          customer: {
+            userId
+          },
           updatedAt: { gte: last7Days },
           canceledAt: { not: null }
         }
@@ -409,9 +413,9 @@ export class DataEncryption {
     const decrypted: any = {}
     
     Object.entries(encryptedData).forEach(([key, value]) => {
-      if (value && typeof value === 'object' && value.encrypted) {
+      if (value && typeof value === 'object' && 'encrypted' in value && (value as any).encrypted) {
         try {
-          decrypted[key] = PCICompliance.decrypt(value, this.ENCRYPTION_KEY)
+          decrypted[key] = PCICompliance.decrypt(value as any, this.ENCRYPTION_KEY)
         } catch (error) {
           console.error(`Error decrypting field ${key}:`, error)
           decrypted[key] = '[DECRYPTION_ERROR]'

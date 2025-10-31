@@ -24,20 +24,137 @@ const detailedCaseStudies: Record<string, CaseStudy & {
   keyFeatures: string[]
   challenges: string[]
   futureEnhancements: string[]
+  solutionImages?: string[]
+  resultImages?: string[]
 }> = {
+  'petroverse-oil-gas': {
+    id: 'petroverse-oil-gas',
+    title: 'Oil & Gas: Stop $200K Equipment Failures',
+    description: 'Equipment kept failing with zero warning. Every failure cost $200K+ in downtime and repairs. Maintenance teams were flying blind—reacting to breakdowns instead of preventing them. We built a system that predicts failures 2 weeks before they happen.',
+    client: 'Petroverse',
+    industry: 'Oil & Gas',
+    image: '/images/case-studies/petroverse/petroverse-featured.jpg',
+    tags: ['Predictive Maintenance', 'IoT Sensors', 'Machine Learning'],
+    results: [
+      { metric: 'Equipment Failures Cut', value: '45%' },
+      { metric: 'Early Warning Time', value: '2 Weeks' },
+      { metric: 'First Year Savings', value: '$2.5M' },
+      { metric: 'False Alarms', value: '<5%' }
+    ],
+    content: {
+      challenge: 'Petroverse faced critical challenges with equipment failures that occurred without warning, costing over $200K per incident in downtime and emergency repairs. Maintenance teams operated reactively, unable to predict when critical drilling and refining equipment would fail. This unpredictability led to production losses, safety concerns, and mounting operational costs. Traditional time-based maintenance schedules were insufficient for the harsh operating conditions of oil and gas facilities.',
+      solution: 'We developed an AI-powered predictive maintenance system that monitors equipment health in real-time using IoT sensors deployed across critical machinery. Machine learning models analyze vibration patterns, temperature fluctuations, pressure changes, and operational metrics to predict equipment failures up to 2 weeks in advance. The system provides maintenance teams with prioritized alerts and recommended actions, enabling proactive intervention before costly breakdowns occur.',
+      implementation: 'The implementation was conducted in 7 weeks with minimal operational disruption. We deployed IoT sensor networks across drilling equipment, pumps, compressors, and refining machinery. The ML models were trained on 5 years of historical maintenance data combined with real-time sensor readings. We integrated the predictive system with existing maintenance workflows and provided comprehensive training to maintenance crews. The solution included a mobile app for field technicians and a central dashboard for operations managers.',
+      outcomes: 'The predictive maintenance system has transformed Petroverses operations, reducing equipment failures by 45% and providing 2-week advance warning with 95% accuracy. The company saved $2.5M in the first year through avoided downtime and optimized maintenance scheduling. False alarm rates stayed below 5%, ensuring maintenance teams trust the system. Safety incidents related to equipment failure decreased by 60%, and overall equipment effectiveness (OEE) improved by 35%.'
+    },
+    timeline: '7 weeks',
+    teamSize: '8 specialists',
+    technologies: ['Python', 'TensorFlow', 'Apache Kafka', 'InfluxDB', 'PostgreSQL', 'React', 'AWS IoT Core', 'Docker'],
+    keyFeatures: [
+      'Real-time equipment monitoring with IoT sensor networks',
+      'Predictive ML models with 95% accuracy for failure prediction',
+      'Two-week advance warning for critical equipment failures',
+      'Automated maintenance prioritization and scheduling',
+      'Mobile app for field technicians with offline capability',
+      'Integration with existing CMMS and ERP systems'
+    ],
+    challenges: [
+      'Deploying sensors in harsh oil & gas environments',
+      'Achieving high accuracy with limited historical failure data',
+      'Ensuring system reliability in remote locations',
+      'Training models for diverse equipment types'
+    ],
+    futureEnhancements: [
+      'Expansion to offshore platforms and remote wells',
+      'Integration with drone inspection systems',
+      'Advanced anomaly detection for new failure patterns',
+      'Predictive spare parts inventory optimization'
+    ],
+    solutionImages: [
+      '/images/case-studies/petroverse/petroverse-solution-dashboard.jpg',
+      '/images/case-studies/petroverse/petroverse-solution-sensors.jpg',
+      '/images/case-studies/petroverse/petroverse-solution-monitoring.jpg'
+    ],
+    resultImages: [
+      '/images/case-studies/petroverse/petroverse-results-metrics.jpg',
+      '/images/case-studies/petroverse/petroverse-results-uptime.jpg'
+    ]
+  },
+  'insure360-insurance': {
+    id: 'insure360-insurance',
+    title: 'Insurance: Process Claims 60% Faster',
+    description: 'Claims were taking 7-10 days because adjusters spent hours manually extracting data from PDFs and photos. Fraud was slipping through. Customers were furious. We automated the document processing and built fraud detection that actually works—claims now take 2-3 days.',
+    client: 'INSURE360',
+    industry: 'Insurance',
+    image: '/images/case-studies/insure360/insure360-featured.jpg',
+    tags: ['Claims Automation', 'Fraud Detection', 'Computer Vision'],
+    results: [
+      { metric: 'Processing Time', value: '2-3 Days' },
+      { metric: 'Fraud Detection', value: '98.5%' },
+      { metric: 'Labor Cost Saved', value: '50%' },
+      { metric: 'Customer Satisfaction', value: '+85%' }
+    ],
+    content: {
+      challenge: 'INSURE360 struggled with a claims processing bottleneck that frustrated both customers and staff. Adjusters spent 60-70% of their time manually extracting data from accident reports, medical documents, photos, and police reports. The 7-10 day processing time led to customer complaints and poor satisfaction scores. Fraudulent claims were slipping through manual review processes, costing millions annually. The company needed to speed up legitimate claims while catching fraud more effectively.',
+      solution: 'We built an intelligent claims automation platform powered by computer vision and NLP. The system automatically extracts data from documents and photos using OCR and machine learning. Advanced fraud detection algorithms analyze claim patterns, cross-reference databases, and flag suspicious submissions with 98.5% accuracy. The platform integrates with existing claims management systems and provides adjusters with pre-processed, verified information, allowing them to focus on decision-making rather than data entry.',
+      implementation: 'The 6-month implementation included extensive testing with historical claims data to ensure regulatory compliance and accuracy. We deployed the document processing engine first, followed by fraud detection models trained on 10 years of claims history. The system was rolled out gradually across different claim types (auto, property, health) with continuous monitoring and model refinement. We provided comprehensive training to claims adjusters and established new workflows that leverage AI assistance while maintaining human oversight for complex cases.',
+      outcomes: 'The automated claims platform has revolutionized INSURE360s operations. Processing time dropped from 7-10 days to 2-3 days, a 60% reduction. Fraud detection accuracy reached 98.5%, preventing an estimated $12M in fraudulent payouts annually. Labor costs decreased by 50% as adjusters handle 3x more claims with AI assistance. Customer satisfaction scores increased by 85% due to faster claim resolution. The system processes 50,000+ claims monthly with consistent accuracy.'
+    },
+    timeline: '6 months',
+    teamSize: '10 specialists',
+    technologies: ['Python', 'PyTorch', 'Tesseract OCR', 'spaCy', 'PostgreSQL', 'Redis', 'React', 'AWS Textract', 'Docker'],
+    keyFeatures: [
+      'Automated document extraction from PDFs, images, and forms',
+      'Multi-modal fraud detection using ML and pattern analysis',
+      'Real-time claim scoring and risk assessment',
+      'Integration with police reports and medical databases',
+      'Automated customer communication and status updates',
+      'Compliance tracking and audit trail generation'
+    ],
+    challenges: [
+      'Handling diverse document formats and quality levels',
+      'Ensuring HIPAA and regulatory compliance',
+      'Balancing automation speed with fraud detection accuracy',
+      'Managing change adoption among experienced adjusters'
+    ],
+    futureEnhancements: [
+      'Mobile app for instant photo claim submission',
+      'Integration with telematics data for auto claims',
+      'Automated damage estimation from photos',
+      'Blockchain-based claim verification network'
+    ],
+    solutionImages: [
+      '/images/case-studies/insure360/insure360-solution-document-scanning.jpg',
+      '/images/case-studies/insure360/insure360-solution-fraud-detection.jpg',
+      '/images/case-studies/insure360/insure360-solution-claims-processing.jpg'
+    ],
+    resultImages: [
+      '/images/case-studies/insure360/insure360-results-processing-time.jpg',
+      '/images/case-studies/insure360/insure360-results-accuracy.jpg'
+    ]
+  },
   'techcorp-automation': {
     id: 'techcorp-automation',
     title: 'Manufacturing Process Optimization',
     description: 'AI-powered predictive maintenance and quality control system that reduced downtime by 60% and improved product quality by 40%.',
     client: 'TechCorp Industries',
     industry: 'Manufacturing',
-    image: '/case-studies/techcorp-automation.jpg',
+    image: '/images/case-studies/techcorp/techcorp-featured.jpg',
     tags: ['Predictive Analytics', 'Computer Vision', 'IoT Integration'],
     results: [
       { metric: 'Downtime Reduction', value: '60%' },
       { metric: 'Quality Improvement', value: '40%' },
       { metric: 'Cost Savings', value: '$2.5M' },
       { metric: 'ROI', value: '280%' }
+    ],
+    solutionImages: [
+      '/images/case-studies/techcorp/techcorp-solution-computer-vision.jpg',
+      '/images/case-studies/techcorp/techcorp-solution-quality-control.jpg',
+      '/images/case-studies/techcorp/techcorp-solution-defect-detection.jpg'
+    ],
+    resultImages: [
+      '/images/case-studies/techcorp/techcorp-results-quality-metrics.jpg',
+      '/images/case-studies/techcorp/techcorp-results-defect-reduction.jpg'
     ],
     content: {
       challenge: 'TechCorp Industries faced significant challenges with unplanned equipment downtime and quality control issues across their manufacturing facilities. Traditional maintenance schedules were inefficient, leading to unexpected breakdowns that cost the company millions in lost production time. Quality control relied heavily on manual inspection, resulting in inconsistent product quality and customer complaints.',
@@ -75,13 +192,22 @@ const detailedCaseStudies: Record<string, CaseStudy & {
     description: 'Machine learning-powered fraud detection system that processes millions of transactions daily with 99.7% accuracy.',
     client: 'FinanceFlow',
     industry: 'Financial Services',
-    image: '/case-studies/financeflow-fraud.jpg',
+    image: '/images/case-studies/financeflow/financeflow-featured.jpg',
     tags: ['Machine Learning', 'Real-time Processing', 'Risk Assessment'],
     results: [
       { metric: 'False Positive Reduction', value: '65%' },
       { metric: 'Fraud Detection Rate', value: '99.7%' },
       { metric: 'Processing Speed', value: '<50ms' },
       { metric: 'Annual Savings', value: '$8.2M' }
+    ],
+    solutionImages: [
+      '/images/case-studies/financeflow/financeflow-solution-fraud-detection.jpg',
+      '/images/case-studies/financeflow/financeflow-solution-ml-models.jpg',
+      '/images/case-studies/financeflow/financeflow-solution-payment-processing.jpg'
+    ],
+    resultImages: [
+      '/images/case-studies/financeflow/financeflow-results-false-positives.jpg',
+      '/images/case-studies/financeflow/financeflow-results-fraud-catch-rate.jpg'
     ],
     content: {
       challenge: 'FinanceFlow was experiencing significant losses due to fraudulent transactions while their existing system generated too many false positives, leading to customer frustration and operational inefficiencies. The legacy rule-based system couldnt adapt to evolving fraud patterns and struggled with the volume of transactions.',
@@ -119,13 +245,22 @@ const detailedCaseStudies: Record<string, CaseStudy & {
     description: 'Deep learning system for medical imaging analysis that assists radiologists in early disease detection.',
     client: 'HealthTech Solutions',
     industry: 'Healthcare',
-    image: '/case-studies/healthtech-diagnosis.jpg',
+    image: '/images/case-studies/healthtech/healthtech-featured.jpg',
     tags: ['Deep Learning', 'Computer Vision', 'Medical AI'],
     results: [
       { metric: 'Diagnostic Accuracy', value: '95.8%' },
       { metric: 'Time Reduction', value: '50%' },
       { metric: 'Patient Outcomes', value: '25% Better' },
       { metric: 'Radiologist Efficiency', value: '3x Faster' }
+    ],
+    solutionImages: [
+      '/images/case-studies/healthtech/healthtech-solution-xray-analysis.jpg',
+      '/images/case-studies/healthtech/healthtech-solution-mri-scans.jpg',
+      '/images/case-studies/healthtech/healthtech-solution-diagnostic-assistance.jpg'
+    ],
+    resultImages: [
+      '/images/case-studies/healthtech/healthtech-results-analysis-speed.jpg',
+      '/images/case-studies/healthtech/healthtech-results-accuracy-metrics.jpg'
     ],
     content: {
       challenge: 'HealthTech Solutions needed to address the growing demand for medical imaging analysis while maintaining high diagnostic accuracy. Radiologists were overwhelmed with the volume of cases, leading to delays in diagnosis and treatment. The challenge was to develop an AI system that could assist without replacing human expertise.',
@@ -163,13 +298,22 @@ const detailedCaseStudies: Record<string, CaseStudy & {
     description: 'AI-driven recommendation system that delivers personalized shopping experiences and increases customer engagement.',
     client: 'RetailMax',
     industry: 'E-commerce',
-    image: '/case-studies/retailmax-personalization.jpg',
+    image: '/images/case-studies/retailmax/retailmax-featured.jpg',
     tags: ['Recommendation Systems', 'NLP', 'Customer Analytics'],
     results: [
       { metric: 'Conversion Rate', value: '+35%' },
       { metric: 'Customer LTV', value: '+50%' },
       { metric: 'Revenue Growth', value: '+28%' },
       { metric: 'User Engagement', value: '+45%' }
+    ],
+    solutionImages: [
+      '/images/case-studies/retailmax/retailmax-solution-personalization-engine.jpg',
+      '/images/case-studies/retailmax/retailmax-solution-recommendation-system.jpg',
+      '/images/case-studies/retailmax/retailmax-solution-online-shopping.jpg'
+    ],
+    resultImages: [
+      '/images/case-studies/retailmax/retailmax-results-conversion-rate.jpg',
+      '/images/case-studies/retailmax/retailmax-results-revenue-growth.jpg'
     ],
     content: {
       challenge: 'RetailMax struggled with low conversion rates and customer engagement on their e-commerce platform. Generic product recommendations and search results failed to meet individual customer needs, resulting in missed sales opportunities and customer churn.',
@@ -207,13 +351,22 @@ const detailedCaseStudies: Record<string, CaseStudy & {
     description: 'AI-powered logistics optimization platform that reduces delivery times and operational costs across global supply chains.',
     client: 'LogisticsCorp',
     industry: 'Logistics',
-    image: '/case-studies/logisticscorp-optimization.jpg',
+    image: '/images/case-studies/logisticscorp/logisticscorp-featured.jpg',
     tags: ['Optimization Algorithms', 'Route Planning', 'Supply Chain AI'],
     results: [
       { metric: 'Delivery Time', value: '-25%' },
       { metric: 'Fuel Savings', value: '30%' },
       { metric: 'Cost Reduction', value: '$5.1M' },
       { metric: 'Customer Satisfaction', value: '92%' }
+    ],
+    solutionImages: [
+      '/images/case-studies/logisticscorp/logisticscorp-solution-route-optimization.jpg',
+      '/images/case-studies/logisticscorp/logisticscorp-solution-gps-tracking.jpg',
+      '/images/case-studies/logisticscorp/logisticscorp-solution-delivery-trucks.jpg'
+    ],
+    resultImages: [
+      '/images/case-studies/logisticscorp/logisticscorp-results-mile-reduction.jpg',
+      '/images/case-studies/logisticscorp/logisticscorp-results-fuel-savings.jpg'
     ],
     content: {
       challenge: 'LogisticsCorp faced inefficiencies in their global supply chain operations, with suboptimal route planning leading to increased costs and delivery delays. The complexity of managing multiple distribution centers, varying delivery requirements, and dynamic constraints made manual optimization impossible.',
@@ -251,13 +404,22 @@ const detailedCaseStudies: Record<string, CaseStudy & {
     description: 'Machine learning models for energy demand prediction and grid optimization, enabling renewable energy integration.',
     client: 'EnergyCorp',
     industry: 'Energy',
-    image: '/case-studies/energycorp-prediction.jpg',
+    image: '/images/case-studies/energycorp/energycorp-featured.jpg',
     tags: ['Time Series Forecasting', 'IoT Data', 'Green Energy'],
     results: [
       { metric: 'Prediction Accuracy', value: '96.5%' },
       { metric: 'Energy Waste', value: '-22%' },
       { metric: 'Renewable Integration', value: '+40%' },
       { metric: 'Grid Efficiency', value: '+18%' }
+    ],
+    solutionImages: [
+      '/images/case-studies/energycorp/energycorp-solution-smart-grid.jpg',
+      '/images/case-studies/energycorp/energycorp-solution-demand-forecasting.jpg',
+      '/images/case-studies/energycorp/energycorp-solution-renewable-energy.jpg'
+    ],
+    resultImages: [
+      '/images/case-studies/energycorp/energycorp-results-accuracy-improvement.jpg',
+      '/images/case-studies/energycorp/energycorp-results-waste-reduction.jpg'
     ],
     content: {
       challenge: 'EnergyCorp needed to modernize their grid management to accommodate increasing renewable energy sources while maintaining reliability and efficiency. Traditional forecasting methods were inadequate for handling the variability of renewable energy and changing consumption patterns.',
@@ -306,50 +468,66 @@ export default function CaseStudyPage({ params }: CaseStudyPageProps) {
 
   return (
     <div className="min-h-screen">
-      {/* Hero Section */}
-      <section className="py-20 bg-gradient-to-br from-primary-900 via-primary-800 to-primary-700 relative overflow-hidden">
-        <div className="absolute inset-0 bg-gradient-to-r from-cyan-600/20 to-purple-600/20" />
-        <div className="container relative">
-          <div className="mb-8">
-            <Button asChild variant="secondary" size="sm">
-              <Link href="/case-studies" className="inline-flex items-center">
-                <ArrowLeft className="mr-2 h-4 w-4" />
-                Back to Case Studies
-              </Link>
-            </Button>
+      {/* Hero Section with Featured Image */}
+      <section className="relative overflow-hidden">
+        {/* Featured Image Background */}
+        <div className="relative h-[500px] md:h-[600px]">
+          <img
+            src={typeof caseStudy.image === 'string' ? caseStudy.image : caseStudy.image.src}
+            alt={caseStudy.title}
+            className="w-full h-full object-cover"
+          />
+          {/* Dark gradient overlay for text readability */}
+          <div className="absolute inset-0 bg-gradient-to-t from-black via-black/70 to-black/40" />
+
+          {/* Colored accent overlay */}
+          <div className="absolute inset-0 bg-gradient-to-r from-cyan-600/30 to-purple-600/30 mix-blend-multiply" />
+        </div>
+
+        {/* Content Overlay */}
+        <div className="absolute inset-0 flex items-end">
+          <div className="container pb-16 md:pb-20">
+            <div className="mb-8">
+              <Button asChild variant="secondary" size="sm" className="bg-white/10 backdrop-blur-sm border-white/20 text-white hover:bg-white/20">
+                <Link href="/case-studies" className="inline-flex items-center">
+                  <ArrowLeft className="mr-2 h-4 w-4" />
+                  Back to Case Studies
+                </Link>
+              </Button>
+            </div>
+
+            <motion.div
+              initial={{ opacity: 0, y: 20 }}
+              animate={{ opacity: 1, y: 0 }}
+              transition={{ duration: 0.6 }}
+            >
+              <div className="flex items-center space-x-4 mb-6">
+                <Badge variant="secondary" className="bg-white/20 backdrop-blur-sm text-white border-white/30">
+                  {typeof caseStudy.industry === 'string' ? caseStudy.industry : caseStudy.industry.name}
+                </Badge>
+                <div className="flex items-center text-white/90 text-sm">
+                  <Calendar className="mr-1 h-4 w-4" />
+                  {caseStudy.timeline}
+                </div>
+                <div className="flex items-center text-white/90 text-sm">
+                  <Users className="mr-1 h-4 w-4" />
+                  {caseStudy.teamSize}
+                </div>
+              </div>
+
+              <h1 className="font-display text-4xl font-bold tracking-tight text-white sm:text-5xl lg:text-6xl mb-6 drop-shadow-lg">
+                {caseStudy.title}
+              </h1>
+
+              <p className="text-xl text-gray-100 mb-8 max-w-3xl drop-shadow-md">
+                {caseStudy.description}
+              </p>
+
+              <div className="text-2xl font-semibold text-cyan-300 drop-shadow-lg">
+                {typeof caseStudy.client === 'string' ? caseStudy.client : caseStudy.client.name}
+              </div>
+            </motion.div>
           </div>
-          
-          <motion.div
-            initial={{ opacity: 0, y: 20 }}
-            animate={{ opacity: 1, y: 0 }}
-            transition={{ duration: 0.6 }}
-          >
-            <div className="flex items-center space-x-4 mb-6">
-              <Badge variant="secondary" className="bg-white/20 text-white border-white/30">
-                {typeof caseStudy.industry === 'string' ? caseStudy.industry : caseStudy.industry.name}
-              </Badge>
-              <div className="flex items-center text-white/80 text-sm">
-                <Calendar className="mr-1 h-4 w-4" />
-                {caseStudy.timeline}
-              </div>
-              <div className="flex items-center text-white/80 text-sm">
-                <Users className="mr-1 h-4 w-4" />
-                {caseStudy.teamSize}
-              </div>
-            </div>
-            
-            <h1 className="font-display text-4xl font-bold tracking-tight text-white sm:text-5xl lg:text-6xl mb-6">
-              {caseStudy.title}
-            </h1>
-            
-            <p className="text-xl text-gray-200 mb-8 max-w-3xl">
-              {caseStudy.description}
-            </p>
-            
-            <div className="text-2xl font-semibold text-cyan-400">
-              {typeof caseStudy.client === 'string' ? caseStudy.client : caseStudy.client.name}
-            </div>
-          </motion.div>
         </div>
       </section>
 
@@ -365,7 +543,7 @@ export default function CaseStudyPage({ params }: CaseStudyPageProps) {
             <h2 className="text-3xl font-bold text-center mb-12 text-gray-900 dark:text-white">
               Key Results Achieved
             </h2>
-            
+
             <div className="grid grid-cols-2 md:grid-cols-4 gap-6">
               {caseStudy.results.map((result, index) => (
                 <motion.div
@@ -391,6 +569,67 @@ export default function CaseStudyPage({ params }: CaseStudyPageProps) {
           </motion.div>
         </div>
       </section>
+
+      {/* Visual Showcase - Solution in Action */}
+      {caseStudy.solutionImages && caseStudy.solutionImages.length > 0 && (
+        <section className="py-20 bg-gradient-to-br from-gray-50 to-cyan-50/30 dark:from-gray-900 dark:to-cyan-950/20">
+          <div className="container">
+            <motion.div
+              initial={{ opacity: 0, y: 20 }}
+              whileInView={{ opacity: 1, y: 0 }}
+              viewport={{ once: true }}
+              transition={{ duration: 0.6 }}
+              className="text-center mb-12"
+            >
+              <h2 className="text-3xl font-bold text-gray-900 dark:text-white mb-4">
+                Solution in Action
+              </h2>
+              <p className="text-lg text-gray-600 dark:text-gray-300 max-w-2xl mx-auto">
+                See how our AI-powered solution transformed operations through real-world implementation
+              </p>
+            </motion.div>
+
+            {/* 3-Column Image Grid */}
+            <div className="grid md:grid-cols-3 gap-6">
+              {caseStudy.solutionImages.map((image, idx) => (
+                <motion.div
+                  key={idx}
+                  initial={{ opacity: 0, y: 30 }}
+                  whileInView={{ opacity: 1, y: 0 }}
+                  viewport={{ once: true }}
+                  transition={{ duration: 0.6, delay: idx * 0.15 }}
+                  className="relative group overflow-hidden rounded-xl shadow-lg hover:shadow-2xl transition-all duration-500"
+                >
+                  <div className="aspect-[4/3] overflow-hidden">
+                    <img
+                      src={image}
+                      alt={`Solution implementation ${idx + 1}`}
+                      className="w-full h-full object-cover transition-transform duration-700 group-hover:scale-110"
+                    />
+                  </div>
+
+                  {/* Gradient overlay */}
+                  <div className="absolute inset-0 bg-gradient-to-t from-cyan-900/80 via-cyan-900/40 to-transparent opacity-60 group-hover:opacity-80 transition-opacity duration-500" />
+
+                  {/* Hover reveal text */}
+                  <div className="absolute bottom-0 left-0 right-0 p-6 transform translate-y-2 group-hover:translate-y-0 transition-transform duration-500">
+                    <div className="text-white font-semibold text-lg opacity-0 group-hover:opacity-100 transition-opacity duration-500 delay-100">
+                      {idx === 0 && 'Core Technology'}
+                      {idx === 1 && 'System Integration'}
+                      {idx === 2 && 'Real-Time Monitoring'}
+                    </div>
+                  </div>
+
+                  {/* Step number badge */}
+                  <div className="absolute top-4 left-4 bg-cyan-500 text-white font-bold w-10 h-10 rounded-full flex items-center justify-center shadow-lg">
+                    {idx + 1}
+                  </div>
+                </motion.div>
+              ))}
+            </div>
+          </div>
+        </section>
+      )}
 
       {/* Challenge & Solution */}
       <section className="py-16 bg-gray-50 dark:bg-gray-900/50">
@@ -431,9 +670,32 @@ export default function CaseStudyPage({ params }: CaseStudyPageProps) {
                   </CardTitle>
                 </CardHeader>
                 <CardContent>
-                  <p className="text-gray-600 dark:text-gray-300 leading-relaxed">
+                  <p className="text-gray-600 dark:text-gray-300 leading-relaxed mb-6">
                     {caseStudy.content.solution}
                   </p>
+
+                  {/* Solution Images Grid */}
+                  {caseStudy.solutionImages && caseStudy.solutionImages.length > 0 && (
+                    <div className="grid grid-cols-1 gap-4 mt-6">
+                      {caseStudy.solutionImages.map((image, idx) => (
+                        <motion.div
+                          key={idx}
+                          initial={{ opacity: 0, y: 20 }}
+                          whileInView={{ opacity: 1, y: 0 }}
+                          viewport={{ once: true }}
+                          transition={{ duration: 0.5, delay: idx * 0.1 }}
+                          className="relative group overflow-hidden rounded-lg"
+                        >
+                          <img
+                            src={image}
+                            alt={`Solution ${idx + 1}`}
+                            className="w-full h-48 object-cover transition-transform duration-500 group-hover:scale-105"
+                          />
+                          <div className="absolute inset-0 bg-gradient-to-t from-black/50 to-transparent opacity-0 group-hover:opacity-100 transition-opacity duration-300" />
+                        </motion.div>
+                      ))}
+                    </div>
+                  )}
                 </CardContent>
               </Card>
             </motion.div>
@@ -485,6 +747,105 @@ export default function CaseStudyPage({ params }: CaseStudyPageProps) {
         </div>
       </section>
 
+      {/* Results Visualization - Before & After Style */}
+      {caseStudy.resultImages && caseStudy.resultImages.length >= 2 && (
+        <section className="py-20 bg-gradient-to-br from-purple-50 to-pink-50/30 dark:from-purple-950/20 dark:to-pink-950/10">
+          <div className="container">
+            <motion.div
+              initial={{ opacity: 0, y: 20 }}
+              whileInView={{ opacity: 1, y: 0 }}
+              viewport={{ once: true }}
+              transition={{ duration: 0.6 }}
+              className="text-center mb-12"
+            >
+              <h2 className="text-3xl font-bold text-gray-900 dark:text-white mb-4">
+                Measurable Impact
+              </h2>
+              <p className="text-lg text-gray-600 dark:text-gray-300 max-w-2xl mx-auto">
+                Data-driven results that transformed business performance
+              </p>
+            </motion.div>
+
+            {/* Side-by-side comparison layout */}
+            <div className="grid md:grid-cols-2 gap-8 max-w-5xl mx-auto">
+              {caseStudy.resultImages.map((image, idx) => (
+                <motion.div
+                  key={idx}
+                  initial={{ opacity: 0, x: idx === 0 ? -30 : 30 }}
+                  whileInView={{ opacity: 1, x: 0 }}
+                  viewport={{ once: true }}
+                  transition={{ duration: 0.7, delay: idx * 0.2 }}
+                  className="relative group"
+                >
+                  {/* Card container */}
+                  <div className="relative overflow-hidden rounded-2xl shadow-xl hover:shadow-2xl transition-all duration-500 bg-white dark:bg-gray-800">
+                    {/* Image */}
+                    <div className="aspect-[4/3] overflow-hidden">
+                      <img
+                        src={image}
+                        alt={`Result metric ${idx + 1}`}
+                        className="w-full h-full object-cover transition-transform duration-700 group-hover:scale-105"
+                      />
+                    </div>
+
+                    {/* Gradient overlay */}
+                    <div className="absolute inset-0 bg-gradient-to-t from-purple-900/90 via-purple-900/50 to-transparent" />
+
+                    {/* Result label */}
+                    <div className="absolute top-4 left-4 right-4">
+                      <div className="inline-flex items-center bg-white/90 dark:bg-gray-900/90 backdrop-blur-sm px-4 py-2 rounded-full shadow-lg">
+                        <TrendingUp className="h-5 w-5 text-purple-600 dark:text-purple-400 mr-2" />
+                        <span className="font-semibold text-gray-900 dark:text-white">
+                          {idx === 0 ? 'Key Metrics' : 'Performance Gains'}
+                        </span>
+                      </div>
+                    </div>
+
+                    {/* Metric overlay at bottom */}
+                    <div className="absolute bottom-0 left-0 right-0 p-6 text-white">
+                      <div className="text-4xl font-bold mb-2">
+                        {caseStudy.results[idx * 2]?.value || caseStudy.results[idx]?.value}
+                      </div>
+                      <div className="text-lg opacity-90">
+                        {caseStudy.results[idx * 2]?.metric || caseStudy.results[idx]?.metric}
+                      </div>
+                    </div>
+
+                    {/* Animated border effect */}
+                    <div className="absolute inset-0 border-4 border-purple-500/0 group-hover:border-purple-500/50 rounded-2xl transition-all duration-500" />
+                  </div>
+                </motion.div>
+              ))}
+            </div>
+
+            {/* Stats summary bar */}
+            <motion.div
+              initial={{ opacity: 0, y: 20 }}
+              whileInView={{ opacity: 1, y: 0 }}
+              viewport={{ once: true }}
+              transition={{ duration: 0.6, delay: 0.4 }}
+              className="mt-12 text-center"
+            >
+              <div className="inline-flex items-center gap-8 bg-white dark:bg-gray-800 px-8 py-4 rounded-full shadow-lg">
+                <div className="flex items-center gap-2">
+                  <Award className="h-5 w-5 text-purple-600 dark:text-purple-400" />
+                  <span className="text-sm font-medium text-gray-900 dark:text-white">
+                    Verified Results
+                  </span>
+                </div>
+                <div className="h-4 w-px bg-gray-300 dark:bg-gray-600" />
+                <div className="flex items-center gap-2">
+                  <DollarSign className="h-5 w-5 text-green-600 dark:text-green-400" />
+                  <span className="text-sm font-medium text-gray-900 dark:text-white">
+                    ROI Positive
+                  </span>
+                </div>
+              </div>
+            </motion.div>
+          </div>
+        </section>
+      )}
+
       {/* Implementation & Outcomes */}
       <section className="py-16 bg-gray-50 dark:bg-gray-900/50">
         <div className="container">
@@ -524,9 +885,36 @@ export default function CaseStudyPage({ params }: CaseStudyPageProps) {
                   </CardTitle>
                 </CardHeader>
                 <CardContent>
-                  <p className="text-gray-600 dark:text-gray-300 leading-relaxed">
+                  <p className="text-gray-600 dark:text-gray-300 leading-relaxed mb-6">
                     {caseStudy.content.outcomes}
                   </p>
+
+                  {/* Results Images - Side by Side Comparison */}
+                  {caseStudy.resultImages && caseStudy.resultImages.length > 0 && (
+                    <div className="grid grid-cols-2 gap-4 mt-6">
+                      {caseStudy.resultImages.map((image, idx) => (
+                        <motion.div
+                          key={idx}
+                          initial={{ opacity: 0, scale: 0.9 }}
+                          whileInView={{ opacity: 1, scale: 1 }}
+                          viewport={{ once: true }}
+                          transition={{ duration: 0.5, delay: idx * 0.1 }}
+                          className="relative group overflow-hidden rounded-lg border-2 border-purple-200 dark:border-purple-800"
+                        >
+                          <img
+                            src={image}
+                            alt={`Result ${idx + 1}`}
+                            className="w-full h-40 object-cover transition-transform duration-500 group-hover:scale-110"
+                          />
+                          <div className="absolute inset-0 bg-gradient-to-t from-purple-600/40 to-transparent opacity-0 group-hover:opacity-100 transition-opacity duration-300" />
+                          {/* Badge overlay */}
+                          <div className="absolute top-2 right-2 bg-purple-500/90 backdrop-blur-sm text-white text-xs font-semibold px-2 py-1 rounded-full opacity-0 group-hover:opacity-100 transition-opacity duration-300">
+                            Metric {idx + 1}
+                          </div>
+                        </motion.div>
+                      ))}
+                    </div>
+                  )}
                 </CardContent>
               </Card>
             </motion.div>

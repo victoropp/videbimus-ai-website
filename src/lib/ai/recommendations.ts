@@ -113,11 +113,12 @@ Respond in JSON format:
     if ('choices' in response) {
       responseContent = response.choices[0]?.message?.content || '';
     } else if ('content' in response) {
-      responseContent = Array.isArray(response.content) 
-        ? response.content[0]?.text || ''
+      responseContent = Array.isArray(response.content)
+        ? (response.content[0] && 'text' in response.content[0] ? response.content[0].text : '')
         : response.content;
     } else {
-      responseContent = response.generated_text || response.response || '';
+      const anyResponse = response as any;
+      responseContent = anyResponse.generated_text || anyResponse.response || '';
     }
 
     try {
@@ -209,11 +210,12 @@ Return only the tags as a JSON array: ["tag1", "tag2", "tag3", ...]`;
     if ('choices' in response) {
       responseContent = response.choices[0]?.message?.content || '';
     } else if ('content' in response) {
-      responseContent = Array.isArray(response.content) 
-        ? response.content[0]?.text || ''
+      responseContent = Array.isArray(response.content)
+        ? (response.content[0] && 'text' in response.content[0] ? response.content[0].text : '')
         : response.content;
     } else {
-      responseContent = response.generated_text || response.response || '';
+      const anyResponse = response as any;
+      responseContent = anyResponse.generated_text || anyResponse.response || '';
     }
 
     try {

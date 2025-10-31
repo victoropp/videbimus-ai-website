@@ -2,17 +2,20 @@
 
 import { useState } from 'react'
 import { motion } from 'framer-motion'
-import { 
-  Calendar, 
-  Clock, 
-  Users, 
-  MessageSquare, 
-  FileText, 
+import Image from 'next/image'
+import {
+  Calendar,
+  Clock,
+  Users,
+  MessageSquare,
+  FileText,
   CheckCircle,
   Video,
   PlusCircle,
   ArrowRight,
-  Activity
+  Activity,
+  Monitor,
+  Pen
 } from 'lucide-react'
 import { Button } from '@/components/ui/button'
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card'
@@ -78,6 +81,183 @@ export function ConsultationDashboard() {
 
   return (
     <div className="space-y-8">
+      {/* Video Call Features */}
+      <div className="mb-12">
+        <h2 className="text-3xl font-bold text-center mb-3">Professional Video Consultations</h2>
+        <p className="text-center text-muted-foreground mb-8 max-w-2xl mx-auto">
+          Experience seamless collaboration with enterprise-grade video technology
+        </p>
+        <div className="grid md:grid-cols-3 gap-6">
+          <div className="group">
+            <div className="relative rounded-xl overflow-hidden shadow-lg transition-transform duration-300 group-hover:scale-105">
+              <Image
+                src="/images/consultation/video-call-professional.jpg"
+                alt="Professional Video Calls"
+                width={800}
+                height={600}
+                className="w-full h-[250px] object-cover"
+              />
+              <div className="absolute inset-0 bg-gradient-to-t from-blue-900/95 via-blue-800/70 to-transparent"></div>
+              <div className="absolute bottom-0 left-0 right-0 p-5 text-white">
+                <div className="flex items-center gap-2 mb-2">
+                  <Video className="w-6 h-6" />
+                  <h3 className="text-xl font-bold">HD Video & Audio</h3>
+                </div>
+                <p className="text-sm text-white/90">Crystal-clear video calls with professional audio quality for effective communication</p>
+              </div>
+            </div>
+          </div>
+
+          <div className="group">
+            <div className="relative rounded-xl overflow-hidden shadow-lg transition-transform duration-300 group-hover:scale-105">
+              <Image
+                src="/images/consultation/video-call-screen-sharing.jpg"
+                alt="Screen Sharing"
+                width={800}
+                height={600}
+                className="w-full h-[250px] object-cover"
+              />
+              <div className="absolute inset-0 bg-gradient-to-t from-purple-900/95 via-purple-800/70 to-transparent"></div>
+              <div className="absolute bottom-0 left-0 right-0 p-5 text-white">
+                <div className="flex items-center gap-2 mb-2">
+                  <Monitor className="w-6 h-6" />
+                  <h3 className="text-xl font-bold">Screen Sharing</h3>
+                </div>
+                <p className="text-sm text-white/90">Share your screen to demonstrate ideas, review code, or present projects in real-time</p>
+              </div>
+            </div>
+          </div>
+
+          <div className="group">
+            <div className="relative rounded-xl overflow-hidden shadow-lg transition-transform duration-300 group-hover:scale-105">
+              <Image
+                src="/images/consultation/video-call-whiteboard.jpg"
+                alt="Collaborative Whiteboard"
+                width={800}
+                height={600}
+                className="w-full h-[250px] object-cover"
+              />
+              <div className="absolute inset-0 bg-gradient-to-t from-green-900/95 via-green-800/70 to-transparent"></div>
+              <div className="absolute bottom-0 left-0 right-0 p-5 text-white">
+                <div className="flex items-center gap-2 mb-2">
+                  <Pen className="w-6 h-6" />
+                  <h3 className="text-xl font-bold">Interactive Whiteboard</h3>
+                </div>
+                <p className="text-sm text-white/90">Brainstorm together with collaborative drawing tools and visual planning capabilities</p>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      {/* Consultation Process Flow */}
+      <div className="mb-12">
+        <h2 className="text-3xl font-bold text-center mb-3">How It Works</h2>
+        <p className="text-center text-muted-foreground mb-8 max-w-2xl mx-auto">
+          Our streamlined consultation process ensures productive and efficient sessions
+        </p>
+        <div className="grid md:grid-cols-3 gap-6">
+          <div className="relative">
+            <div className="relative rounded-xl overflow-hidden shadow-lg">
+              <Image
+                src="/images/consultation/process-preparation.jpg"
+                alt="Preparation Phase"
+                width={800}
+                height={600}
+                className="w-full h-[280px] object-cover"
+              />
+              <div className="absolute inset-0 bg-gradient-to-t from-indigo-900/95 via-indigo-800/70 to-transparent"></div>
+              <div className="absolute top-4 left-4">
+                <Badge className="bg-white text-indigo-900 text-lg px-4 py-1">Step 1</Badge>
+              </div>
+              <div className="absolute bottom-0 left-0 right-0 p-5 text-white">
+                <h3 className="text-2xl font-bold mb-2">Preparation</h3>
+                <ul className="space-y-1 text-sm text-white/90">
+                  <li className="flex items-start gap-2">
+                    <CheckCircle className="w-4 h-4 mt-0.5 flex-shrink-0" />
+                    <span>Book your consultation slot</span>
+                  </li>
+                  <li className="flex items-start gap-2">
+                    <CheckCircle className="w-4 h-4 mt-0.5 flex-shrink-0" />
+                    <span>Share project requirements</span>
+                  </li>
+                  <li className="flex items-start gap-2">
+                    <CheckCircle className="w-4 h-4 mt-0.5 flex-shrink-0" />
+                    <span>Receive pre-meeting agenda</span>
+                  </li>
+                </ul>
+              </div>
+            </div>
+          </div>
+
+          <div className="relative">
+            <div className="relative rounded-xl overflow-hidden shadow-lg">
+              <Image
+                src="/images/consultation/process-active-consultation.jpg"
+                alt="Active Consultation"
+                width={800}
+                height={600}
+                className="w-full h-[280px] object-cover"
+              />
+              <div className="absolute inset-0 bg-gradient-to-t from-blue-900/95 via-blue-800/70 to-transparent"></div>
+              <div className="absolute top-4 left-4">
+                <Badge className="bg-white text-blue-900 text-lg px-4 py-1">Step 2</Badge>
+              </div>
+              <div className="absolute bottom-0 left-0 right-0 p-5 text-white">
+                <h3 className="text-2xl font-bold mb-2">Active Session</h3>
+                <ul className="space-y-1 text-sm text-white/90">
+                  <li className="flex items-start gap-2">
+                    <CheckCircle className="w-4 h-4 mt-0.5 flex-shrink-0" />
+                    <span>Live video consultation</span>
+                  </li>
+                  <li className="flex items-start gap-2">
+                    <CheckCircle className="w-4 h-4 mt-0.5 flex-shrink-0" />
+                    <span>Screen sharing & collaboration</span>
+                  </li>
+                  <li className="flex items-start gap-2">
+                    <CheckCircle className="w-4 h-4 mt-0.5 flex-shrink-0" />
+                    <span>Real-time problem solving</span>
+                  </li>
+                </ul>
+              </div>
+            </div>
+          </div>
+
+          <div className="relative">
+            <div className="relative rounded-xl overflow-hidden shadow-lg">
+              <Image
+                src="/images/consultation/process-followup.jpg"
+                alt="Follow-up Phase"
+                width={800}
+                height={600}
+                className="w-full h-[280px] object-cover"
+              />
+              <div className="absolute inset-0 bg-gradient-to-t from-green-900/95 via-green-800/70 to-transparent"></div>
+              <div className="absolute top-4 left-4">
+                <Badge className="bg-white text-green-900 text-lg px-4 py-1">Step 3</Badge>
+              </div>
+              <div className="absolute bottom-0 left-0 right-0 p-5 text-white">
+                <h3 className="text-2xl font-bold mb-2">Follow-up</h3>
+                <ul className="space-y-1 text-sm text-white/90">
+                  <li className="flex items-start gap-2">
+                    <CheckCircle className="w-4 h-4 mt-0.5 flex-shrink-0" />
+                    <span>Session recording & notes</span>
+                  </li>
+                  <li className="flex items-start gap-2">
+                    <CheckCircle className="w-4 h-4 mt-0.5 flex-shrink-0" />
+                    <span>Action items & recommendations</span>
+                  </li>
+                  <li className="flex items-start gap-2">
+                    <CheckCircle className="w-4 h-4 mt-0.5 flex-shrink-0" />
+                    <span>Ongoing support & resources</span>
+                  </li>
+                </ul>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+
       {/* Quick Stats */}
       <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6">
         <motion.div

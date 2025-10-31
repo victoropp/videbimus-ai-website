@@ -210,7 +210,7 @@ export class EnterpriseChatService {
     } else {
       // Get AI response using enhanced providers
       try {
-        providerResponse = await enhancedProviders.chatCompletion({
+        providerResponse = (await enhancedProviders.chatCompletion({
           messages: enhancedMessages,
           model,
           temperature,
@@ -222,8 +222,8 @@ export class EnterpriseChatService {
             tone: conversationTone,
             previousTopics: session.context.previousTopics,
           }
-        });
-        
+        })) as ProviderResponse;
+
         // Cache the response for future use
         await semanticCache.set(message, providerResponse.content, {
           model: providerResponse.model || 'gpt-4',

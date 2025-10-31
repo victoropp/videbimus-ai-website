@@ -3,6 +3,7 @@
 import { useState, useEffect } from 'react'
 import { motion } from 'framer-motion'
 import Link from 'next/link'
+import Image from 'next/image'
 import { Calendar, Clock, User, ArrowRight, Search, Tag, Filter, Loader2 } from 'lucide-react'
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card'
 import { Badge } from '@/components/ui/badge'
@@ -44,13 +45,13 @@ export default function BlogPage() {
     excerpt: 'Explore how artificial intelligence is reshaping business operations, from automation to decision-making, and what lies ahead for organizations embracing AI transformation.',
     content: '',
     author: 'Dr. Sarah Chen',
-    authorImage: '/team/sarah-chen.jpg',
+    authorImage: '/images/blog/author-1.jpg',
     publishedAt: new Date('2024-08-20'),
     date: new Date('2024-08-20'),
     readTime: 8,
     category: { id: '1', name: 'AI & Machine Learning', slug: 'ai-machine-learning' },
     tags: ['AI Strategy', 'Digital Transformation', 'Business Intelligence', 'Machine Learning'],
-    image: '/blog/ai-future.jpg',
+    image: '/images/blog/featured-ai-future-business.jpg',
     views: 1542,
     likes: 234,
   }
@@ -63,10 +64,12 @@ export default function BlogPage() {
       title: 'Building Scalable Data Pipelines for Real-Time Analytics',
       excerpt: 'Learn the best practices for designing and implementing data pipelines that can handle millions of events per second.',
       author: 'Marcus Johnson',
+      authorImage: '/images/blog/author-2.jpg',
       date: new Date('2024-08-18'),
       readTime: 12,
       tags: ['Data Engineering', 'Apache Kafka', 'Stream Processing'],
       category: { id: '2', name: 'Data Science', slug: 'data-science' },
+      image: '/images/blog/article-data-pipelines.jpg',
     },
     {
       id: '3',
@@ -74,10 +77,12 @@ export default function BlogPage() {
       title: 'MLOps Best Practices: From Development to Production',
       excerpt: 'A comprehensive guide to implementing MLOps practices that ensure reliable and scalable machine learning deployments.',
       author: 'Emily Rodriguez',
+      authorImage: '/images/blog/author-3.jpg',
       date: new Date('2024-08-15'),
       readTime: 10,
       tags: ['MLOps', 'DevOps', 'Machine Learning'],
       category: { id: '1', name: 'AI & Machine Learning', slug: 'ai-machine-learning' },
+      image: '/images/blog/article-mlops-practices.jpg',
     },
     {
       id: '4',
@@ -85,10 +90,12 @@ export default function BlogPage() {
       title: 'Ethical AI: Building Responsible AI Systems',
       excerpt: 'Exploring the critical ethical considerations when developing AI systems and how to implement responsible AI practices.',
       author: 'Dr. James Wilson',
+      authorImage: '/images/blog/author-4.jpg',
       date: new Date('2024-08-12'),
       readTime: 7,
       tags: ['AI Ethics', 'Responsible AI', 'Governance'],
       category: { id: '3', name: 'Industry Insights', slug: 'industry-insights' },
+      image: '/images/blog/article-ai-ethics.jpg',
     },
     {
       id: '5',
@@ -96,10 +103,12 @@ export default function BlogPage() {
       title: 'Computer Vision in Manufacturing: Quality Control Revolution',
       excerpt: 'How computer vision is transforming quality control processes in manufacturing with real-world case studies.',
       author: 'Lisa Chang',
+      authorImage: '/images/blog/author-1.jpg',
       date: new Date('2024-08-10'),
       readTime: 9,
       tags: ['Computer Vision', 'Manufacturing', 'Quality Control'],
       category: { id: '3', name: 'Industry Insights', slug: 'industry-insights' },
+      image: '/images/blog/article-computer-vision-manufacturing.jpg',
     },
     {
       id: '6',
@@ -107,10 +116,12 @@ export default function BlogPage() {
       title: 'Transforming Customer Service with NLP',
       excerpt: 'Discover how natural language processing is revolutionizing customer service through chatbots and sentiment analysis.',
       author: 'Michael Brown',
+      authorImage: '/images/blog/author-2.jpg',
       date: new Date('2024-08-08'),
       readTime: 6,
       tags: ['NLP', 'Customer Service', 'Chatbots'],
       category: { id: '1', name: 'AI & Machine Learning', slug: 'ai-machine-learning' },
+      image: '/images/blog/article-nlp-customer-service.jpg',
     },
   ]
   
@@ -118,6 +129,17 @@ export default function BlogPage() {
     <div className="min-h-screen">
       {/* Hero Section */}
       <section className="py-20 bg-gradient-to-br from-primary-900 via-primary-800 to-primary-700 relative overflow-hidden">
+        {/* Hero Background Image */}
+        <div className="absolute inset-0">
+          <Image
+            src="/images/blog/hero-knowledge-sharing.jpg"
+            alt="Knowledge sharing and AI insights"
+            fill
+            className="object-cover opacity-20"
+            priority
+          />
+          <div className="absolute inset-0 bg-gradient-to-br from-primary-900/90 via-primary-800/90 to-primary-700/90" />
+        </div>
         <div className="absolute inset-0 bg-gradient-to-r from-cyan-600/20 to-purple-600/20" />
         <div className="container relative">
           <motion.div
@@ -130,7 +152,7 @@ export default function BlogPage() {
               AI Insights & Expertise
             </h1>
             <p className="mx-auto max-w-3xl text-xl text-gray-200 mb-8">
-              Stay ahead of the curve with the latest insights, trends, and best practices 
+              Stay ahead of the curve with the latest insights, trends, and best practices
               in artificial intelligence and data science from our expert team.
             </p>
           </motion.div>
@@ -201,12 +223,15 @@ export default function BlogPage() {
             <Card className="overflow-hidden hover:shadow-2xl transition-all duration-500 group">
               <div className="lg:flex">
                 {/* Image */}
-                <div className="lg:w-2/3 h-64 lg:h-auto bg-gradient-to-br from-cyan-100 to-purple-100 dark:from-cyan-900/20 dark:to-purple-900/20 relative overflow-hidden">
-                  <div className="absolute inset-0 flex items-center justify-center">
-                    <div className="text-8xl font-bold text-cyan-500/20">
-                      AI
-                    </div>
-                  </div>
+                <div className="lg:w-2/3 h-64 lg:h-auto relative overflow-hidden">
+                  <Image
+                    src={featuredPost.image}
+                    alt={featuredPost.title}
+                    fill
+                    className="object-cover group-hover:scale-105 transition-transform duration-700"
+                    priority
+                  />
+                  <div className="absolute inset-0 bg-gradient-to-t from-black/60 via-transparent to-transparent" />
                   <div className="absolute top-4 left-4">
                     <Badge variant="success">Featured</Badge>
                   </div>
@@ -232,8 +257,15 @@ export default function BlogPage() {
                     </p>
 
                     <div className="flex items-center space-x-4 text-sm text-gray-500 dark:text-gray-400">
-                      <div className="flex items-center space-x-1">
-                        <User className="h-4 w-4" />
+                      <div className="flex items-center space-x-2">
+                        <div className="relative h-8 w-8 rounded-full overflow-hidden">
+                          <Image
+                            src={featuredPost.authorImage}
+                            alt={featuredPost.author}
+                            fill
+                            className="object-cover"
+                          />
+                        </div>
                         <span>{featuredPost.author}</span>
                       </div>
                       <div className="flex items-center space-x-1">
@@ -290,12 +322,14 @@ export default function BlogPage() {
                 <Link href={`/blog/${post.slug}`} className="block group">
                   <Card className="h-full hover:shadow-xl transition-all duration-500 hover:-translate-y-2 overflow-hidden">
                     {/* Image */}
-                    <div className="h-48 bg-gradient-to-br from-cyan-100 to-purple-100 dark:from-cyan-900/20 dark:to-purple-900/20 relative overflow-hidden">
-                      <div className="absolute inset-0 flex items-center justify-center">
-                        <div className="text-4xl font-bold text-cyan-500/30">
-                          {post.title.split(' ')[0][0]}{post.title.split(' ')[1]?.[0] || ''}
-                        </div>
-                      </div>
+                    <div className="h-48 relative overflow-hidden">
+                      <Image
+                        src={post.image}
+                        alt={post.title}
+                        fill
+                        className="object-cover group-hover:scale-110 transition-transform duration-500"
+                      />
+                      <div className="absolute inset-0 bg-gradient-to-t from-black/40 via-transparent to-transparent" />
                     </div>
 
                     <CardHeader>
@@ -316,8 +350,15 @@ export default function BlogPage() {
 
                     <CardContent className="pt-0">
                       <div className="flex items-center justify-between text-sm text-gray-500 dark:text-gray-400">
-                        <div className="flex items-center space-x-1">
-                          <User className="h-4 w-4" />
+                        <div className="flex items-center space-x-2">
+                          <div className="relative h-6 w-6 rounded-full overflow-hidden">
+                            <Image
+                              src={post.authorImage}
+                              alt={post.author}
+                              fill
+                              className="object-cover"
+                            />
+                          </div>
                           <span>{post.author}</span>
                         </div>
                         <div className="flex items-center space-x-3">

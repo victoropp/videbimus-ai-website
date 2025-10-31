@@ -11,20 +11,27 @@ export async function middleware(request: NextRequest) {
   // Set nonce in response header so it can be used in the app
   response.headers.set('x-nonce', nonce)
 
-  // Secure CSP with nonce-based script execution (no unsafe-inline or unsafe-eval)
+  // Check if we're in development mode
+  const isDevelopment = process.env.NODE_ENV === 'development'
+
+  // Configure CSP based on environment
+  // Development: Allow unsafe-eval for Next.js hot reloading and development tools
+  // Production: Strict CSP with nonce-based script execution
   const cspHeader = [
     "default-src 'self'",
-    `script-src 'self' 'nonce-${nonce}' 'strict-dynamic' https:`,
+    isDevelopment
+      ? `script-src 'self' 'unsafe-eval' 'unsafe-inline' https:`
+      : `script-src 'self' 'nonce-${nonce}' 'strict-dynamic' https:`,
     "style-src 'self' 'unsafe-inline' https://fonts.googleapis.com",
     "img-src 'self' data: blob: https:",
     "font-src 'self' data: https://fonts.gstatic.com",
-    "connect-src 'self' https: wss:",
+    "connect-src 'self' https: wss: ws:",
     "media-src 'self'",
     "object-src 'none'",
     "frame-ancestors 'none'",
     "base-uri 'self'",
     "form-action 'self'",
-    "upgrade-insecure-requests"
+    ...(isDevelopment ? [] : ["upgrade-insecure-requests"])
   ].join("; ")
 
   response.headers.set('Content-Security-Policy', cspHeader)

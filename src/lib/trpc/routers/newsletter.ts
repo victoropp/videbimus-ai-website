@@ -65,7 +65,7 @@ export const newsletterRouter = createTRPCRouter({
           status: NewsletterStatus.SUBSCRIBED,
           preferences,
           userId: ctx.session?.user?.id,
-        },
+        } as any,
       })
 
       // Send welcome email
@@ -101,7 +101,7 @@ export const newsletterRouter = createTRPCRouter({
         data: {
           status: NewsletterStatus.UNSUBSCRIBED,
           updatedAt: new Date(),
-        },
+        } as any,
       })
 
       return { message: "Successfully unsubscribed from newsletter" }
@@ -145,7 +145,7 @@ export const newsletterRouter = createTRPCRouter({
           limit,
           total,
           pages: Math.ceil(total / limit),
-        },
+        } as any,
       }
     }),
 
@@ -156,7 +156,7 @@ export const newsletterRouter = createTRPCRouter({
 
       const subscription = await ctx.prisma.newsletter.update({
         where: { id },
-        data: updateData,
+        data: updateData as any,
       })
 
       return { subscription, message: "Subscription updated successfully" }

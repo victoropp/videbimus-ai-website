@@ -14,7 +14,7 @@ const caseStudies: CaseStudy[] = [
     description: 'Equipment kept failing with zero warning. Every failure cost $200K+ in downtime and repairs. Maintenance teams were flying blind—reacting to breakdowns instead of preventing them. We built a system that predicts failures 2 weeks before they happen.',
     client: 'Petroverse',
     industry: 'Oil & Gas',
-    image: '/case-studies/petroverse-oil-gas.jpg',
+    image: '/images/case-studies/petroverse/petroverse-featured.jpg',
     tags: ['Predictive Maintenance', 'Saved $2.5M First Year', 'Live in 7 Weeks'],
     results: [
       { metric: 'Equipment Failures Cut', value: '45%' },
@@ -29,7 +29,7 @@ const caseStudies: CaseStudy[] = [
     description: 'Claims were taking 7-10 days because adjusters spent hours manually extracting data from PDFs and photos. Fraud was slipping through. Customers were furious. We automated the document processing and built fraud detection that actually works—claims now take 2-3 days.',
     client: 'INSURE360',
     industry: 'Insurance',
-    image: '/case-studies/insure360-insurance.jpg',
+    image: '/images/case-studies/insure360/insure360-featured.jpg',
     tags: ['Claims Automation', 'Fraud Detection', 'Cut Processing 60%'],
     results: [
       { metric: 'Processing Time', value: '2-3 Days' },
@@ -44,7 +44,7 @@ const caseStudies: CaseStudy[] = [
     description: 'Quality issues weren\'t caught until products shipped—costing millions in returns and warranty claims. Production scheduling was guesswork. We built computer vision QC and predictive scheduling. Defects caught in real-time, production optimized automatically.',
     client: 'TechCorp Industries',
     industry: 'Manufacturing',
-    image: '/case-studies/techcorp-automation.jpg',
+    image: '/images/case-studies/techcorp/techcorp-featured.jpg',
     tags: ['Quality Control', 'Saved $2.5M/Year', 'Defect Detection'],
     results: [
       { metric: 'Product Defects', value: '-40%' },
@@ -59,7 +59,7 @@ const caseStudies: CaseStudy[] = [
     description: 'Fraud detection was catching fraud but drowning legitimate transactions in false alarms—customers were furious. Manual review couldn\'t keep up. We built ML models that learn what "normal" looks like for each customer. Fraud caught faster, false alarms down 65%.',
     client: 'FinanceFlow',
     industry: 'Financial Services',
-    image: '/case-studies/financeflow-fraud.jpg',
+    image: '/images/case-studies/financeflow/financeflow-featured.jpg',
     tags: ['Fraud Detection', 'Real-time', 'Saved $8.2M'],
     results: [
       { metric: 'False Alarms Cut', value: '65%' },
@@ -74,7 +74,7 @@ const caseStudies: CaseStudy[] = [
     description: 'Radiologists were backlogged 3-4 weeks analyzing scans. Patients waited in limbo. We built AI that pre-analyzes scans and flags areas of concern. Radiologists review faster, catch more issues early, patients get answers sooner.',
     client: 'HealthTech Solutions',
     industry: 'Healthcare',
-    image: '/case-studies/healthtech-diagnosis.jpg',
+    image: '/images/case-studies/healthtech/healthtech-featured.jpg',
     tags: ['Medical Imaging', 'Computer Vision', '3x Faster'],
     results: [
       { metric: 'Analysis Speed', value: '3x Faster' },
@@ -89,7 +89,7 @@ const caseStudies: CaseStudy[] = [
     description: 'Generic product recommendations were converting <2%. Customers couldn\'t find what they wanted and left. We built personalization that learns from behavior—not just demographics. Right products shown to right people. Conversion jumped 35%, revenue up 28% with same traffic.',
     client: 'RetailMax',
     industry: 'E-commerce',
-    image: '/case-studies/retailmax-personalization.jpg',
+    image: '/images/case-studies/retailmax/retailmax-featured.jpg',
     tags: ['Personalization', '+28% Revenue', 'Recommendations'],
     results: [
       { metric: 'Conversion Rate', value: '+35%' },
@@ -104,7 +104,7 @@ const caseStudies: CaseStudy[] = [
     description: 'Routes were planned manually using "gut feel" and outdated maps. Trucks drove 20-30% more miles than needed. Deliveries late. Fuel costs insane. We built route optimization that factors in real-time traffic, weather, delivery windows. Saved $5.1M first year.',
     client: 'LogisticsCorp',
     industry: 'Logistics',
-    image: '/case-studies/logisticscorp-optimization.jpg',
+    image: '/images/case-studies/logisticscorp/logisticscorp-featured.jpg',
     tags: ['Route Optimization', 'Saved $5.1M', 'Real-time'],
     results: [
       { metric: 'Miles Driven', value: '-25%' },
@@ -119,7 +119,7 @@ const caseStudies: CaseStudy[] = [
     description: 'Energy demand forecasting was consistently wrong by 15-20%—leading to massive waste or brownouts. Renewables were unpredictable. We built ML forecasting that learns seasonal patterns and weather impacts. Prediction accuracy 96.5%, waste down 22%.',
     client: 'EnergyCorp',
     industry: 'Energy',
-    image: '/case-studies/energycorp-prediction.jpg',
+    image: '/images/case-studies/energycorp/energycorp-featured.jpg',
     tags: ['Demand Forecasting', '96.5% Accuracy', 'Green Energy'],
     results: [
       { metric: 'Forecast Accuracy', value: '96.5%' },
@@ -202,18 +202,27 @@ export default function CaseStudiesPage() {
             {caseStudies.map((study, index) => (
               <motion.div key={study.id} variants={itemVariants}>
                 <Card className="h-full group hover:shadow-2xl transition-all duration-500 hover:-translate-y-2 overflow-hidden">
-                  {/* Image placeholder */}
-                  <div className="h-48 bg-gradient-to-br from-cyan-100 to-purple-100 dark:from-cyan-900/20 dark:to-purple-900/20 relative overflow-hidden">
-                    <div className="absolute inset-0 flex items-center justify-center">
-                      <div className="text-6xl font-bold text-cyan-500/20">
-                        {typeof study.client === 'string' 
-                          ? study.client.split(' ')[0][0] 
-                          : study.client.name.split(' ')[0][0]}
+                  {/* Featured Image */}
+                  <div className="h-48 relative overflow-hidden">
+                    <img
+                      src={typeof study.image === 'string' ? study.image : study.image.src}
+                      alt={study.title}
+                      className="w-full h-full object-cover transition-transform duration-700 group-hover:scale-110"
+                    />
+                    {/* Dark overlay gradient for better text readability */}
+                    <div className="absolute inset-0 bg-gradient-to-t from-black/60 via-black/20 to-transparent" />
+
+                    {/* Industry badge */}
+                    <div className="absolute top-4 right-4">
+                      <div className="bg-white/90 dark:bg-gray-900/90 backdrop-blur-sm px-3 py-1 rounded-full text-xs font-medium text-gray-900 dark:text-white shadow-lg">
+                        {typeof study.industry === 'string' ? study.industry : study.industry.name}
                       </div>
                     </div>
-                    <div className="absolute top-4 right-4">
-                      <div className="bg-white/90 dark:bg-gray-900/90 px-2 py-1 rounded-full text-xs font-medium text-gray-900 dark:text-white">
-                        {typeof study.industry === 'string' ? study.industry : study.industry.name}
+
+                    {/* Client name overlay */}
+                    <div className="absolute bottom-4 left-4">
+                      <div className="text-white font-semibold text-sm opacity-0 group-hover:opacity-100 transition-opacity duration-500">
+                        {typeof study.client === 'string' ? study.client : study.client.name}
                       </div>
                     </div>
                   </div>

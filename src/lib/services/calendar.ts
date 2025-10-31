@@ -136,7 +136,7 @@ class CalendarService {
     if (!this.googleAPI) throw new Error('Google Calendar not configured');
     
     try {
-      const googleEvent = {
+      const googleEvent: any = {
         summary: event.title,
         description: event.description,
         location: event.location,
@@ -193,6 +193,105 @@ class CalendarService {
         originalError: error as Error,
         metadata: { title: event.title, startTime: event.startTime },
       });
+    }
+  }
+
+  private async updateGoogleEvent(id: string, updates: Partial<Omit<CalendarEvent, 'id' | 'createdAt' | 'updatedAt'>>): Promise<CalendarEvent> {
+    if (!this.googleAPI) throw new Error('Google Calendar not configured');
+
+    try {
+      const googleEvent: any = {};
+
+      if (updates.title) googleEvent.summary = updates.title;
+      if (updates.description) googleEvent.description = updates.description;
+      if (updates.location) googleEvent.location = updates.location;
+      if (updates.startTime) {
+        googleEvent.start = {
+          dateTime: updates.startTime.toISOString(),
+          timeZone: updates.timezone || this.defaultSettings.timezone,
+        };
+      }
+      if (updates.endTime) {
+        googleEvent.end = {
+          dateTime: updates.endTime.toISOString(),
+          timeZone: updates.timezone || this.defaultSettings.timezone,
+        };
+      }
+      if (updates.attendees) {
+        googleEvent.attendees = updates.attendees.map(attendee => ({
+          email: attendee.email,
+          displayName: attendee.name,
+        }));
+      }
+
+      const response = await fetch(`${this.googleAPI.baseUrl}/calendars/${this.googleAPI.calendarId}/events/${id}`, {
+        method: 'PATCH',
+        headers: {
+          'Content-Type': 'application/json',
+          'Authorization': `Bearer ${this.googleAPI.accessToken}`,
+        },
+        body: JSON.stringify(googleEvent),
+      });
+
+      if (!response.ok) {
+        throw new Error(`Failed to update Google event: ${response.statusText}`);
+      }
+
+      const result = await response.json();
+      return this.mapGoogleEventToCalendarEvent(result);
+    } catch (error) {
+      throw new Error(`Failed to update Google Calendar event: ${error}`);
+    }
+  }
+
+  private async updateOutlookEvent(id: string, updates: Partial<Omit<CalendarEvent, 'id' | 'createdAt' | 'updatedAt'>>): Promise<CalendarEvent> {
+    if (!this.outlookAPI) throw new Error('Outlook Calendar not configured');
+
+    try {
+      const outlookEvent: any = {};
+
+      if (updates.title) outlookEvent.subject = updates.title;
+      if (updates.description) {
+        outlookEvent.body = {
+          contentType: 'text',
+          content: updates.description,
+        };
+      }
+      if (updates.location) {
+        outlookEvent.location = {
+          displayName: updates.location,
+        };
+      }
+      if (updates.startTime) {
+        outlookEvent.start = {
+          dateTime: updates.startTime.toISOString(),
+          timeZone: updates.timezone || this.defaultSettings.timezone,
+        };
+      }
+      if (updates.endTime) {
+        outlookEvent.end = {
+          dateTime: updates.endTime.toISOString(),
+          timeZone: updates.timezone || this.defaultSettings.timezone,
+        };
+      }
+
+      const response = await fetch(`${this.outlookAPI.baseUrl}/me/events/${id}`, {
+        method: 'PATCH',
+        headers: {
+          'Content-Type': 'application/json',
+          'Authorization': `Bearer ${this.outlookAPI.accessToken}`,
+        },
+        body: JSON.stringify(outlookEvent),
+      });
+
+      if (!response.ok) {
+        throw new Error(`Failed to update Outlook event: ${response.statusText}`);
+      }
+
+      const result = await response.json();
+      return this.mapOutlookEventToCalendarEvent(result);
+    } catch (error) {
+      throw new Error(`Failed to update Outlook Calendar event: ${error}`);
     }
   }
 
@@ -701,6 +800,93 @@ class CalendarService {
     if (this.outlookAPI) {
       this.outlookAPI.accessToken = accessToken;
       this.outlookAPI.refreshToken = refreshToken;
+    }
+  }
+
+  private mapGoogleEventToCalendarEvent(googleEvent: any): CalendarEvent {
+    return {
+      id: googleEvent.id,
+      title: googleEvent.summary || '',
+      description: googleEvent.description || '',
+      location: googleEvent.location || '',
+      startTime: new Date(googleEvent.start.dateTime || googleEvent.start.date),
+      endTime: new Date(googleEvent.end.dateTime || googleEvent.end.date),
+      timezone: googleEvent.start.timeZone || this.defaultSettings.timezone,
+      attendees: googleEvent.attendees?.map((attendee: any) => ({
+        email: attendee.email,
+        name: attendee.displayName || attendee.email,
+        status: attendee.responseStatus || 'pending',
+      })) || [],
+      reminders: googleEvent.reminders?.overrides?.map((reminder: any) => ({
+        method: reminder.method,
+        minutes: reminder.minutes,
+      })) || [],
+      recurrence: googleEvent.recurrence,
+      visibility: googleEvent.visibility || 'public',
+      status: googleEvent.status || 'confirmed',
+      createdAt: new Date(googleEvent.created),
+      updatedAt: new Date(googleEvent.updated),
+    };
+  }
+
+  private mapOutlookEventToCalendarEvent(outlookEvent: any): CalendarEvent {
+    return {
+      id: outlookEvent.id,
+      title: outlookEvent.subject || '',
+      description: outlookEvent.body?.content || '',
+      location: outlookEvent.location?.displayName || '',
+      startTime: new Date(outlookEvent.start.dateTime),
+      endTime: new Date(outlookEvent.end.dateTime),
+      timezone: outlookEvent.start.timeZone || this.defaultSettings.timezone,
+      attendees: outlookEvent.attendees?.map((attendee: any) => ({
+        email: attendee.emailAddress.address,
+        name: attendee.emailAddress.name || attendee.emailAddress.address,
+        status: attendee.status?.response || 'pending',
+      })) || [],
+      reminders: [],
+      recurrence: outlookEvent.recurrence,
+      visibility: outlookEvent.sensitivity === 'private' ? 'private' : 'public',
+      status: outlookEvent.isCancelled ? 'cancelled' : 'confirmed',
+      createdAt: new Date(outlookEvent.createdDateTime),
+      updatedAt: new Date(outlookEvent.lastModifiedDateTime),
+    };
+  }
+
+  private async deleteGoogleEvent(id: string): Promise<void> {
+    if (!this.googleAPI) throw new Error('Google Calendar not configured');
+
+    try {
+      const response = await fetch(`${this.googleAPI.baseUrl}/calendars/${this.googleAPI.calendarId}/events/${id}`, {
+        method: 'DELETE',
+        headers: {
+          'Authorization': `Bearer ${this.googleAPI.accessToken}`,
+        },
+      });
+
+      if (!response.ok) {
+        throw new Error(`Failed to delete Google event: ${response.statusText}`);
+      }
+    } catch (error) {
+      throw new Error(`Failed to delete Google Calendar event: ${error}`);
+    }
+  }
+
+  private async deleteOutlookEvent(id: string): Promise<void> {
+    if (!this.outlookAPI) throw new Error('Outlook Calendar not configured');
+
+    try {
+      const response = await fetch(`${this.outlookAPI.baseUrl}/me/events/${id}`, {
+        method: 'DELETE',
+        headers: {
+          'Authorization': `Bearer ${this.outlookAPI.accessToken}`,
+        },
+      });
+
+      if (!response.ok) {
+        throw new Error(`Failed to delete Outlook event: ${response.statusText}`);
+      }
+    } catch (error) {
+      throw new Error(`Failed to delete Outlook Calendar event: ${error}`);
     }
   }
 }

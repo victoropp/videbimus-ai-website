@@ -1,6 +1,6 @@
 import { stripe } from '@/lib/stripe'
 import { prisma } from '@/lib/prisma'
-import { PaymentMethodType } from '@prisma/client'
+import { PaymentMethod_Type } from '@prisma/client'
 import Stripe from 'stripe'
 
 export interface AttachPaymentMethodData {
@@ -31,9 +31,8 @@ export async function attachPaymentMethod(data: AttachPaymentMethodData) {
     const stripePaymentMethod = await stripe.paymentMethods.retrieve(data.paymentMethodId)
 
     // Store payment method in database
-    const paymentMethod = await prisma.paymentMethod.create({
+    const paymentMethod = await prisma.stripePaymentMethod.create({
       data: {
-        userId: customer.userId,
         customerId: data.customerId,
         stripePaymentMethodId: data.paymentMethodId,
         type: mapPaymentMethodType(stripePaymentMethod.type),
@@ -44,7 +43,7 @@ export async function attachPaymentMethod(data: AttachPaymentMethodData) {
         bankName: stripePaymentMethod.us_bank_account?.bank_name,
         bankLast4: stripePaymentMethod.us_bank_account?.last4,
         isDefault: data.setAsDefault || false,
-        billingDetails: stripePaymentMethod.billing_details || {},
+        billingDetails: (stripePaymentMethod.billing_details as any) || {},
         metadata: stripePaymentMethod.metadata || {}
       }
     })
@@ -66,7 +65,7 @@ export async function attachPaymentMethod(data: AttachPaymentMethodData) {
  */
 export async function getCustomerPaymentMethods(customerId: string) {
   try {
-    const paymentMethods = await prisma.paymentMethod.findMany({
+    const paymentMethods = await prisma.stripePaymentMethod.findMany({
       where: {
         customerId,
         isActive: true
@@ -97,7 +96,7 @@ export async function setDefaultPaymentMethod(customerId: string, paymentMethodI
       throw new Error('Customer not found')
     }
 
-    const paymentMethod = await prisma.paymentMethod.findUnique({
+    const paymentMethod = await prisma.stripePaymentMethod.findUnique({
       where: { id: paymentMethodId }
     })
 
@@ -106,13 +105,13 @@ export async function setDefaultPaymentMethod(customerId: string, paymentMethodI
     }
 
     // Remove default flag from all payment methods
-    await prisma.paymentMethod.updateMany({
+    await prisma.stripePaymentMethod.updateMany({
       where: { customerId },
       data: { isDefault: false }
     })
 
     // Set new default
-    const updatedPaymentMethod = await prisma.paymentMethod.update({
+    const updatedPaymentMethod = await prisma.stripePaymentMethod.update({
       where: { id: paymentMethodId },
       data: { isDefault: true }
     })
@@ -144,7 +143,7 @@ export async function setDefaultPaymentMethod(customerId: string, paymentMethodI
  */
 export async function detachPaymentMethod(paymentMethodId: string) {
   try {
-    const paymentMethod = await prisma.paymentMethod.findUnique({
+    const paymentMethod = await prisma.stripePaymentMethod.findUnique({
       where: { id: paymentMethodId },
       include: { customer: true }
     })
@@ -156,7 +155,7 @@ export async function detachPaymentMethod(paymentMethodId: string) {
     // Check if it's the default payment method
     if (paymentMethod.isDefault) {
       // Check if there are other payment methods
-      const otherPaymentMethods = await prisma.paymentMethod.findMany({
+      const otherPaymentMethods = await prisma.stripePaymentMethod.findMany({
         where: {
           customerId: paymentMethod.customerId,
           id: { not: paymentMethodId },
@@ -174,7 +173,7 @@ export async function detachPaymentMethod(paymentMethodId: string) {
     await stripe.paymentMethods.detach(paymentMethod.stripePaymentMethodId)
 
     // Deactivate in database (soft delete)
-    const updatedPaymentMethod = await prisma.paymentMethod.update({
+    const updatedPaymentMethod = await prisma.stripePaymentMethod.update({
       where: { id: paymentMethodId },
       data: {
         isActive: false,
@@ -197,7 +196,7 @@ export async function updatePaymentMethod(paymentMethodId: string, updateData: {
   metadata?: Record<string, string>
 }) {
   try {
-    const paymentMethod = await prisma.paymentMethod.findUnique({
+    const paymentMethod = await prisma.stripePaymentMethod.findUnique({
       where: { id: paymentMethodId }
     })
 
@@ -215,10 +214,10 @@ export async function updatePaymentMethod(paymentMethodId: string, updateData: {
     )
 
     // Update in database
-    const updatedPaymentMethod = await prisma.paymentMethod.update({
+    const updatedPaymentMethod = await prisma.stripePaymentMethod.update({
       where: { id: paymentMethodId },
       data: {
-        billingDetails: stripePaymentMethod.billing_details || {},
+        billingDetails: (stripePaymentMethod.billing_details as any) || {},
         metadata: stripePaymentMethod.metadata || {}
       }
     })
@@ -279,13 +278,13 @@ export async function syncPaymentMethodFromStripe(stripePaymentMethodId: string)
     }
 
     // Check if payment method already exists
-    let paymentMethod = await prisma.paymentMethod.findUnique({
+    let paymentMethod = await prisma.stripePaymentMethod.findUnique({
       where: { stripePaymentMethodId }
     })
 
     if (paymentMethod) {
       // Update existing payment method
-      paymentMethod = await prisma.paymentMethod.update({
+      paymentMethod = await prisma.stripePaymentMethod.update({
         where: { id: paymentMethod.id },
         data: {
           type: mapPaymentMethodType(stripePaymentMethod.type),
@@ -295,15 +294,14 @@ export async function syncPaymentMethodFromStripe(stripePaymentMethodId: string)
           cardExpYear: stripePaymentMethod.card?.exp_year,
           bankName: stripePaymentMethod.us_bank_account?.bank_name,
           bankLast4: stripePaymentMethod.us_bank_account?.last4,
-          billingDetails: stripePaymentMethod.billing_details || {},
+          billingDetails: (stripePaymentMethod.billing_details as any) || {},
           metadata: stripePaymentMethod.metadata || {}
         }
       })
     } else {
       // Create new payment method
-      paymentMethod = await prisma.paymentMethod.create({
+      paymentMethod = await prisma.stripePaymentMethod.create({
         data: {
-          userId: customer.userId,
           customerId: customer.id,
           stripePaymentMethodId,
           type: mapPaymentMethodType(stripePaymentMethod.type),
@@ -313,7 +311,7 @@ export async function syncPaymentMethodFromStripe(stripePaymentMethodId: string)
           cardExpYear: stripePaymentMethod.card?.exp_year,
           bankName: stripePaymentMethod.us_bank_account?.bank_name,
           bankLast4: stripePaymentMethod.us_bank_account?.last4,
-          billingDetails: stripePaymentMethod.billing_details || {},
+          billingDetails: (stripePaymentMethod.billing_details as any) || {},
           metadata: stripePaymentMethod.metadata || {}
         }
       })
@@ -328,22 +326,27 @@ export async function syncPaymentMethodFromStripe(stripePaymentMethodId: string)
 
 /**
  * Map Stripe payment method type to database enum
+ * Schema enum: CARD, BANK_ACCOUNT, SEPA_DEBIT
  */
-function mapPaymentMethodType(stripeType: string): PaymentMethodType {
-  const typeMap: Record<string, PaymentMethodType> = {
+function mapPaymentMethodType(stripeType: string): PaymentMethod_Type {
+  const typeMap: Record<string, PaymentMethod_Type> = {
     'card': 'CARD',
     'us_bank_account': 'BANK_ACCOUNT',
     'sepa_debit': 'SEPA_DEBIT',
-    'ach_debit': 'ACH_DEBIT',
-    'au_becs_debit': 'AU_BECS_DEBIT',
-    'bacs_debit': 'BACS_DEBIT',
-    'ideal': 'IDEAL',
-    'sofort': 'SOFORT',
-    'giropay': 'GIROPAY',
-    'eps': 'EPS',
-    'bancontact': 'BANCONTACT',
-    'alipay': 'ALIPAY',
-    'wechat_pay': 'WECHAT_PAY'
+    'ach_debit': 'BANK_ACCOUNT',
+    'au_becs_debit': 'BANK_ACCOUNT',
+    'bacs_debit': 'BANK_ACCOUNT',
+    'ideal': 'BANK_ACCOUNT',
+    'sofort': 'BANK_ACCOUNT',
+    'giropay': 'BANK_ACCOUNT',
+    'eps': 'BANK_ACCOUNT',
+    'bancontact': 'BANK_ACCOUNT',
+    'alipay': 'CARD',
+    'wechat_pay': 'CARD',
+    'paypal': 'CARD',
+    'wire': 'BANK_ACCOUNT',
+    'check': 'BANK_ACCOUNT',
+    'cash': 'CARD'
   }
 
   return typeMap[stripeType] || 'CARD'

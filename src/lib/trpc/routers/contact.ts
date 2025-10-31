@@ -45,7 +45,7 @@ export const contactRouter = createTRPCRouter({
           status: ContactStatus.NEW,
           priority: Priority.MEDIUM,
           userId: ctx.session?.user?.id,
-        },
+        } as any,
       })
 
       // Send notification email to admin
@@ -115,7 +115,7 @@ export const contactRouter = createTRPCRouter({
           limit,
           total,
           pages: Math.ceil(total / limit),
-        },
+        } as any,
       }
     }),
 
@@ -133,7 +133,7 @@ export const contactRouter = createTRPCRouter({
               image: true,
             },
           },
-        },
+        } as any,
       })
 
       if (!contact) {
@@ -158,7 +158,7 @@ export const contactRouter = createTRPCRouter({
           ...(input.status === ContactStatus.RESPONDED && {
             respondedAt: new Date(),
           }),
-        },
+        } as any,
         include: {
           user: {
             select: {
@@ -166,7 +166,7 @@ export const contactRouter = createTRPCRouter({
               email: true,
             },
           },
-        },
+        } as any,
       })
 
       return { contact, message: "Contact updated successfully" }

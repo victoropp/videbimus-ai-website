@@ -27,10 +27,10 @@ export const teamRouter = createTRPCRouter({
       limit: z.number().min(1).max(50).default(20),
     }))
     .query(async ({ ctx, input }) => {
-      return ctx.db.teamMember.findMany({
+      return ctx.prisma.teamMember.findMany({
         where: {
           isActive: input.isActive,
-        },
+        } as any,
         orderBy: [
           { sortOrder: 'asc' },
           { createdAt: 'desc' }
@@ -42,7 +42,7 @@ export const teamRouter = createTRPCRouter({
   getById: publicProcedure
     .input(z.object({ id: z.string() }))
     .query(async ({ ctx, input }) => {
-      const member = await ctx.db.teamMember.findUnique({
+      const member = await ctx.prisma.teamMember.findUnique({
         where: { id: input.id },
       })
 
@@ -59,7 +59,7 @@ export const teamRouter = createTRPCRouter({
   getByEmail: publicProcedure
     .input(z.object({ email: z.string().email() }))
     .query(async ({ ctx, input }) => {
-      return ctx.db.teamMember.findUnique({
+      return ctx.prisma.teamMember.findUnique({
         where: { email: input.email },
       })
     }),
@@ -70,7 +70,7 @@ export const teamRouter = createTRPCRouter({
     .mutation(async ({ ctx, input }) => {
       // Check if email is already in use
       if (input.email) {
-        const existing = await ctx.db.teamMember.findUnique({
+        const existing = await ctx.prisma.teamMember.findUnique({
           where: { email: input.email },
         })
 
@@ -82,18 +82,18 @@ export const teamRouter = createTRPCRouter({
         }
       }
 
-      return ctx.db.teamMember.create({
-        data: input,
+      return ctx.prisma.teamMember.create({
+        data: input as any,
       })
     }),
 
   update: adminProcedure
     .input(z.object({
       id: z.string(),
-      data: updateTeamMemberSchema,
+      data: updateTeamMemberSchema as any,
     }))
     .mutation(async ({ ctx, input }) => {
-      const member = await ctx.db.teamMember.findUnique({
+      const member = await ctx.prisma.teamMember.findUnique({
         where: { id: input.id },
       })
 
@@ -106,7 +106,7 @@ export const teamRouter = createTRPCRouter({
 
       // Check if email is being changed and is already in use
       if (input.data.email && input.data.email !== member.email) {
-        const existing = await ctx.db.teamMember.findUnique({
+        const existing = await ctx.prisma.teamMember.findUnique({
           where: { email: input.data.email },
         })
 
@@ -118,7 +118,7 @@ export const teamRouter = createTRPCRouter({
         }
       }
 
-      return ctx.db.teamMember.update({
+      return ctx.prisma.teamMember.update({
         where: { id: input.id },
         data: input.data,
       })
@@ -127,7 +127,7 @@ export const teamRouter = createTRPCRouter({
   delete: adminProcedure
     .input(z.object({ id: z.string() }))
     .mutation(async ({ ctx, input }) => {
-      const member = await ctx.db.teamMember.findUnique({
+      const member = await ctx.prisma.teamMember.findUnique({
         where: { id: input.id },
       })
 
@@ -138,7 +138,7 @@ export const teamRouter = createTRPCRouter({
         })
       }
 
-      return ctx.db.teamMember.delete({
+      return ctx.prisma.teamMember.delete({
         where: { id: input.id },
       })
     }),
@@ -153,13 +153,13 @@ export const teamRouter = createTRPCRouter({
     }))
     .mutation(async ({ ctx, input }) => {
       const updates = input.items.map(item =>
-        ctx.db.teamMember.update({
+        ctx.prisma.teamMember.update({
           where: { id: item.id },
           data: { sortOrder: item.sortOrder },
         })
       )
 
-      await ctx.db.$transaction(updates)
+      await ctx.prisma.$transaction(updates)
       return { success: true }
     }),
 
@@ -169,7 +169,7 @@ export const teamRouter = createTRPCRouter({
       isActive: z.boolean(),
     }))
     .mutation(async ({ ctx, input }) => {
-      return ctx.db.teamMember.update({
+      return ctx.prisma.teamMember.update({
         where: { id: input.id },
         data: { isActive: input.isActive },
       })
@@ -198,7 +198,7 @@ export const teamRouter = createTRPCRouter({
         }
       }
 
-      return ctx.db.teamMember.findMany({
+      return ctx.prisma.teamMember.findMany({
         where: whereClause,
         orderBy: [
           { sortOrder: 'asc' },
@@ -210,13 +210,13 @@ export const teamRouter = createTRPCRouter({
   getStats: adminProcedure
     .query(async ({ ctx }) => {
       const [total, active, inactive] = await Promise.all([
-        ctx.db.teamMember.count(),
-        ctx.db.teamMember.count({ where: { isActive: true } }),
-        ctx.db.teamMember.count({ where: { isActive: false } }),
+        ctx.prisma.teamMember.count(),
+        ctx.prisma.teamMember.count({ where: { isActive: true } }),
+        ctx.prisma.teamMember.count({ where: { isActive: false } }),
       ])
 
       // Get all unique skills
-      const members = await ctx.db.teamMember.findMany({
+      const members = await ctx.prisma.teamMember.findMany({
         where: { isActive: true },
         select: { skills: true },
       })
@@ -243,7 +243,7 @@ export const teamRouter = createTRPCRouter({
 
   getSkills: publicProcedure
     .query(async ({ ctx }) => {
-      const members = await ctx.db.teamMember.findMany({
+      const members = await ctx.prisma.teamMember.findMany({
         where: { isActive: true },
         select: { skills: true },
       })

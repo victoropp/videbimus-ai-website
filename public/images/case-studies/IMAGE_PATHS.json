@@ -1,0 +1,162 @@
+{
+  "caseStudies": {
+    "petroverse": {
+      "name": "PetroVerse",
+      "industry": "Oil & Gas",
+      "featured": "/images/case-studies/petroverse/petroverse-featured.jpg",
+      "solutions": [
+        "/images/case-studies/petroverse/petroverse-solution-dashboard.jpg",
+        "/images/case-studies/petroverse/petroverse-solution-sensors.jpg",
+        "/images/case-studies/petroverse/petroverse-solution-monitoring.jpg"
+      ],
+      "results": [
+        "/images/case-studies/petroverse/petroverse-results-metrics.jpg",
+        "/images/case-studies/petroverse/petroverse-results-uptime.jpg"
+      ],
+      "metrics": {
+        "costReduction": "30%",
+        "uptimeImprovement": "45%"
+      }
+    },
+    "insure360": {
+      "name": "Insure360",
+      "industry": "Insurance",
+      "featured": "/images/case-studies/insure360/insure360-featured.jpg",
+      "solutions": [
+        "/images/case-studies/insure360/insure360-solution-document-scanning.jpg",
+        "/images/case-studies/insure360/insure360-solution-fraud-detection.jpg",
+        "/images/case-studies/insure360/insure360-solution-claims-processing.jpg"
+      ],
+      "results": [
+        "/images/case-studies/insure360/insure360-results-processing-time.jpg",
+        "/images/case-studies/insure360/insure360-results-accuracy.jpg"
+      ],
+      "metrics": {
+        "processingSpeedIncrease": "70%",
+        "fraudAccuracy": "95%"
+      }
+    },
+    "techcorp": {
+      "name": "TechCorp",
+      "industry": "Manufacturing",
+      "featured": "/images/case-studies/techcorp/techcorp-featured.jpg",
+      "solutions": [
+        "/images/case-studies/techcorp/techcorp-solution-computer-vision.jpg",
+        "/images/case-studies/techcorp/techcorp-solution-quality-control.jpg",
+        "/images/case-studies/techcorp/techcorp-solution-defect-detection.jpg"
+      ],
+      "results": [
+        "/images/case-studies/techcorp/techcorp-results-quality-metrics.jpg",
+        "/images/case-studies/techcorp/techcorp-results-defect-reduction.jpg"
+      ],
+      "metrics": {
+        "qualityImprovement": "40%",
+        "defectReduction": "60%"
+      }
+    },
+    "financeflow": {
+      "name": "FinanceFlow",
+      "industry": "FinTech",
+      "featured": "/images/case-studies/financeflow/financeflow-featured.jpg",
+      "solutions": [
+        "/images/case-studies/financeflow/financeflow-solution-fraud-detection.jpg",
+        "/images/case-studies/financeflow/financeflow-solution-ml-models.jpg",
+        "/images/case-studies/financeflow/financeflow-solution-payment-processing.jpg"
+      ],
+      "results": [
+        "/images/case-studies/financeflow/financeflow-results-false-positives.jpg",
+        "/images/case-studies/financeflow/financeflow-results-fraud-catch-rate.jpg"
+      ],
+      "metrics": {
+        "falsePositiveReduction": "75%",
+        "fraudDetectionRate": "98.5%"
+      }
+    },
+    "healthtech": {
+      "name": "HealthTech",
+      "industry": "Healthcare",
+      "featured": "/images/case-studies/healthtech/healthtech-featured.jpg",
+      "solutions": [
+        "/images/case-studies/healthtech/healthtech-solution-xray-analysis.jpg",
+        "/images/case-studies/healthtech/healthtech-solution-mri-scans.jpg",
+        "/images/case-studies/healthtech/healthtech-solution-diagnostic-assistance.jpg"
+      ],
+      "results": [
+        "/images/case-studies/healthtech/healthtech-results-analysis-speed.jpg",
+        "/images/case-studies/healthtech/healthtech-results-accuracy-metrics.jpg"
+      ],
+      "metrics": {
+        "analysisSpeedIncrease": "85%",
+        "diagnosticAccuracy": "97%"
+      }
+    },
+    "retailmax": {
+      "name": "RetailMax",
+      "industry": "E-commerce",
+      "featured": "/images/case-studies/retailmax/retailmax-featured.jpg",
+      "solutions": [
+        "/images/case-studies/retailmax/retailmax-solution-personalization-engine.jpg",
+        "/images/case-studies/retailmax/retailmax-solution-recommendation-system.jpg",
+        "/images/case-studies/retailmax/retailmax-solution-online-shopping.jpg"
+      ],
+      "results": [
+        "/images/case-studies/retailmax/retailmax-results-conversion-rate.jpg",
+        "/images/case-studies/retailmax/retailmax-results-revenue-growth.jpg"
+      ],
+      "metrics": {
+        "conversionIncrease": "35%",
+        "revenueGrowth": "28%"
+      }
+    },
+    "logisticscorp": {
+      "name": "LogisticsCorp",
+      "industry": "Logistics",
+      "featured": "/images/case-studies/logisticscorp/logisticscorp-featured.jpg",
+      "solutions": [
+        "/images/case-studies/logisticscorp/logisticscorp-solution-route-optimization.jpg",
+        "/images/case-studies/logisticscorp/logisticscorp-solution-gps-tracking.jpg",
+        "/images/case-studies/logisticscorp/logisticscorp-solution-delivery-trucks.jpg"
+      ],
+      "results": [
+        "/images/case-studies/logisticscorp/logisticscorp-results-mile-reduction.jpg",
+        "/images/case-studies/logisticscorp/logisticscorp-results-fuel-savings.jpg"
+      ],
+      "metrics": {
+        "mileReduction": "25%",
+        "fuelSavings": "20%"
+      }
+    },
+    "energycorp": {
+      "name": "EnergyCorp",
+      "industry": "Energy",
+      "featured": "/images/case-studies/energycorp/energycorp-featured.jpg",
+      "solutions": [
+        "/images/case-studies/energycorp/energycorp-solution-smart-grid.jpg",
+        "/images/case-studies/energycorp/energycorp-solution-demand-forecasting.jpg",
+        "/images/case-studies/energycorp/energycorp-solution-renewable-energy.jpg"
+      ],
+      "results": [
+        "/images/case-studies/energycorp/energycorp-results-accuracy-improvement.jpg",
+        "/images/case-studies/energycorp/energycorp-results-waste-reduction.jpg"
+      ],
+      "metrics": {
+        "forecastAccuracy": "40%",
+        "wasteReduction": "15%"
+      }
+    }
+  },
+  "metadata": {
+    "totalCaseStudies": 8,
+    "totalImages": 48,
+    "imagesPerCaseStudy": 6,
+    "source": "Unsplash",
+    "license": "Unsplash License (commercial use allowed)",
+    "dateDownloaded": "2025-10-31",
+    "dimensions": {
+      "featured": "1200x800px",
+      "solutions": "800x600px",
+      "results": "800x600px"
+    },
+    "totalSize": "4.8 MB"
+  }
+}

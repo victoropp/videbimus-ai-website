@@ -4,6 +4,7 @@ import { useState } from 'react'
 import { signIn } from 'next-auth/react'
 import { useSearchParams, useRouter } from 'next/navigation'
 import Link from 'next/link'
+import Image from 'next/image'
 import { motion } from 'framer-motion'
 import { Button } from '@/components/ui/button'
 import { Input } from '@/components/ui/input'
@@ -56,14 +57,67 @@ export default function SignInPage() {
   }
 
   return (
-    <div className="min-h-screen flex items-center justify-center px-4 py-12 bg-gradient-to-br from-gray-50 to-gray-100 dark:from-gray-900 dark:to-gray-800">
-      <motion.div
-        initial={{ opacity: 0, y: 20 }}
-        animate={{ opacity: 1, y: 0 }}
-        transition={{ duration: 0.5 }}
-        className="w-full max-w-md"
-      >
-        <Card className="shadow-2xl">
+    <div className="min-h-screen grid lg:grid-cols-2">
+      {/* Left side - Image */}
+      <div className="hidden lg:block relative">
+        <Image
+          src="/images/auth/signin-secure-login.jpg"
+          alt="Secure login - Your AI journey starts here"
+          fill
+          className="object-cover"
+          priority
+        />
+        <div className="absolute inset-0 bg-gradient-to-br from-primary-900/80 via-primary-800/70 to-primary-700/80" />
+        <div className="absolute inset-0 flex flex-col items-center justify-center p-12 text-white">
+          <motion.div
+            initial={{ opacity: 0, y: 20 }}
+            animate={{ opacity: 1, y: 0 }}
+            transition={{ duration: 0.6 }}
+            className="text-center"
+          >
+            <h1 className="font-display text-4xl font-bold mb-4">Welcome Back to Videbimus AI</h1>
+            <p className="text-xl text-gray-200 mb-8">
+              Continue your AI transformation journey with secure, enterprise-grade authentication.
+            </p>
+            <div className="flex flex-col space-y-3 text-left max-w-md mx-auto">
+              <div className="flex items-center space-x-3">
+                <div className="h-8 w-8 rounded-full bg-cyan-500/20 flex items-center justify-center">
+                  <svg className="h-4 w-4 text-cyan-400" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M5 13l4 4L19 7" />
+                  </svg>
+                </div>
+                <span>Secure authentication</span>
+              </div>
+              <div className="flex items-center space-x-3">
+                <div className="h-8 w-8 rounded-full bg-cyan-500/20 flex items-center justify-center">
+                  <svg className="h-4 w-4 text-cyan-400" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M5 13l4 4L19 7" />
+                  </svg>
+                </div>
+                <span>Access your AI projects</span>
+              </div>
+              <div className="flex items-center space-x-3">
+                <div className="h-8 w-8 rounded-full bg-cyan-500/20 flex items-center justify-center">
+                  <svg className="h-4 w-4 text-cyan-400" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M5 13l4 4L19 7" />
+                  </svg>
+                </div>
+                <span>Privacy-first approach</span>
+              </div>
+            </div>
+          </motion.div>
+        </div>
+      </div>
+
+      {/* Right side - Form */}
+      <div className="flex items-center justify-center px-4 py-12 bg-gradient-to-br from-gray-50 to-gray-100 dark:from-gray-900 dark:to-gray-800">
+        <motion.div
+          initial={{ opacity: 0, y: 20 }}
+          animate={{ opacity: 1, y: 0 }}
+          transition={{ duration: 0.5 }}
+          className="w-full max-w-md"
+        >
+          <Card className="shadow-2xl">
           <CardHeader className="space-y-1">
             <CardTitle className="text-2xl font-bold text-center">Welcome Back</CardTitle>
             <CardDescription className="text-center">
@@ -186,7 +240,7 @@ export default function SignInPage() {
           </CardContent>
           <CardFooter>
             <div className="text-sm text-center w-full">
-              Don't have an account?{' '}
+              Don&apos;t have an account?{' '}
               <Link
                 href="/auth/signup"
                 className="font-medium text-primary hover:underline"
@@ -197,6 +251,7 @@ export default function SignInPage() {
           </CardFooter>
         </Card>
       </motion.div>
+      </div>
     </div>
   )
 }

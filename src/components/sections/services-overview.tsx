@@ -2,10 +2,11 @@
 
 import { motion } from 'framer-motion'
 import Link from 'next/link'
-import { 
-  Search, 
-  Cog, 
-  Building2, 
+import Image from 'next/image'
+import {
+  Search,
+  Cog,
+  Building2,
   ArrowRight,
   Brain,
   BarChart3,
@@ -23,7 +24,9 @@ const services = [
     duration: '2-4 weeks',
     features: ['Find Your Hidden Costs', 'See What\'s Possible (Live Demo)', 'Get Your Custom Roadmap', 'Know Your Real ROI'],
     href: '/services#discovery',
-    color: 'from-blue-500 to-cyan-500'
+    color: 'from-blue-500 to-cyan-500',
+    image: '/images/home/service-quick-win.jpg',
+    imageAlt: 'Strategic business analysis and discovery process to identify cost-saving opportunities'
   },
   {
     icon: Cog,
@@ -32,7 +35,9 @@ const services = [
     duration: '6-12 weeks',
     features: ['Build Your Solution', 'Plug Into Your Systems', 'Train Your Team', 'We Stick Around'],
     href: '/services#implementation',
-    color: 'from-purple-500 to-pink-500'
+    color: 'from-purple-500 to-pink-500',
+    image: '/images/home/service-build-launch.jpg',
+    imageAlt: 'Custom AI and automation solution implementation and integration process'
   },
   {
     icon: Building2,
@@ -41,7 +46,9 @@ const services = [
     duration: '3-12 months',
     features: ['Company-Wide Platform', 'Your Own Automation Hub', 'Rock-Solid Security', 'Always-On Support'],
     href: '/services#transformation',
-    color: 'from-green-500 to-emerald-500'
+    color: 'from-green-500 to-emerald-500',
+    image: '/images/home/service-full-stack.jpg',
+    imageAlt: 'Enterprise-wide AI platform and full-stack automation infrastructure'
   }
 ]
 
@@ -50,25 +57,33 @@ const specializedServices = [
     icon: Brain,
     title: 'Predict What\'s Next',
     description: 'Stop guessing. Know which customers will buy, what inventory you\'ll need, or when equipment will break—before it happens.',
-    href: '/services#ml'
+    href: '/services#ml',
+    image: '/images/home/specialized-industry-ai.jpg',
+    imageAlt: 'Industry-specific AI solutions for predictive analytics and business intelligence'
   },
   {
     icon: BarChart3,
     title: 'Clean Up Your Data Mess',
     description: 'Data trapped in spreadsheets and disconnected systems? We organize it so you can actually use it.',
-    href: '/services#data-engineering'
+    href: '/services#data-engineering',
+    image: '/images/home/specialized-data-infrastructure.jpg',
+    imageAlt: 'Data infrastructure modernization and integration services'
   },
   {
     icon: Bot,
     title: 'Let Robots Do The Boring Stuff',
     description: 'Your team shouldn\'t be copy-pasting data or answering the same questions all day. Automate the grunt work.',
-    href: '/services#automation'
+    href: '/services#automation',
+    image: '/images/home/specialized-automation.jpg',
+    imageAlt: 'Business process automation and workflow optimization solutions'
   },
   {
     icon: GraduationCap,
     title: 'Make Your Team Confident',
     description: 'No tech background? No problem. We teach your team to use these tools without the jargon.',
-    href: '/services#training'
+    href: '/services#training',
+    image: '/images/home/specialized-training.jpg',
+    imageAlt: 'AI and data analytics training programs for business teams'
   }
 ]
 
@@ -125,13 +140,28 @@ export function ServicesOverview() {
             return (
               <motion.div key={service.title} variants={itemVariants}>
                 <Card className="relative h-full overflow-hidden group hover:shadow-2xl transition-all duration-500 hover:-translate-y-2">
-                  {/* Background gradient */}
-                  <div className={`absolute inset-0 bg-gradient-to-br ${service.color} opacity-5 group-hover:opacity-10 transition-opacity`} />
-                  
-                  <CardHeader className="relative">
-                    <div className={`inline-flex h-12 w-12 items-center justify-center rounded-lg bg-gradient-to-br ${service.color} text-white mb-4`}>
-                      <Icon className="h-6 w-6" />
+                  {/* Service image with overlay */}
+                  <div className="relative h-48 w-full overflow-hidden">
+                    <Image
+                      src={service.image}
+                      alt={service.imageAlt}
+                      fill
+                      className="object-cover transition-transform duration-500 group-hover:scale-110"
+                      sizes="(max-width: 768px) 100vw, (max-width: 1200px) 50vw, 33vw"
+                      loading="lazy"
+                    />
+                    <div className={`absolute inset-0 bg-gradient-to-br ${service.color} opacity-20 group-hover:opacity-30 transition-opacity duration-500`} />
+                    <div className="absolute inset-0 bg-gradient-to-t from-black/60 via-black/20 to-transparent" />
+
+                    {/* Icon overlay on image */}
+                    <div className="absolute bottom-4 left-4">
+                      <div className={`inline-flex h-12 w-12 items-center justify-center rounded-lg bg-gradient-to-br ${service.color} text-white shadow-lg`}>
+                        <Icon className="h-6 w-6" />
+                      </div>
                     </div>
+                  </div>
+
+                  <CardHeader className="relative">
                     <CardTitle className="text-xl mb-2">{service.title}</CardTitle>
                     <CardDescription className="text-base">
                       {service.description}
@@ -197,11 +227,28 @@ export function ServicesOverview() {
             return (
               <motion.div key={service.title} variants={itemVariants}>
                 <Link href={service.href}>
-                  <Card className="h-full text-center hover:shadow-lg transition-all duration-300 hover:-translate-y-1 group cursor-pointer">
-                    <CardContent className="p-6">
-                      <div className="inline-flex h-12 w-12 items-center justify-center rounded-lg bg-gray-100 dark:bg-gray-800 text-gray-600 dark:text-gray-400 mb-4 group-hover:bg-gradient-to-br group-hover:from-cyan-500 group-hover:to-purple-500 group-hover:text-white transition-all">
-                        <Icon className="h-6 w-6" />
+                  <Card className="h-full overflow-hidden hover:shadow-lg transition-all duration-300 hover:-translate-y-1 group cursor-pointer">
+                    {/* Image section */}
+                    <div className="relative h-40 w-full overflow-hidden">
+                      <Image
+                        src={service.image}
+                        alt={service.imageAlt}
+                        fill
+                        className="object-cover transition-transform duration-500 group-hover:scale-110"
+                        sizes="(max-width: 768px) 100vw, (max-width: 1200px) 50vw, 25vw"
+                        loading="lazy"
+                      />
+                      <div className="absolute inset-0 bg-gradient-to-t from-black/70 via-black/30 to-transparent" />
+
+                      {/* Icon on image */}
+                      <div className="absolute bottom-3 left-3">
+                        <div className="inline-flex h-10 w-10 items-center justify-center rounded-lg bg-gradient-to-br from-cyan-500 to-purple-500 text-white shadow-lg group-hover:scale-110 transition-transform">
+                          <Icon className="h-5 w-5" />
+                        </div>
                       </div>
+                    </div>
+
+                    <CardContent className="p-6 text-center">
                       <h4 className="font-semibold text-gray-900 dark:text-white mb-2">{service.title}</h4>
                       <p className="text-sm text-gray-600 dark:text-gray-400">{service.description}</p>
                     </CardContent>

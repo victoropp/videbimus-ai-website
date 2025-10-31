@@ -1,11 +1,13 @@
 import { prisma } from '@/lib/prisma'
-import { AIService } from '@prisma/client'
 import { STRIPE_CONFIG } from '@/lib/stripe'
+
+// Define AIService type locally instead of importing from Prisma
+export type AIService = 'ANTHROPIC' | 'OPENAI' | 'GOOGLE' | 'COHERE' | 'REPLICATE' | 'HUGGINGFACE' | 'MISTRAL' | 'PERPLEXITY' | 'OTHER'
 
 export interface UsageData {
   userId: string
   customerId?: string
-  service: AIService
+  service: string
   endpoint: string
   method: string
   model?: string
@@ -26,7 +28,7 @@ export interface BillableUsage {
   subscriptionItemId: string
   userId: string
   customerId: string
-  service: AIService
+  service: string
   quantity: number // typically token count
   model?: string
   inputTokens?: number
@@ -88,7 +90,7 @@ export async function logUsage(data: UsageData) {
 /**
  * Create a billable usage record for subscription billing
  */
-async function createBillableUsageRecord(data: Omit<BillableUsage, 'subscriptionId' | 'subscriptionItemId'>) {
+async function createBillableUsageRecord(data: Omit<BillableUsage, 'subscriptionId' | 'subscriptionItemId'>): Promise<any> {
   try {
     // Find active subscription for the customer
     const subscription = await prisma.subscription.findFirst({
@@ -107,17 +109,17 @@ async function createBillableUsageRecord(data: Omit<BillableUsage, 'subscription
 
     if (!subscription) {
       console.warn('No active subscription found for customer:', data.customerId)
-      return
+      return null
     }
 
     // Find appropriate subscription item for metered billing
-    const meteringItem = subscription.subscriptionItems.find(item => 
+    const meteringItem = subscription.subscriptionItems.find(item =>
       item.usageType === 'METERED'
     )
 
     if (!meteringItem) {
       console.warn('No metered subscription item found for customer:', data.customerId)
-      return
+      return null
     }
 
     // Create usage record
@@ -142,6 +144,7 @@ async function createBillableUsageRecord(data: Omit<BillableUsage, 'subscription
   } catch (error) {
     console.error('Error creating billable usage record:', error)
     // Don't throw error as this shouldn't break the main API flow
+    return null
   }
 }
 
@@ -241,7 +244,9 @@ export async function checkUsageLimits(userId: string) {
     // Get user's active subscription
     const subscription = await prisma.subscription.findFirst({
       where: {
-        userId,
+        customer: {
+          userId
+        },
         status: { in: ['ACTIVE', 'TRIALING'] }
       }
     })
@@ -403,7 +408,7 @@ export async function getUsageAnalytics(
 /**
  * Middleware to track API usage
  */
-export function createUsageTrackingMiddleware(service: AIService) {
+export function createUsageTrackingMiddleware(service: string) {
   return async function trackUsage(
     userId: string,
     customerId: string | undefined,

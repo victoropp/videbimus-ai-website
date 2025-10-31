@@ -1,12 +1,13 @@
 'use client'
 
 import { motion } from 'framer-motion'
-import { 
-  Shield, 
-  Zap, 
-  Users, 
-  TrendingUp, 
-  Clock, 
+import Image from 'next/image'
+import {
+  Shield,
+  Zap,
+  Users,
+  TrendingUp,
+  Clock,
   Award,
   ChevronRight
 } from 'lucide-react'
@@ -17,37 +18,49 @@ const features = [
     icon: Zap,
     title: 'You Need Results Yesterday, Not Next Year',
     description: 'Tired of "6-month implementations" that take 18? We ship working solutions in 6-8 weeks. See it, use it, benefit from it—fast.',
-    metrics: 'Live in 6-8 Weeks'
+    metrics: 'Live in 6-8 Weeks',
+    image: '/images/home/feature-fast-implementation.jpg',
+    imageAlt: 'Rapid AI implementation and deployment timeline showing quick results'
   },
   {
     icon: TrendingUp,
     title: 'Know Exactly What You\'re Getting',
     description: 'No vague promises. We show you the numbers before we start: how much you\'ll save, when you\'ll break even, what ROI looks like.',
-    metrics: '3x Return (Typical)'
+    metrics: '3x Return (Typical)',
+    image: '/images/home/feature-roi.jpg',
+    imageAlt: 'Clear ROI metrics and financial performance tracking for AI investments'
   },
   {
     icon: Shield,
     title: 'Your Data Isn\'t Going Anywhere',
     description: 'Worried about security? Good. So are we. Bank-level encryption, your servers if you want, zero data sharing. Period.',
-    metrics: 'Zero Breaches Ever'
+    metrics: 'Zero Breaches Ever',
+    image: '/images/home/feature-security.jpg',
+    imageAlt: 'Enterprise-grade security and data protection measures'
   },
   {
     icon: Users,
     title: 'Talk to People Who Get It',
     description: 'No junior teams learning on your dime. You work with people who\'ve done this 50+ times and actually understand your business.',
-    metrics: '50+ Projects Done'
-  },
-  {
-    icon: Clock,
-    title: 'We Don\'t Disappear After Launch',
-    description: 'Something breaks at 2 AM? We\'re there. Need adjustments? We stick around. Think of us as part of your team.',
-    metrics: 'Always Available'
+    metrics: '50+ Projects Done',
+    image: '/images/home/feature-expert-team.jpg',
+    imageAlt: 'Experienced AI and data science team collaborating on solutions'
   },
   {
     icon: Award,
     title: 'Other Companies Trust Us. You Can Too.',
     description: 'We\'ve saved oil & gas operations millions, cut insurance claims time by 70%, and helped 20+ businesses like yours succeed.',
-    metrics: '20+ Happy Clients'
+    metrics: '20+ Happy Clients',
+    image: '/images/home/feature-proven-track-record.jpg',
+    imageAlt: 'Success stories and proven results from satisfied clients'
+  },
+  {
+    icon: Clock,
+    title: 'We Don\'t Disappear After Launch',
+    description: 'Something breaks at 2 AM? We\'re there. Need adjustments? We stick around. Think of us as part of your team.',
+    metrics: 'Always Available',
+    image: '/images/home/feature-support.jpg',
+    imageAlt: '24/7 technical support and ongoing maintenance services'
   }
 ]
 
@@ -104,29 +117,41 @@ export function Features() {
             return (
               <motion.div key={feature.title} variants={itemVariants}>
                 <Card className="h-full group hover:shadow-xl transition-all duration-500 hover:-translate-y-2 relative overflow-hidden">
-                  {/* Gradient background on hover */}
-                  <div className="absolute inset-0 bg-gradient-to-br from-cyan-500/5 to-purple-500/5 opacity-0 group-hover:opacity-100 transition-opacity duration-500" />
-                  
-                  <CardContent className="p-8 relative">
-                    <div className="flex items-start space-x-4">
-                      <div className="flex-shrink-0">
-                        <div className="inline-flex h-12 w-12 items-center justify-center rounded-lg bg-gradient-to-br from-cyan-500 to-purple-500 text-white group-hover:scale-110 transition-transform duration-300">
-                          <Icon className="h-6 w-6" />
-                        </div>
-                      </div>
-                      <div className="flex-1 min-w-0">
-                        <h3 className="font-semibold text-gray-900 dark:text-white mb-2 group-hover:text-cyan-600 dark:group-hover:text-cyan-400 transition-colors">
-                          {feature.title}
-                        </h3>
-                        <p className="text-gray-600 dark:text-gray-300 mb-4 leading-relaxed">
-                          {feature.description}
-                        </p>
-                        <div className="flex items-center text-sm font-medium text-cyan-600 dark:text-cyan-400">
-                          <span>{feature.metrics}</span>
-                          <ChevronRight className="ml-1 h-4 w-4 group-hover:translate-x-1 transition-transform" />
-                        </div>
+                  {/* Feature image background */}
+                  <div className="relative h-56 w-full overflow-hidden">
+                    <Image
+                      src={feature.image}
+                      alt={feature.imageAlt}
+                      fill
+                      className="object-cover transition-transform duration-700 group-hover:scale-110"
+                      sizes="(max-width: 768px) 100vw, (max-width: 1200px) 50vw, 33vw"
+                      loading="lazy"
+                    />
+                    <div className="absolute inset-0 bg-gradient-to-br from-cyan-500/10 to-purple-500/10 group-hover:from-cyan-500/20 group-hover:to-purple-500/20 transition-all duration-500" />
+                    <div className="absolute inset-0 bg-gradient-to-t from-black/80 via-black/40 to-transparent" />
+
+                    {/* Icon on image */}
+                    <div className="absolute top-4 left-4">
+                      <div className="inline-flex h-12 w-12 items-center justify-center rounded-lg bg-gradient-to-br from-cyan-500 to-purple-500 text-white shadow-lg group-hover:scale-110 transition-transform duration-300">
+                        <Icon className="h-6 w-6" />
                       </div>
                     </div>
+
+                    {/* Metrics badge */}
+                    <div className="absolute bottom-4 right-4">
+                      <div className="px-3 py-1.5 rounded-full bg-white/20 backdrop-blur-md border border-white/30 text-white text-xs font-semibold">
+                        {feature.metrics}
+                      </div>
+                    </div>
+                  </div>
+
+                  <CardContent className="p-6 relative">
+                    <h3 className="font-semibold text-gray-900 dark:text-white mb-2 group-hover:text-cyan-600 dark:group-hover:text-cyan-400 transition-colors">
+                      {feature.title}
+                    </h3>
+                    <p className="text-sm text-gray-600 dark:text-gray-300 leading-relaxed">
+                      {feature.description}
+                    </p>
                   </CardContent>
                 </Card>
               </motion.div>

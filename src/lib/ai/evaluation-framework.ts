@@ -3,7 +3,7 @@
  * Implements RAGAS, BLEU, ROUGE, and custom metrics for continuous improvement
  */
 
-import { enhancedProviders } from './enhanced-providers';
+import { enhancedProviders, type ProviderResponse } from './enhanced-providers';
 import { semanticCache } from './semantic-cache';
 
 export interface EvaluationMetrics {
@@ -158,8 +158,11 @@ export class EvaluationFramework {
       helpfulness,
       ...ragMetrics,
       overallScore,
-      confidence: this.calculateConfidence(metrics),
+      confidence: 0.5, // Temporary value, will be calculated below
     };
+
+    // Calculate confidence after metrics object is constructed
+    metrics.confidence = this.calculateConfidence(metrics);
 
     // Generate feedback and suggestions
     const { feedback, suggestions } = this.generateFeedback(metrics);
@@ -201,7 +204,7 @@ Return only a number between 0 and 1.`;
         messages: [{ role: 'user', content: prompt }],
         temperature: 0,
         maxTokens: 10,
-      });
+      }) as ProviderResponse;
 
       const score = parseFloat(result.content.trim());
       return isNaN(score) ? 0.5 : Math.min(1, Math.max(0, score));

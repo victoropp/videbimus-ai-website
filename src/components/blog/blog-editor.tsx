@@ -38,14 +38,7 @@ interface TagInfo {
   count: number
 }
 
-// Dynamically import Monaco Editor to avoid SSR issues
-const MonacoEditor = dynamic(
-  () => import('@monaco-editor/react'),
-  { 
-    ssr: false,
-    loading: () => <div className="h-96 bg-gray-100 animate-pulse rounded" />
-  }
-)
+// Removed Monaco Editor to reduce bundle size - using simple textarea instead
 
 interface BlogEditorProps {
   post?: Partial<BlogPost>
@@ -338,31 +331,18 @@ export default function BlogEditor({
               </div>
             </CardHeader>
             <CardContent>
-              {editorMode === 'visual' && (
-                <Textarea
-                  value={formData.content}
-                  onChange={(e) => handleInputChange('content', e.target.value)}
-                  placeholder="Start writing your post..."
-                  className="min-h-96 font-mono"
-                />
-              )}
-              
-              {(editorMode === 'markdown' || editorMode === 'html') && (
-                <MonacoEditor
-                  height="400px"
-                  language={editorMode === 'markdown' ? 'markdown' : 'html'}
-                  value={formData.content}
-                  onChange={(value) => handleInputChange('content', value || '')}
-                  options={{
-                    minimap: { enabled: false },
-                    lineNumbers: 'on',
-                    wordWrap: 'on',
-                    fontSize: 14,
-                    lineHeight: 1.6
-                  }}
-                  theme="vs-light"
-                />
-              )}
+              <Textarea
+                value={formData.content}
+                onChange={(e) => handleInputChange('content', e.target.value)}
+                placeholder={
+                  editorMode === 'markdown'
+                    ? "Write in Markdown format..."
+                    : editorMode === 'html'
+                    ? "Write HTML content..."
+                    : "Start writing your post..."
+                }
+                className="min-h-96 font-mono"
+              />
             </CardContent>
           </Card>
         </div>

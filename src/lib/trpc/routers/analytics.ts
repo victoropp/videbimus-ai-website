@@ -38,12 +38,12 @@ export const analyticsRouter = createTRPCRouter({
   trackEvent: publicProcedure
     .input(analyticsEventSchema)
     .mutation(async ({ ctx, input }) => {
-      return ctx.db.analytics.create({
+      return ctx.prisma.analytics.create({
         data: {
-          userId: ctx.user?.id,
-          sessionId: ctx.session?.sessionToken,
+          userId: ctx.session?.user?.id,
+          sessionId: (ctx.session as any)?.sessionToken,
           ...input,
-        },
+        } as any,
       })
     }),
 
@@ -51,13 +51,13 @@ export const analyticsRouter = createTRPCRouter({
   trackActivity: protectedProcedure
     .input(userActivitySchema)
     .mutation(async ({ ctx, input }) => {
-      return ctx.db.userActivity.create({
+      return ctx.prisma.userActivity.create({
         data: {
-          userId: ctx.user.id,
-          sessionId: ctx.session?.sessionToken,
+          userId: ctx.session.user.id,
+          sessionId: (ctx.session as any)?.sessionToken,
           ...input,
           timestamp: new Date(),
-        },
+        } as any,
       })
     }),
 
@@ -65,8 +65,8 @@ export const analyticsRouter = createTRPCRouter({
   recordMetric: adminProcedure
     .input(performanceMetricSchema)
     .mutation(async ({ ctx, input }) => {
-      return ctx.db.performanceMetric.create({
-        data: input,
+      return ctx.prisma.performanceMetric.create({
+        data: input as any,
       })
     }),
 
@@ -80,7 +80,7 @@ export const analyticsRouter = createTRPCRouter({
       metadata: z.record(z.any()).optional(),
     }))
     .mutation(async ({ ctx, input }) => {
-      return ctx.db.systemHealth.upsert({
+      return ctx.prisma.systemHealth.upsert({
         where: { service: input.service },
         update: {
           status: input.status,
@@ -88,7 +88,7 @@ export const analyticsRouter = createTRPCRouter({
           uptime: input.uptime,
           metadata: input.metadata,
           lastCheck: new Date(),
-        },
+        } as any,
         create: {
           service: input.service,
           status: input.status,
@@ -96,7 +96,7 @@ export const analyticsRouter = createTRPCRouter({
           uptime: input.uptime,
           metadata: input.metadata,
           lastCheck: new Date(),
-        },
+        } as any,
       })
     }),
 
@@ -127,8 +127,8 @@ export const analyticsRouter = createTRPCRouter({
       }
 
       const [views, uniqueViews] = await Promise.all([
-        ctx.db.analytics.count({ where: whereClause }),
-        ctx.db.analytics.findMany({
+        ctx.prisma.analytics.count({ where: whereClause }),
+        ctx.prisma.analytics.findMany({
           where: whereClause,
           select: { userId: true, sessionId: true },
           distinct: ['userId', 'sessionId'],
@@ -163,7 +163,7 @@ export const analyticsRouter = createTRPCRouter({
         }
       }
 
-      const topPages = await ctx.db.analytics.groupBy({
+      const topPages = await ctx.prisma.analytics.groupBy({
         by: ['page'],
         _count: true,
         where: whereClause,
@@ -198,7 +198,7 @@ export const analyticsRouter = createTRPCRouter({
         }
       }
 
-      const sources = await ctx.db.analytics.groupBy({
+      const sources = await ctx.prisma.analytics.groupBy({
         by: ['referrer'],
         _count: true,
         where: whereClause,
@@ -233,17 +233,17 @@ export const analyticsRouter = createTRPCRouter({
       }
 
       const [devices, browsers, os] = await Promise.all([
-        ctx.db.analytics.groupBy({
+        ctx.prisma.analytics.groupBy({
           by: ['device'],
           _count: true,
           where: { ...whereClause, device: { not: null } },
         }),
-        ctx.db.analytics.groupBy({
+        ctx.prisma.analytics.groupBy({
           by: ['browser'],
           _count: true,
           where: { ...whereClause, browser: { not: null } },
         }),
-        ctx.db.analytics.groupBy({
+        ctx.prisma.analytics.groupBy({
           by: ['os'],
           _count: true,
           where: { ...whereClause, os: { not: null } },
@@ -278,14 +278,14 @@ export const analyticsRouter = createTRPCRouter({
       }
 
       const [countries, cities] = await Promise.all([
-        ctx.db.analytics.groupBy({
+        ctx.prisma.analytics.groupBy({
           by: ['country'],
           _count: true,
           where: { ...whereClause, country: { not: null } },
           orderBy: { _count: { country: 'desc' } },
           take: 20,
         }),
-        ctx.db.analytics.groupBy({
+        ctx.prisma.analytics.groupBy({
           by: ['city'],
           _count: true,
           where: { ...whereClause, city: { not: null } },
@@ -325,15 +325,15 @@ export const analyticsRouter = createTRPCRouter({
       }
 
       const [totalActivities, topActions, activeUsers] = await Promise.all([
-        ctx.db.userActivity.count({ where: whereClause }),
-        ctx.db.userActivity.groupBy({
+        ctx.prisma.userActivity.count({ where: whereClause }),
+        ctx.prisma.userActivity.groupBy({
           by: ['action'],
           _count: true,
           where: whereClause,
           orderBy: { _count: { action: 'desc' } },
           take: 10,
         }),
-        ctx.db.userActivity.findMany({
+        ctx.prisma.userActivity.findMany({
           where: whereClause,
           select: { userId: true },
           distinct: ['userId'],
@@ -380,7 +380,7 @@ export const analyticsRouter = createTRPCRouter({
         }
       }
 
-      return ctx.db.performanceMetric.findMany({
+      return ctx.prisma.performanceMetric.findMany({
         where: whereClause,
         orderBy: { timestamp: 'desc' },
         take: input.limit,
@@ -390,7 +390,7 @@ export const analyticsRouter = createTRPCRouter({
   // System health
   getSystemHealth: adminProcedure
     .query(async ({ ctx }) => {
-      return ctx.db.systemHealth.findMany({
+      return ctx.prisma.systemHealth.findMany({
         orderBy: { lastCheck: 'desc' },
       })
     }),
@@ -422,24 +422,24 @@ export const analyticsRouter = createTRPCRouter({
         activeProjects,
         totalContacts,
       ] = await Promise.all([
-        ctx.db.analytics.count({
+        ctx.prisma.analytics.count({
           where: { ...whereClause, event: 'page_view' },
         }),
-        ctx.db.analytics.findMany({
+        ctx.prisma.analytics.findMany({
           where: { ...whereClause, event: 'page_view' },
           select: { sessionId: true },
           distinct: ['sessionId'],
         }),
-        ctx.db.user.count({
+        ctx.prisma.user.count({
           where: whereClause,
         }),
-        ctx.db.user.count(),
-        ctx.db.project.count({
+        ctx.prisma.user.count(),
+        ctx.prisma.project.count({
           where: {
             status: { in: ['PLANNING', 'IN_PROGRESS'] },
           },
         }),
-        ctx.db.contact.count({
+        ctx.prisma.contact.count({
           where: whereClause,
         }),
       ])
@@ -466,7 +466,7 @@ export const analyticsRouter = createTRPCRouter({
         onlineUsers,
         recentActivities,
       ] = await Promise.all([
-        ctx.db.analytics.findMany({
+        ctx.prisma.analytics.findMany({
           where: {
             event: 'page_view',
             createdAt: { gte: last24Hours },
@@ -474,7 +474,7 @@ export const analyticsRouter = createTRPCRouter({
           select: { sessionId: true },
           distinct: ['sessionId'],
         }),
-        ctx.db.analytics.findMany({
+        ctx.prisma.analytics.findMany({
           where: {
             event: 'page_view',
             createdAt: { gte: lastHour },
@@ -482,10 +482,10 @@ export const analyticsRouter = createTRPCRouter({
           select: { sessionId: true },
           distinct: ['sessionId'],
         }),
-        ctx.db.userPresence.count({
+        ctx.prisma.userPresence.count({
           where: { isOnline: true },
         }),
-        ctx.db.userActivity.findMany({
+        ctx.prisma.userActivity.findMany({
           where: {
             timestamp: { gte: lastHour },
           },

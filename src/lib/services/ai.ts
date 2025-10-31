@@ -278,7 +278,7 @@ class AIService {
       stream: options.streaming ?? false,
       tools: options.tools,
       tool_choice: options.toolChoice,
-    });
+    }) as any;
 
     const choice = completion.choices[0];
     if (!choice) {
@@ -318,11 +318,11 @@ class AIService {
       stream: options.streaming ?? false,
       tools: options.tools,
       tool_choice: options.toolChoice,
-    });
+    }) as any;
 
     const textContent = completion.content
-      .filter(c => c.type === 'text')
-      .map(c => c.text)
+      .filter((c: any) => c.type === 'text')
+      .map((c: any) => c.text)
       .join('\n');
 
     return {
@@ -334,7 +334,7 @@ class AIService {
       },
       model: completion.model,
       finishReason: completion.stop_reason || 'unknown',
-      toolCalls: completion.content.filter(c => c.type === 'tool_use'),
+      toolCalls: completion.content.filter((c: any) => c.type === 'tool_use'),
     };
   }
 
@@ -400,10 +400,9 @@ class AIService {
       
       // Track usage
       const totalTokens = response.usage.total_tokens;
-      this.trackUsage(model, totalTokens, 1, this.calculateCost(modelInfo, { 
+      this.trackUsage(model, totalTokens, 1, this.calculateCost(modelInfo, {
         promptTokens: totalTokens,
-        completionTokens: 0,
-        totalTokens 
+        completionTokens: 0
       }));
 
       return {

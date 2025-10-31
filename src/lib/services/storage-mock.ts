@@ -60,9 +60,11 @@ class MockStorageService {
     }
   ): Promise<UploadResult> {
     return withErrorHandling(
+      'storage',
+      'upload',
       async () => {
         const etag = crypto.createHash('md5').update(buffer).digest('hex');
-        
+
         // Store file metadata in memory (mock)
         const storageObject: StorageObject = {
           key,
@@ -71,7 +73,7 @@ class MockStorageService {
           etag,
           contentType: options?.contentType
         };
-        
+
         this.uploadedFiles.set(key, storageObject);
 
         return {
@@ -81,10 +83,8 @@ class MockStorageService {
           contentType: options?.contentType,
           etag
         };
-      },
-      'storage:upload',
-      ServiceErrorType.STORAGE
-    );
+      }
+    )();
   }
 
   // Upload stream (mock)
@@ -103,18 +103,18 @@ class MockStorageService {
   // Download file (mock)
   async downloadFile(key: string): Promise<Buffer> {
     return withErrorHandling(
+      'storage',
+      'download',
       async () => {
         const file = this.uploadedFiles.get(key);
         if (!file) {
           throw new Error(`File not found: ${key}`);
         }
-        
+
         // Return mock data
         return Buffer.from(`Mock content for ${key}`);
-      },
-      'storage:download',
-      ServiceErrorType.STORAGE
-    );
+      }
+    )();
   }
 
   // Get download stream (mock)
@@ -127,55 +127,55 @@ class MockStorageService {
   // Delete file (mock)
   async deleteFile(key: string): Promise<void> {
     return withErrorHandling(
+      'storage',
+      'delete',
       async () => {
         this.uploadedFiles.delete(key);
-      },
-      'storage:delete',
-      ServiceErrorType.STORAGE
-    );
+      }
+    )();
   }
 
   // List files (mock)
   async listFiles(prefix?: string): Promise<StorageObject[]> {
     return withErrorHandling(
+      'storage',
+      'list',
       async () => {
         const files = Array.from(this.uploadedFiles.values());
-        
+
         if (prefix) {
           return files.filter(file => file.key.startsWith(prefix));
         }
-        
+
         return files;
-      },
-      'storage:list',
-      ServiceErrorType.STORAGE
-    );
+      }
+    )();
   }
 
   // Check if file exists (mock)
   async fileExists(key: string): Promise<boolean> {
     return withErrorHandling(
+      'storage',
+      'exists',
       async () => {
         return this.uploadedFiles.has(key);
-      },
-      'storage:exists',
-      ServiceErrorType.STORAGE
-    );
+      }
+    )();
   }
 
   // Get file metadata (mock)
   async getFileMetadata(key: string): Promise<StorageObject> {
     return withErrorHandling(
+      'storage',
+      'metadata',
       async () => {
         const file = this.uploadedFiles.get(key);
         if (!file) {
           throw new Error(`File not found: ${key}`);
         }
         return file;
-      },
-      'storage:metadata',
-      ServiceErrorType.STORAGE
-    );
+      }
+    )();
   }
 
   // Generate signed URL (mock)
@@ -185,6 +185,8 @@ class MockStorageService {
     operation: 'get' | 'put' = 'get'
   ): Promise<string> {
     return withErrorHandling(
+      'storage',
+      'signed-url',
       async () => {
         const timestamp = Date.now();
         const expires = timestamp + (expiresIn * 1000);
@@ -192,29 +194,27 @@ class MockStorageService {
           .createHash('sha256')
           .update(`${key}-${expires}-${operation}`)
           .digest('hex');
-        
+
         return `/mock-signed/${key}?signature=${signature}&expires=${expires}&operation=${operation}`;
-      },
-      'storage:signed-url',
-      ServiceErrorType.STORAGE
-    );
+      }
+    )();
   }
 
   // Copy file (mock)
   async copyFile(sourceKey: string, destinationKey: string): Promise<void> {
     return withErrorHandling(
+      'storage',
+      'copy',
       async () => {
         const file = this.uploadedFiles.get(sourceKey);
         if (!file) {
           throw new Error(`Source file not found: ${sourceKey}`);
         }
-        
+
         const copiedFile = { ...file, key: destinationKey };
         this.uploadedFiles.set(destinationKey, copiedFile);
-      },
-      'storage:copy',
-      ServiceErrorType.STORAGE
-    );
+      }
+    )();
   }
 
   // Move file (mock)
@@ -266,6 +266,5 @@ class MockStorageService {
 // Export singleton instance
 export const storageService = new MockStorageService();
 
-// Export types
-export type { StorageService } from './storage';
+// Export class for typing
 export const StorageService = MockStorageService;

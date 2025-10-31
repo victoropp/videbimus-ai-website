@@ -57,6 +57,7 @@ export interface EmailStats {
   bounced: number;
   complained: number;
   unsubscribed: number;
+  failed: number;
 }
 
 export interface ContactNotificationData {
@@ -120,7 +121,7 @@ class EmailService {
     
     // Initialize SMTP if configured
     if (this.config.smtp) {
-      this.smtp = nodemailer.createTransporter({
+      this.smtp = nodemailer.createTransport({
         host: this.config.smtp.host,
         port: this.config.smtp.port,
         secure: this.config.smtp.secure,
@@ -179,7 +180,7 @@ class EmailService {
         subject: template.subject,
         html: template.html,
         text: template.text,
-        reply_to: options.replyTo,
+        replyTo: options.replyTo,
         cc: options.cc?.map(r => `${r.name || ''} <${r.email}>`.trim()),
         bcc: options.bcc?.map(r => `${r.name || ''} <${r.email}>`.trim()),
         attachments: options.attachments?.map(att => ({
@@ -548,8 +549,9 @@ class EmailService {
       bounced: 0,
       complained: 0,
       unsubscribed: 0,
+      failed: 0,
     };
-    
+
     stats[type] += count;
     this.emailStats.set(today, stats);
   }

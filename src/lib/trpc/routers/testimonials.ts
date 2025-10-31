@@ -23,10 +23,10 @@ export const testimonialsRouter = createTRPCRouter({
       limit: z.number().min(1).max(50).default(10),
     }))
     .query(async ({ ctx, input }) => {
-      return ctx.db.testimonial.findMany({
+      return ctx.prisma.testimonial.findMany({
         where: {
           isActive: input.isActive,
-        },
+        } as any,
         orderBy: [
           { sortOrder: 'asc' },
           { createdAt: 'desc' }
@@ -38,7 +38,7 @@ export const testimonialsRouter = createTRPCRouter({
   getById: publicProcedure
     .input(z.object({ id: z.string() }))
     .query(async ({ ctx, input }) => {
-      const testimonial = await ctx.db.testimonial.findUnique({
+      const testimonial = await ctx.prisma.testimonial.findUnique({
         where: { id: input.id },
       })
 
@@ -56,18 +56,18 @@ export const testimonialsRouter = createTRPCRouter({
   create: adminProcedure
     .input(testimonialSchema)
     .mutation(async ({ ctx, input }) => {
-      return ctx.db.testimonial.create({
-        data: input,
+      return ctx.prisma.testimonial.create({
+        data: input as any,
       })
     }),
 
   update: adminProcedure
     .input(z.object({
       id: z.string(),
-      data: updateTestimonialSchema,
+      data: updateTestimonialSchema as any,
     }))
     .mutation(async ({ ctx, input }) => {
-      const testimonial = await ctx.db.testimonial.findUnique({
+      const testimonial = await ctx.prisma.testimonial.findUnique({
         where: { id: input.id },
       })
 
@@ -78,7 +78,7 @@ export const testimonialsRouter = createTRPCRouter({
         })
       }
 
-      return ctx.db.testimonial.update({
+      return ctx.prisma.testimonial.update({
         where: { id: input.id },
         data: input.data,
       })
@@ -87,7 +87,7 @@ export const testimonialsRouter = createTRPCRouter({
   delete: adminProcedure
     .input(z.object({ id: z.string() }))
     .mutation(async ({ ctx, input }) => {
-      const testimonial = await ctx.db.testimonial.findUnique({
+      const testimonial = await ctx.prisma.testimonial.findUnique({
         where: { id: input.id },
       })
 
@@ -98,7 +98,7 @@ export const testimonialsRouter = createTRPCRouter({
         })
       }
 
-      return ctx.db.testimonial.delete({
+      return ctx.prisma.testimonial.delete({
         where: { id: input.id },
       })
     }),
@@ -113,13 +113,13 @@ export const testimonialsRouter = createTRPCRouter({
     }))
     .mutation(async ({ ctx, input }) => {
       const updates = input.items.map(item =>
-        ctx.db.testimonial.update({
+        ctx.prisma.testimonial.update({
           where: { id: item.id },
           data: { sortOrder: item.sortOrder },
         })
       )
 
-      await ctx.db.$transaction(updates)
+      await ctx.prisma.$transaction(updates)
       return { success: true }
     }),
 
@@ -129,7 +129,7 @@ export const testimonialsRouter = createTRPCRouter({
       isActive: z.boolean(),
     }))
     .mutation(async ({ ctx, input }) => {
-      return ctx.db.testimonial.update({
+      return ctx.prisma.testimonial.update({
         where: { id: input.id },
         data: { isActive: input.isActive },
       })
@@ -139,12 +139,12 @@ export const testimonialsRouter = createTRPCRouter({
   getStats: adminProcedure
     .query(async ({ ctx }) => {
       const [total, active, inactive] = await Promise.all([
-        ctx.db.testimonial.count(),
-        ctx.db.testimonial.count({ where: { isActive: true } }),
-        ctx.db.testimonial.count({ where: { isActive: false } }),
+        ctx.prisma.testimonial.count(),
+        ctx.prisma.testimonial.count({ where: { isActive: true } }),
+        ctx.prisma.testimonial.count({ where: { isActive: false } }),
       ])
 
-      const ratingStats = await ctx.db.testimonial.groupBy({
+      const ratingStats = await ctx.prisma.testimonial.groupBy({
         by: ['rating'],
         _count: true,
         where: { isActive: true },

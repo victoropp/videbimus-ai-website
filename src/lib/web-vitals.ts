@@ -3,7 +3,7 @@
  * Tracks Core Web Vitals and sends to analytics
  */
 
-import { getCLS, getFID, getFCP, getLCP, getTTFB, type Metric } from 'web-vitals'
+import { onCLS, onINP, onFCP, onLCP, onTTFB, type Metric } from 'web-vitals'
 
 const vitalsUrl = '/api/analytics/vitals'
 
@@ -49,11 +49,11 @@ function sendToAnalytics(metric: Metric) {
 
 export function reportWebVitals() {
   try {
-    getCLS(sendToAnalytics)
-    getFID(sendToAnalytics)
-    getFCP(sendToAnalytics)
-    getLCP(sendToAnalytics)
-    getTTFB(sendToAnalytics)
+    onCLS(sendToAnalytics)
+    onINP(sendToAnalytics) // INP replaced FID as a Core Web Vital
+    onFCP(sendToAnalytics)
+    onLCP(sendToAnalytics)
+    onTTFB(sendToAnalytics)
   } catch (err) {
     console.error('Error reporting web vitals:', err)
   }

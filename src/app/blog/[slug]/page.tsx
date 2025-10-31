@@ -3,6 +3,7 @@
 import { useState, useEffect, useCallback } from 'react'
 import { useParams, useRouter } from 'next/navigation'
 import { motion } from 'framer-motion'
+import Image from 'next/image'
 import { Calendar, Clock, User, Eye, Heart, Share2, MessageSquare, Tag, ArrowLeft, ArrowRight } from 'lucide-react'
 import ReactMarkdown from 'react-markdown'
 import { Prism as SyntaxHighlighter } from 'react-syntax-highlighter'
@@ -214,19 +215,22 @@ export default function BlogPostPage() {
 
               {/* Article Meta */}
               <div className="flex flex-wrap items-center gap-6 text-gray-300">
-                <div className="flex items-center space-x-2">
+                <div className="flex items-center space-x-3">
                   {post.author.image && (
-                    <img
-                      src={typeof post.author.image === 'string' ? post.author.image : '/avatar-placeholder.png'}
-                      alt={post.author.name || ''}
-                      className="h-8 w-8 rounded-full object-cover"
-                    />
+                    <div className="relative h-10 w-10 rounded-full overflow-hidden ring-2 ring-white/20">
+                      <Image
+                        src={typeof post.author.image === 'string' ? post.author.image : '/avatar-placeholder.png'}
+                        alt={post.author.name || ''}
+                        fill
+                        className="object-cover"
+                      />
+                    </div>
                   )}
                   <div>
                     <div className="flex items-center space-x-1">
-                      <User className="h-4 w-4" />
-                      <span className="font-medium">{post.author.name}</span>
+                      <span className="font-medium text-white">{post.author.name}</span>
                     </div>
+                    <div className="text-sm text-gray-400">Author</div>
                   </div>
                 </div>
                 <div className="flex items-center space-x-1">
@@ -254,10 +258,12 @@ export default function BlogPostPage() {
       {/* Featured Image */}
       {post.featuredImage && (
         <div className="relative h-96 overflow-hidden">
-          <img
+          <Image
             src={post.featuredImage}
             alt={post.title}
-            className="w-full h-full object-cover"
+            fill
+            className="object-cover"
+            priority
           />
           <div className="absolute inset-0 bg-gradient-to-t from-black/20 to-transparent" />
         </div>
@@ -372,11 +378,14 @@ export default function BlogPostPage() {
                     <CardHeader>
                       <CardTitle className="flex items-center space-x-3">
                         {post.author.image && (
-                          <img
-                            src={typeof post.author.image === 'string' ? post.author.image : '/avatar-placeholder.png'}
-                            alt={post.author.name || ''}
-                            className="h-12 w-12 rounded-full object-cover"
-                          />
+                          <div className="relative h-12 w-12 rounded-full overflow-hidden">
+                            <Image
+                              src={typeof post.author.image === 'string' ? post.author.image : '/avatar-placeholder.png'}
+                              alt={post.author.name || ''}
+                              fill
+                              className="object-cover"
+                            />
+                          </div>
                         )}
                         <div>
                           <h3 className="font-semibold">{post.author.name}</h3>
@@ -432,16 +441,17 @@ export default function BlogPostPage() {
                   transition={{ duration: 0.6, delay: index * 0.1 }}
                 >
                   <Card className="h-full hover:shadow-xl transition-all duration-500 hover:-translate-y-2 overflow-hidden group">
-                    {/* Placeholder image */}
-                    <div className="h-48 bg-gradient-to-br from-cyan-100 to-purple-100 dark:from-cyan-900/20 dark:to-purple-900/20 relative overflow-hidden">
+                    {/* Article image */}
+                    <div className="h-48 relative overflow-hidden">
                       {relatedPost.featuredImage ? (
-                        <img 
-                          src={relatedPost.featuredImage} 
+                        <Image
+                          src={relatedPost.featuredImage}
                           alt={relatedPost.title}
-                          className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-300"
+                          fill
+                          className="object-cover group-hover:scale-105 transition-transform duration-300"
                         />
                       ) : (
-                        <div className="absolute inset-0 flex items-center justify-center">
+                        <div className="bg-gradient-to-br from-cyan-100 to-purple-100 dark:from-cyan-900/20 dark:to-purple-900/20 h-full flex items-center justify-center">
                           <div className="text-4xl font-bold text-cyan-500/30">
                             {relatedPost.title.split(' ')[0][0]}{relatedPost.title.split(' ')[1]?.[0] || ''}
                           </div>

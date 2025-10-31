@@ -2,6 +2,7 @@
 
 import { useState, useEffect, useCallback } from 'react'
 import { useSession } from 'next-auth/react'
+import Image from 'next/image'
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card'
 import { Button } from '@/components/ui/button'
 import { Badge } from '@/components/ui/badge'
@@ -11,7 +12,7 @@ import { PaymentMethods } from '@/components/billing/payment-methods'
 import { InvoiceHistory } from '@/components/billing/invoice-history'
 import { UsageAnalytics } from '@/components/billing/usage-analytics'
 import { useToast } from '@/hooks/use-toast'
-import { CreditCard, FileText, BarChart3, Settings, Plus } from 'lucide-react'
+import { CreditCard, FileText, BarChart3, Settings, Plus, Shield, Lock, CheckCircle, Zap } from 'lucide-react'
 
 interface BillingData {
   customer?: any
@@ -212,9 +213,40 @@ export default function BillingPage() {
 
   return (
     <div className="container mx-auto py-8 max-w-6xl">
-      <div className="mb-8">
-        <h1 className="text-3xl font-bold">Billing</h1>
-        <p className="text-muted-foreground">Manage your billing information and subscriptions</p>
+      {/* Hero Section with Dashboard Image */}
+      <div className="relative mb-12 rounded-2xl overflow-hidden shadow-xl">
+        <Image
+          src="/images/billing/hero-billing-dashboard.jpg"
+          alt="Billing Dashboard"
+          width={1200}
+          height={800}
+          className="w-full h-[300px] object-cover"
+          priority
+        />
+        <div className="absolute inset-0 bg-gradient-to-r from-slate-900/95 to-slate-800/90"></div>
+        <div className="absolute inset-0 flex flex-col justify-center px-8">
+          <div className="flex items-center gap-3 mb-3">
+            <CreditCard className="w-10 h-10 text-blue-400" />
+            <h1 className="text-4xl font-bold text-white">Billing Dashboard</h1>
+          </div>
+          <p className="text-lg text-white/90 max-w-2xl">
+            Manage your subscriptions, payment methods, and billing history with ease. Secure, transparent, and always in your control.
+          </p>
+          <div className="flex items-center gap-6 mt-6">
+            <div className="flex items-center gap-2 text-white/90">
+              <Shield className="w-5 h-5 text-green-400" />
+              <span className="text-sm">Bank-grade Security</span>
+            </div>
+            <div className="flex items-center gap-2 text-white/90">
+              <Lock className="w-5 h-5 text-green-400" />
+              <span className="text-sm">PCI Compliant</span>
+            </div>
+            <div className="flex items-center gap-2 text-white/90">
+              <CheckCircle className="w-5 h-5 text-green-400" />
+              <span className="text-sm">Instant Activation</span>
+            </div>
+          </div>
+        </div>
       </div>
 
       <Tabs value={activeTab} onValueChange={setActiveTab} className="space-y-6">
@@ -243,19 +275,126 @@ export default function BillingPage() {
               onReactivate={handleReactivateSubscription}
             />
           ) : (
-            <Card>
-              <CardHeader>
-                <CardTitle>No Active Subscription</CardTitle>
-                <CardDescription>
-                  Choose a subscription plan to get started with premium features.
-                </CardDescription>
-              </CardHeader>
-              <CardContent>
-                <Button>
-                  View Plans
-                </Button>
-              </CardContent>
-            </Card>
+            <>
+              <Card>
+                <CardHeader>
+                  <CardTitle>No Active Subscription</CardTitle>
+                  <CardDescription>
+                    Choose a subscription plan to get started with premium features.
+                  </CardDescription>
+                </CardHeader>
+                <CardContent>
+                  <Button>
+                    View Plans
+                  </Button>
+                </CardContent>
+              </Card>
+
+              {/* Subscription Tier Showcase */}
+              <div className="mt-8">
+                <h2 className="text-2xl font-bold mb-6 text-center">Choose Your Plan</h2>
+                <div className="grid md:grid-cols-3 gap-6">
+                  {/* Starter Tier */}
+                  <div className="group cursor-pointer">
+                    <div className="relative rounded-xl overflow-hidden shadow-lg transition-transform duration-300 group-hover:scale-105">
+                      <Image
+                        src="/images/billing/tier-starter.jpg"
+                        alt="Starter Tier"
+                        width={600}
+                        height={400}
+                        className="w-full h-[280px] object-cover"
+                      />
+                      <div className="absolute inset-0 bg-gradient-to-t from-blue-900/95 via-blue-800/80 to-transparent"></div>
+                      <div className="absolute bottom-0 left-0 right-0 p-6 text-white">
+                        <Badge className="bg-blue-500 mb-3">STARTER</Badge>
+                        <h3 className="text-2xl font-bold mb-2">$29/month</h3>
+                        <ul className="space-y-2 text-sm text-white/90">
+                          <li className="flex items-center gap-2">
+                            <CheckCircle className="w-4 h-4" />
+                            <span>10,000 API calls/month</span>
+                          </li>
+                          <li className="flex items-center gap-2">
+                            <CheckCircle className="w-4 h-4" />
+                            <span>Basic AI features</span>
+                          </li>
+                          <li className="flex items-center gap-2">
+                            <CheckCircle className="w-4 h-4" />
+                            <span>Email support</span>
+                          </li>
+                        </ul>
+                      </div>
+                    </div>
+                  </div>
+
+                  {/* Professional Tier */}
+                  <div className="group cursor-pointer">
+                    <div className="relative rounded-xl overflow-hidden shadow-lg transition-transform duration-300 group-hover:scale-105 ring-4 ring-purple-500">
+                      <Image
+                        src="/images/billing/tier-professional.jpg"
+                        alt="Professional Tier"
+                        width={600}
+                        height={400}
+                        className="w-full h-[280px] object-cover"
+                      />
+                      <div className="absolute inset-0 bg-gradient-to-t from-purple-900/95 via-purple-800/80 to-transparent"></div>
+                      <div className="absolute top-4 right-4">
+                        <Badge className="bg-yellow-500 text-yellow-900">POPULAR</Badge>
+                      </div>
+                      <div className="absolute bottom-0 left-0 right-0 p-6 text-white">
+                        <Badge className="bg-purple-500 mb-3">PROFESSIONAL</Badge>
+                        <h3 className="text-2xl font-bold mb-2">$99/month</h3>
+                        <ul className="space-y-2 text-sm text-white/90">
+                          <li className="flex items-center gap-2">
+                            <CheckCircle className="w-4 h-4" />
+                            <span>100,000 API calls/month</span>
+                          </li>
+                          <li className="flex items-center gap-2">
+                            <CheckCircle className="w-4 h-4" />
+                            <span>All AI features</span>
+                          </li>
+                          <li className="flex items-center gap-2">
+                            <CheckCircle className="w-4 h-4" />
+                            <span>Priority support</span>
+                          </li>
+                        </ul>
+                      </div>
+                    </div>
+                  </div>
+
+                  {/* Enterprise Tier */}
+                  <div className="group cursor-pointer">
+                    <div className="relative rounded-xl overflow-hidden shadow-lg transition-transform duration-300 group-hover:scale-105">
+                      <Image
+                        src="/images/billing/tier-enterprise.jpg"
+                        alt="Enterprise Tier"
+                        width={600}
+                        height={400}
+                        className="w-full h-[280px] object-cover"
+                      />
+                      <div className="absolute inset-0 bg-gradient-to-t from-slate-900/95 via-slate-800/80 to-transparent"></div>
+                      <div className="absolute bottom-0 left-0 right-0 p-6 text-white">
+                        <Badge className="bg-slate-500 mb-3">ENTERPRISE</Badge>
+                        <h3 className="text-2xl font-bold mb-2">Custom</h3>
+                        <ul className="space-y-2 text-sm text-white/90">
+                          <li className="flex items-center gap-2">
+                            <CheckCircle className="w-4 h-4" />
+                            <span>Unlimited API calls</span>
+                          </li>
+                          <li className="flex items-center gap-2">
+                            <CheckCircle className="w-4 h-4" />
+                            <span>Custom AI solutions</span>
+                          </li>
+                          <li className="flex items-center gap-2">
+                            <CheckCircle className="w-4 h-4" />
+                            <span>Dedicated support</span>
+                          </li>
+                        </ul>
+                      </div>
+                    </div>
+                  </div>
+                </div>
+              </div>
+            </>
           )}
 
           {/* Quick Stats */}
@@ -295,6 +434,63 @@ export default function BillingPage() {
         </TabsContent>
 
         <TabsContent value="payment-methods">
+          {/* Payment Security Features */}
+          <div className="mb-8 grid md:grid-cols-3 gap-6">
+            <div className="relative rounded-xl overflow-hidden shadow-lg group cursor-pointer">
+              <Image
+                src="/images/billing/payment-credit-card.jpg"
+                alt="Secure Payment Methods"
+                width={600}
+                height={400}
+                className="w-full h-[200px] object-cover transition-transform duration-300 group-hover:scale-110"
+              />
+              <div className="absolute inset-0 bg-gradient-to-t from-blue-900/95 via-blue-800/70 to-transparent"></div>
+              <div className="absolute bottom-0 left-0 right-0 p-4 text-white">
+                <div className="flex items-center gap-2 mb-2">
+                  <Shield className="w-6 h-6" />
+                  <h3 className="text-lg font-bold">Secure Payments</h3>
+                </div>
+                <p className="text-sm text-white/90">Bank-grade encryption for all transactions</p>
+              </div>
+            </div>
+
+            <div className="relative rounded-xl overflow-hidden shadow-lg group cursor-pointer">
+              <Image
+                src="/images/billing/payment-processing.jpg"
+                alt="Fast Processing"
+                width={600}
+                height={400}
+                className="w-full h-[200px] object-cover transition-transform duration-300 group-hover:scale-110"
+              />
+              <div className="absolute inset-0 bg-gradient-to-t from-green-900/95 via-green-800/70 to-transparent"></div>
+              <div className="absolute bottom-0 left-0 right-0 p-4 text-white">
+                <div className="flex items-center gap-2 mb-2">
+                  <Zap className="w-6 h-6" />
+                  <h3 className="text-lg font-bold">Instant Processing</h3>
+                </div>
+                <p className="text-sm text-white/90">Real-time payment confirmation and activation</p>
+              </div>
+            </div>
+
+            <div className="relative rounded-xl overflow-hidden shadow-lg group cursor-pointer">
+              <Image
+                src="/images/billing/payment-automation.jpg"
+                alt="Automated Billing"
+                width={600}
+                height={400}
+                className="w-full h-[200px] object-cover transition-transform duration-300 group-hover:scale-110"
+              />
+              <div className="absolute inset-0 bg-gradient-to-t from-purple-900/95 via-purple-800/70 to-transparent"></div>
+              <div className="absolute bottom-0 left-0 right-0 p-4 text-white">
+                <div className="flex items-center gap-2 mb-2">
+                  <Settings className="w-6 h-6" />
+                  <h3 className="text-lg font-bold">Smart Automation</h3>
+                </div>
+                <p className="text-sm text-white/90">Automated billing cycles and notifications</p>
+              </div>
+            </div>
+          </div>
+
           <PaymentMethods
             paymentMethods={billingData.paymentMethods}
             onAdd={loadBillingData}

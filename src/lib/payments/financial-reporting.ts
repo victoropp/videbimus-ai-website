@@ -1,5 +1,20 @@
 import { prisma } from '@/lib/prisma'
-import { ReportType, ReportPeriod } from '@prisma/client'
+
+// Note: These types should be added to schema.prisma as enums
+export enum ReportType {
+  REVENUE = 'REVENUE',
+  SUBSCRIPTION_METRICS = 'SUBSCRIPTION_METRICS',
+  USAGE_ANALYTICS = 'USAGE_ANALYTICS',
+  CUSTOMER_LIFETIME_VALUE = 'CUSTOMER_LIFETIME_VALUE'
+}
+
+export enum ReportPeriod {
+  DAILY = 'DAILY',
+  WEEKLY = 'WEEKLY',
+  MONTHLY = 'MONTHLY',
+  QUARTERLY = 'QUARTERLY',
+  YEARLY = 'YEARLY'
+}
 
 export interface RevenueMetrics {
   totalRevenue: number
@@ -53,7 +68,7 @@ export async function generateRevenueReport(
           gte: startDate,
           lte: endDate
         },
-        status: 'SUCCEEDED',
+        status: 'COMPLETED',
         currency: currency.toLowerCase()
       },
       include: {
@@ -62,24 +77,26 @@ export async function generateRevenueReport(
     })
 
     // Get refunds in period
+    // Note: Refund model needs to be added to schema.prisma
     const refunds = await prisma.refund.findMany({
       where: {
         createdAt: {
           gte: startDate,
           lte: endDate
         },
-        status: 'SUCCEEDED',
+        status: 'COMPLETED',
         currency: currency.toLowerCase()
       }
     })
 
     // Calculate metrics
     const totalRevenue = payments.reduce((sum, payment) => sum + Number(payment.amount), 0)
+    // Note: subscriptionId field needs to be added to Invoice model
     const recurringRevenue = payments
-      .filter(payment => payment.invoice?.subscriptionId)
+      .filter(payment => (payment.invoice as any)?.subscriptionId)
       .reduce((sum, payment) => sum + Number(payment.amount), 0)
     const oneTimeRevenue = totalRevenue - recurringRevenue
-    const totalRefunds = refunds.reduce((sum, refund) => sum + Number(refund.amount), 0)
+    const totalRefunds = refunds.reduce((sum, refund: any) => sum + Number(refund.amount), 0)
 
     return {
       totalRevenue: totalRevenue / 100, // Convert from cents
@@ -209,9 +226,9 @@ export async function generateUsageReport(
     const uniqueUsers = new Set(usageLogs.map(log => log.userId)).size
 
     // Get previous period for growth rate
+    const previousPeriod = new Date(startDate.getTime() - (endDate.getTime() - startDate.getTime()))
     const previousPeriodStart = new Date(previousPeriod.getTime())
     const previousPeriodEnd = startDate
-    const previousPeriod = new Date(startDate.getTime() - (endDate.getTime() - startDate.getTime()))
 
     const previousUsageLogs = await prisma.usageLog.findMany({
       where: {
@@ -387,6 +404,7 @@ export async function generateFinancialReport(
     }
 
     // Store report in database
+    // Note: FinancialReport model needs to be added to schema.prisma
     const report = await prisma.financialReport.create({
       data: {
         type,

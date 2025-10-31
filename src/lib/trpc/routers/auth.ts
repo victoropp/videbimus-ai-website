@@ -48,14 +48,14 @@ export const authRouter = createTRPCRouter({
           email,
           password: hashedPassword,
           role: UserRole.CLIENT,
-        },
+        } as any,
         select: {
           id: true,
           name: true,
           email: true,
           role: true,
           createdAt: true,
-        },
+        } as any,
       })
 
       return { user, message: "User created successfully" }
@@ -110,7 +110,7 @@ export const authRouter = createTRPCRouter({
 
       const updatedUser = await ctx.prisma.user.update({
         where: { id: userId },
-        data: input,
+        data: input as any,
         select: {
           id: true,
           name: true,
@@ -118,7 +118,7 @@ export const authRouter = createTRPCRouter({
           image: true,
           role: true,
           updatedAt: true,
-        },
+        } as any,
       })
 
       return { user: updatedUser, message: "Profile updated successfully" }

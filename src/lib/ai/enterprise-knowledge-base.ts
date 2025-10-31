@@ -1,4 +1,4 @@
-import { enhancedProviders } from './enhanced-providers';
+import { enhancedProviders, type ProviderResponse } from './enhanced-providers';
 import { vectorStore } from './vector-store';
 
 export interface KnowledgeDocument {
@@ -395,7 +395,7 @@ Instructions:
         ],
         temperature: 0.7,
         maxTokens: 500,
-      });
+      }) as ProviderResponse;
 
       return response.content || this.generateEnhancedFallbackResponse(query, intent, documents);
     } catch (error) {

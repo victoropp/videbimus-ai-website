@@ -204,7 +204,8 @@ Return as JSON: { tasks: [...], executionOrder: [[...parallel tasks], [...next p
       });
 
       // Parse the execution plan
-      const planData = this.parseExecutionPlan(response.content);
+      const content = 'content' in response ? response.content : '';
+      const planData = this.parseExecutionPlan(content);
       
       const plan: ExecutionPlan = {
         id: this.generateId(),
@@ -298,10 +299,11 @@ Complete this task and provide a structured response.
         temperature: agent.temperature,
       });
 
-      task.result = response.content;
+      const taskContent = 'content' in response ? response.content : '';
+      task.result = taskContent;
       task.status = 'completed';
       task.endTime = Date.now();
-      
+
       plan.results.set(task.id, task.result);
       plan.logs.push(`Task ${task.id} completed by ${agent.name}`);
     } catch (error) {
@@ -376,7 +378,7 @@ Highlight key findings, recommendations, and any important considerations.
       temperature: 0.3,
     });
 
-    return response.content;
+    return 'content' in response ? response.content : '';
   }
 
   /**

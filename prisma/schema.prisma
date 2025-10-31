@@ -97,6 +97,15 @@ model User {
   presence            UserPresence?
   notifications       Notification[]
 
+  // Payment system relations
+  customer            Customer?     @relation("CustomerToUser")
+  payments            Payment[]
+  refunds             Refund[]
+  usageLogs           UsageLog[]
+
+  // Auth relations
+  passwordResetTokens PasswordResetToken[] @relation("PasswordResetTokens")
+
   @@map("users")
 }
 
@@ -747,29 +756,44 @@ model CaseStudyFile {
 
 // Financial Models
 model Invoice {
-  id          String        @id @default(cuid())
-  number      String        @unique
-  amount      Decimal
-  tax         Decimal?
-  total       Decimal
-  currency    String        @default("USD")
-  status      InvoiceStatus @default(DRAFT)
-  issuedDate  DateTime?
-  dueDate     DateTime?
-  paidDate    DateTime?
-  description String?
-  notes       String?
-  projectId   String?
-  clientId    String
-  createdAt   DateTime      @default(now())
-  updatedAt   DateTime      @updatedAt
+  id                 String         @id @default(cuid())
+  customerId         String?
+  subscriptionId     String?
+  stripeInvoiceId    String?        @unique
+  number             String         @unique
+  amount             Decimal
+  subtotal           Decimal?
+  tax                Decimal?
+  total              Decimal
+  currency           String         @default("USD")
+  status             InvoiceStatus  @default(DRAFT)
+  issuedDate         DateTime?
+  dueDate            DateTime?
+  paidDate           DateTime?
+  description        String?
+  notes              String?
+  projectId          String?
+  clientId           String?
+  amountDue          Int?
+  amountRemaining    Int?
+  hostedInvoiceUrl   String?
+  invoicePdf         String?
+  periodStart        DateTime?
+  periodEnd          DateTime?
+  metadata           Json           @default("{}")
+  createdAt          DateTime       @default(now())
+  updatedAt          DateTime       @updatedAt
 
   // Relations
-  client      User          @relation(fields: [clientId], references: [id], onDelete: Cascade)
-  project     Project?      @relation(fields: [projectId], references: [id], onDelete: SetNull)
-  items       InvoiceItem[]
-  payments    Payment[]
+  client             User?          @relation(fields: [clientId], references: [id], onDelete: Cascade)
+  subscription       Subscription?  @relation("SubscriptionInvoices", fields: [subscriptionId], references: [id], onDelete: SetNull)
+  project            Project?       @relation(fields: [projectId], references: [id], onDelete: SetNull)
+  items              InvoiceItem[]
+  payments           Payment[]
 
+  @@index([customerId])
+  @@index([subscriptionId])
+  @@index([stripeInvoiceId])
   @@map("invoices")
 }
 
@@ -783,37 +807,56 @@ enum InvoiceStatus {
 }
 
 model InvoiceItem {
-  id          String  @id @default(cuid())
+  id          String   @id @default(cuid())
   description String
-  quantity    Decimal @default(1)
+  quantity    Decimal  @default(1)
   rate        Decimal
+  unitAmount  Int?
   amount      Decimal
+  currency    String   @default("USD")
   invoiceId   String
   createdAt   DateTime @default(now())
 
   // Relations
-  invoice     Invoice @relation(fields: [invoiceId], references: [id], onDelete: Cascade)
+  invoice     Invoice  @relation(fields: [invoiceId], references: [id], onDelete: Cascade)
 
   @@map("invoice_items")
 }
 
 model Payment {
-  id            String        @id @default(cuid())
-  amount        Decimal
-  currency      String        @default("USD")
-  status        PaymentStatus @default(PENDING)
-  method        PaymentMethod
-  transactionId String?       @unique
-  reference     String?
-  notes         String?
-  processedAt   DateTime?
-  invoiceId     String
-  createdAt     DateTime      @default(now())
-  updatedAt     DateTime      @updatedAt
+  id                     String         @id @default(cuid())
+  userId                 String
+  customerId             String?
+  stripePaymentIntentId  String?        @unique
+  amount                 Decimal
+  currency               String         @default("USD")
+  status                 PaymentStatus  @default(PENDING)
+  method                 PaymentMethod  @default(STRIPE)
+  paymentMethodId        String?
+  transactionId          String?        @unique
+  reference              String?
+  description            String?
+  receiptEmail           String?
+  amountReceived         Int?
+  failureCode            String?
+  failureMessage         String?
+  notes                  String?
+  processedAt            DateTime?
+  invoiceId              String?
+  metadata               Json           @default("{}")
+  createdAt              DateTime       @default(now())
+  updatedAt              DateTime       @updatedAt
 
   // Relations
-  invoice       Invoice       @relation(fields: [invoiceId], references: [id], onDelete: Cascade)
+  user                   User           @relation(fields: [userId], references: [id], onDelete: Cascade)
+  customer               Customer?      @relation("CustomerPayments", fields: [customerId], references: [id], onDelete: SetNull)
+  paymentMethod          StripePaymentMethod? @relation("PaymentMethodPayments", fields: [paymentMethodId], references: [id], onDelete: SetNull)
+  invoice                Invoice?       @relation(fields: [invoiceId], references: [id], onDelete: Cascade)
+  refunds                Refund[]
 
+  @@index([userId])
+  @@index([customerId])
+  @@index([stripePaymentIntentId])
   @@map("payments")
 }
 
@@ -865,7 +908,7 @@ enum MetricType {
 
 model SystemHealth {
   id          String   @id @default(cuid())
-  service     String   // Service name (api, database, redis, etc.)
+  service     String   @unique // Service name (api, database, redis, etc.)
   status      String   // healthy, degraded, down
   responseTime Int?    // Response time in ms
   uptime      Float?   // Uptime percentage
@@ -1169,3 +1212,315 @@ enum NotificationType {
   ROOM
   ACTION_ITEM
 }
+
+// ============================================
+// Payment System Models (Stripe Integration)
+// ============================================
+
+model Customer {
+  id                String    @id @default(cuid())
+  userId            String    @unique
+  stripeCustomerId  String    @unique
+  email             String
+  name              String?
+  phone             String?
+  defaultPaymentMethodId String?
+  metadata          Json      @default("{}")
+  createdAt         DateTime  @default(now())
+  updatedAt         DateTime  @updatedAt
+
+  // Relations
+  user              User      @relation("CustomerToUser", fields: [userId], references: [id], onDelete: Cascade)
+  subscriptions     Subscription[]
+  paymentMethods    StripePaymentMethod[]
+  payments          Payment[] @relation("CustomerPayments")
+  billingAddress    BillingAddress?
+  credits           Credit[]
+
+  @@index([userId])
+  @@index([stripeCustomerId])
+  @@map("customers")
+}
+
+model StripePaymentMethod {
+  id              String   @id @default(cuid())
+  customerId      String
+  stripePaymentMethodId String @unique
+  type            PaymentMethod_Type
+
+  // Card details
+  cardBrand       String?
+  cardLast4       String?
+  cardExpMonth    Int?
+  cardExpYear     Int?
+
+  // Bank account details
+  bankName        String?
+  bankLast4       String?
+
+  // Legacy fields (for backwards compatibility)
+  last4           String?
+  brand           String?
+  expiryMonth     Int?
+  expiryYear      Int?
+
+  isDefault       Boolean  @default(false)
+  isActive        Boolean  @default(true)
+  billingDetails  Json     @default("{}")
+  metadata        Json     @default("{}")
+  createdAt       DateTime @default(now())
+  updatedAt       DateTime @updatedAt
+
+  // Relations
+  customer        Customer @relation(fields: [customerId], references: [id], onDelete: Cascade)
+  payments        Payment[] @relation("PaymentMethodPayments")
+
+  @@index([customerId])
+  @@index([stripePaymentMethodId])
+  @@map("payment_methods")
+}
+
+enum PaymentMethod_Type {
+  CARD
+  BANK_ACCOUNT
+  SEPA_DEBIT
+}
+
+model Subscription {
+  id                    String              @id @default(cuid())
+  customerId            String
+  stripeSubscriptionId  String              @unique
+  stripePriceId         String?
+  status                SubscriptionStatus
+  plan                  String
+  billingCycle          BillingCycle
+  quantity              Int                 @default(1)
+  unitAmount            Int
+  currency              String              @default("USD")
+  currentPeriodStart    DateTime
+  currentPeriodEnd      DateTime
+  canceledAt            DateTime?
+  cancelAtPeriodEnd     Boolean             @default(false)
+  trialStart            DateTime?
+  trialEnd              DateTime?
+  metadata              Json                @default("{}")
+  createdAt             DateTime            @default(now())
+  updatedAt             DateTime            @updatedAt
+
+  // Relations
+  customer              Customer            @relation(fields: [customerId], references: [id], onDelete: Cascade)
+  subscriptionItems     SubscriptionItem[]
+  invoices              Invoice[]          @relation("SubscriptionInvoices")
+  usageRecords          UsageRecord[]      @relation("SubscriptionUsageRecords")
+
+  @@index([customerId])
+  @@index([stripeSubscriptionId])
+  @@index([status])
+  @@map("subscriptions")
+}
+
+enum SubscriptionStatus {
+  ACTIVE
+  CANCELED
+  PAST_DUE
+  UNPAID
+  TRIALING
+  PAUSED
+  INCOMPLETE
+  INCOMPLETE_EXPIRED
+}
+
+enum BillingCycle {
+  MONTHLY
+  QUARTERLY
+  YEARLY
+}
+
+model SubscriptionItem {
+  id             String       @id @default(cuid())
+  subscriptionId String
+  stripeItemId   String       @unique
+  stripePriceId  String
+  priceId        String?      // Legacy field
+  quantity       Int          @default(1)
+  unitAmount     Int
+  currency       String
+  usageType      String?      // METERED or LICENSED
+  metadata       Json         @default("{}")
+  createdAt      DateTime     @default(now())
+  updatedAt      DateTime     @updatedAt
+
+  // Relations
+  subscription   Subscription @relation(fields: [subscriptionId], references: [id], onDelete: Cascade)
+
+  @@index([subscriptionId])
+  @@map("subscription_items")
+}
+
+model Refund {
+  id              String       @id @default(cuid())
+  userId          String
+  paymentId       String
+  stripeRefundId  String       @unique
+  amount          Int
+  currency        String
+  reason          RefundReason?
+  status          String       @default("PENDING")
+  receiptNumber   String?
+  metadata        Json         @default("{}")
+  createdAt       DateTime     @default(now())
+  updatedAt       DateTime     @updatedAt
+
+  // Relations
+  user            User         @relation(fields: [userId], references: [id], onDelete: Cascade)
+  payment         Payment      @relation(fields: [paymentId], references: [id], onDelete: Cascade)
+
+  @@index([userId])
+  @@index([paymentId])
+  @@index([stripeRefundId])
+  @@map("refunds")
+}
+
+enum RefundReason {
+  DUPLICATE
+  FRAUDULENT
+  REQUESTED_BY_CUSTOMER
+}
+
+model BillingAddress {
+  id         String   @id @default(cuid())
+  customerId String   @unique
+  line1      String
+  line2      String?
+  city       String
+  state      String?
+  postalCode String
+  country    String
+  createdAt  DateTime @default(now())
+  updatedAt  DateTime @updatedAt
+
+  // Relations
+  customer   Customer @relation(fields: [customerId], references: [id], onDelete: Cascade)
+
+  @@map("billing_addresses")
+}
+
+model Credit {
+  id         String   @id @default(cuid())
+  customerId String
+  balance    Int      @default(0)
+  currency   String   @default("USD")
+  metadata   Json     @default("{}")
+  createdAt  DateTime @default(now())
+  updatedAt  DateTime @updatedAt
+
+  // Relations
+  customer   Customer @relation(fields: [customerId], references: [id], onDelete: Cascade)
+
+  @@index([customerId])
+  @@map("credits")
+}
+
+model UsageLog {
+  id           String   @id @default(cuid())
+  userId       String
+  customerId   String?
+  service      String
+  endpoint     String
+  method       String
+  model        String?
+  inputTokens  Int?
+  outputTokens Int?
+  totalTokens  Int      @default(0)
+  duration     Int?
+  success      Boolean  @default(true)
+  errorCode    String?
+  errorMessage String?
+  ipAddress    String?
+  userAgent    String?
+  timestamp    DateTime @default(now())
+  metadata     Json     @default("{}")
+
+  // Relations
+  user        User     @relation(fields: [userId], references: [id], onDelete: Cascade)
+
+  @@index([userId])
+  @@index([customerId])
+  @@index([service])
+  @@index([timestamp])
+  @@map("usage_logs")
+}
+
+model FinancialReport {
+  id        String       @id @default(cuid())
+  type      String
+  period    String
+  startDate DateTime
+  endDate   DateTime
+  data      Json
+  status    String       @default("PENDING")
+  metadata  Json         @default("{}")
+  createdAt DateTime     @default(now())
+  updatedAt DateTime     @updatedAt
+
+  @@index([type])
+  @@index([startDate, endDate])
+  @@map("financial_reports")
+}
+
+model UsageRecord {
+  id                 String   @id @default(cuid())
+  subscriptionId     String
+  subscriptionItemId String?
+  userId             String
+  customerId         String
+  service            String
+  quantity           Int      @default(0)
+  model              String?
+  inputTokens        Int?
+  outputTokens       Int?
+  totalTokens        Int      @default(0)
+  requestDuration    Int?
+  timestamp          DateTime @default(now())
+  metadata           Json     @default("{}")
+  createdAt          DateTime @default(now())
+  updatedAt          DateTime @updatedAt
+
+  // Relations
+  subscription       Subscription @relation("SubscriptionUsageRecords", fields: [subscriptionId], references: [id], onDelete: Cascade)
+
+  @@index([subscriptionId])
+  @@index([subscriptionItemId])
+  @@index([userId])
+  @@index([customerId])
+  @@index([timestamp])
+  @@index([service])
+  @@map("usage_records")
+}
+
+enum AIService {
+  ANTHROPIC
+  OPENAI
+  GOOGLE
+  COHERE
+  REPLICATE
+  HUGGINGFACE
+  MISTRAL
+  PERPLEXITY
+  OTHER
+}
+
+model PasswordResetToken {
+  id        String   @id @default(cuid())
+  token     String   @unique
+  userId    String
+  expires   DateTime
+  createdAt DateTime @default(now())
+  
+  user      User     @relation("PasswordResetTokens", fields: [userId], references: [id], onDelete: Cascade)
+  
+  @@index([userId])
+  @@index([token])
+  @@map("password_reset_tokens")
+}
+

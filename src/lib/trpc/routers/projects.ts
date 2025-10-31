@@ -57,7 +57,7 @@ export const projectsRouter = createTRPCRouter({
         data: {
           ...input,
           userId: ctx.session.user.id,
-        },
+        } as any,
         include: {
           user: {
             select: {
@@ -72,7 +72,7 @@ export const projectsRouter = createTRPCRouter({
               files: true,
             },
           },
-        },
+        } as any,
       })
 
       return { project, message: "Project created successfully" }
@@ -123,7 +123,7 @@ export const projectsRouter = createTRPCRouter({
           limit,
           total,
           pages: Math.ceil(total / limit),
-        },
+        } as any,
       }
     }),
 
@@ -135,7 +135,7 @@ export const projectsRouter = createTRPCRouter({
         where: {
           id: input.id,
           userId: ctx.session.user.id,
-        },
+        } as any,
         include: {
           user: {
             select: {
@@ -160,7 +160,7 @@ export const projectsRouter = createTRPCRouter({
               files: true,
             },
           },
-        },
+        } as any,
       })
 
       if (!project) {
@@ -184,7 +184,7 @@ export const projectsRouter = createTRPCRouter({
         where: {
           id,
           userId: ctx.session.user.id,
-        },
+        } as any,
       })
 
       if (!existingProject) {
@@ -196,7 +196,7 @@ export const projectsRouter = createTRPCRouter({
 
       const project = await ctx.prisma.project.update({
         where: { id },
-        data: updateData,
+        data: updateData as any,
         include: {
           _count: {
             select: {
@@ -205,7 +205,7 @@ export const projectsRouter = createTRPCRouter({
               files: true,
             },
           },
-        },
+        } as any,
       })
 
       return { project, message: "Project updated successfully" }
@@ -220,7 +220,7 @@ export const projectsRouter = createTRPCRouter({
         where: {
           id: input.id,
           userId: ctx.session.user.id,
-        },
+        } as any,
       })
 
       if (!project) {
@@ -246,7 +246,7 @@ export const projectsRouter = createTRPCRouter({
         where: {
           id: input.projectId,
           userId: ctx.session.user.id,
-        },
+        } as any,
       })
 
       if (!project) {
@@ -257,7 +257,7 @@ export const projectsRouter = createTRPCRouter({
       }
 
       const task = await ctx.prisma.task.create({
-        data: input,
+        data: input as any,
       })
 
       return { task, message: "Task created successfully" }
@@ -275,7 +275,7 @@ export const projectsRouter = createTRPCRouter({
           project: {
             userId: ctx.session.user.id,
           },
-        },
+        } as any,
       })
 
       if (!task) {
@@ -292,7 +292,7 @@ export const projectsRouter = createTRPCRouter({
           ...(input.status === TaskStatus.COMPLETED && {
             completedAt: new Date(),
           }),
-        },
+        } as any,
       })
 
       return { task: updatedTask, message: "Task updated successfully" }
@@ -308,7 +308,7 @@ export const projectsRouter = createTRPCRouter({
           project: {
             userId: ctx.session.user.id,
           },
-        },
+        } as any,
       })
 
       if (!task) {
@@ -378,7 +378,7 @@ export const projectsRouter = createTRPCRouter({
           limit,
           total,
           pages: Math.ceil(total / limit),
-        },
+        } as any,
       }
     }),
 })

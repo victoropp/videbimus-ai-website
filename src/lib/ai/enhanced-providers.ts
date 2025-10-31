@@ -381,8 +381,8 @@ export class EnhancedAIProviders {
       max_tokens: request.maxTokens || 1000,
     });
 
-    const content = Array.isArray(response.content) 
-      ? response.content.find(c => c.type === 'text')?.text || ''
+    const content = Array.isArray(response.content)
+      ? (() => { const textBlock = response.content.find(c => c.type === 'text'); return textBlock && 'text' in textBlock ? textBlock.text : ''; })()
       : '';
 
     return {
@@ -443,7 +443,7 @@ export class EnhancedAIProviders {
     const history = messages.slice(0, -1).map(msg => ({
       role: msg.role === 'assistant' ? 'CHATBOT' : 'USER',
       message: msg.content,
-    }));
+    })) as any;
 
     const response = await client.chat({
       model: request.model || 'command',

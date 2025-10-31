@@ -143,8 +143,8 @@ export interface FormState<T = unknown> {
   isDirty: boolean;
 }
 
-// File Upload Types
-export interface FileUpload {
+// File Upload UI State Types
+export interface FileUploadState {
   file: File;
   preview?: string;
   progress?: number;

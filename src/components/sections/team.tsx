@@ -13,7 +13,6 @@ const team: Partial<TeamMember>[] = [
     name: 'Victor Collins Oppon',
     role: 'Founder & CEO',
     bio: 'Started as an accountant, got tired of watching businesses waste money on problems data could solve. Built Videbimus to help companies actually use their data instead of drowning in it. When not working, probably debugging something.',
-    image: '/team/victor-collins-oppon.jpg',
     linkedin: 'https://www.linkedin.com/in/victor-collins-oppon-fcca-mba-bsc-01541019/'
   },
   {
@@ -21,7 +20,6 @@ const team: Partial<TeamMember>[] = [
     name: 'Sai Raj Ali',
     role: 'Chief Technology Officer',
     bio: 'The guy who makes the impossible actually work. Spent years at tech companies watching "AI projects" fail. Now builds systems that ship in weeks, not years. Loves a good technical challenge—and coffee.',
-    image: '/team/sai-raj-ali.jpg',
     linkedin: 'https://www.linkedin.com/in/sairajdream/'
   },
   {
@@ -29,7 +27,6 @@ const team: Partial<TeamMember>[] = [
     name: 'Shawanah Ally',
     role: 'Head of Data Science',
     bio: 'Turns messy spreadsheets into predictions you can trust. Has a gift for explaining complex stats without making your eyes glaze over. Previously: made models for companies that couldn\'t afford to be wrong.',
-    image: '/team/shawanah-ally.jpg',
     linkedin: 'https://www.linkedin.com/in/sally01/'
   },
   {
@@ -37,10 +34,30 @@ const team: Partial<TeamMember>[] = [
     name: 'Rukayat Salau',
     role: 'AI Strategy Director',
     bio: 'The person who figures out what you actually need (vs what you think you need). Saved clients millions by saying "no" to shiny features that don\'t move the needle. Asks the hard questions upfront.',
-    image: '/team/rukayat-salau.jpg',
     linkedin: 'https://www.linkedin.com/in/rukayatsalau/'
   }
 ]
+
+// Helper function to get initials from name
+const getInitials = (name: string) => {
+  return name
+    .split(' ')
+    .map(n => n[0])
+    .join('')
+    .toUpperCase()
+    .slice(0, 2)
+}
+
+// Helper function to get avatar color based on index
+const getAvatarColor = (index: number) => {
+  const colors = [
+    'bg-gradient-to-br from-cyan-500 to-blue-600',
+    'bg-gradient-to-br from-purple-500 to-pink-600',
+    'bg-gradient-to-br from-green-500 to-emerald-600',
+    'bg-gradient-to-br from-orange-500 to-red-600'
+  ]
+  return colors[index % colors.length]
+}
 
 const containerVariants = {
   hidden: { opacity: 0 },
@@ -93,13 +110,15 @@ export function Team() {
             <motion.div key={member.id} variants={itemVariants}>
               <Card className="group hover:shadow-xl transition-all duration-500 hover:-translate-y-2 overflow-hidden">
                 <CardContent className="p-6 text-center">
-                  {/* Avatar */}
-                  <div className="relative mb-6">
-                    <div className="w-24 h-24 mx-auto rounded-full bg-gradient-to-br from-cyan-500 to-purple-500 flex items-center justify-center text-white text-2xl font-bold group-hover:scale-110 transition-transform duration-300">
-                      {member.name.split(' ').map(n => n[0]).join('')}
+                  {/* Avatar with initials placeholder */}
+                  <div className="relative mb-6 mx-auto w-32 h-32">
+                    <div className={`relative w-full h-full rounded-full overflow-hidden ring-4 ring-gray-100 dark:ring-gray-800 group-hover:ring-cyan-500/50 transition-all duration-300 ${getAvatarColor(index)} flex items-center justify-center`}>
+                      <span className="text-4xl font-bold text-white">
+                        {getInitials(member.name)}
+                      </span>
                     </div>
                     {/* Status indicator */}
-                    <div className="absolute -bottom-1 -right-1 w-6 h-6 bg-green-500 border-4 border-white dark:border-gray-950 rounded-full"></div>
+                    <div className="absolute bottom-2 right-2 w-6 h-6 bg-green-500 border-4 border-white dark:border-gray-950 rounded-full shadow-lg"></div>
                   </div>
 
                   {/* Info */}

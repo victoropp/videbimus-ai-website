@@ -57,7 +57,7 @@ const enforceUserIsConsultant = t.middleware(({ ctx, next }) => {
   if (!ctx.session?.user) {
     throw new TRPCError({ code: "UNAUTHORIZED" })
   }
-  if (![UserRole.ADMIN, UserRole.CONSULTANT].includes(ctx.session.user.role)) {
+  if (![UserRole.ADMIN, UserRole.CONSULTANT].includes(ctx.session.user.role as any)) {
     throw new TRPCError({ code: "FORBIDDEN" })
   }
   return next({

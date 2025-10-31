@@ -30,10 +30,13 @@ export class AIProviderFactory {
 
     const key = `openai-${config.apiKey}`;
     if (!this.instances.has(key)) {
-      this.instances.set(key, new OpenAI({
+      const clientConfig: any = {
         apiKey: config.apiKey,
-        organization: config.organization,
-      }));
+      };
+      if ('organization' in config && config.organization) {
+        clientConfig.organization = config.organization;
+      }
+      this.instances.set(key, new OpenAI(clientConfig));
     }
     return this.instances.get(key);
   }

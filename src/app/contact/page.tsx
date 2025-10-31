@@ -1,6 +1,7 @@
 'use client'
 
 import { motion } from 'framer-motion'
+import Image from 'next/image'
 import { Mail, Phone, MapPin, Clock, MessageCircle, Calendar, Users, CheckCircle } from 'lucide-react'
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card'
 import { ContactForm } from '@/components/forms/contact-form'
@@ -11,21 +12,24 @@ const contactMethods = [
     title: 'Email (Detailed Questions)',
     description: 'Got a complex situation? Email us the details—we\'ll respond in 24 hours with real answers',
     contact: 'consulting@videbimusai.com',
-    action: 'mailto:consulting@videbimusai.com'
+    action: 'mailto:consulting@videbimusai.com',
+    image: '/images/contact/method-email.jpg'
   },
   {
     icon: Phone,
     title: 'Call (Quick Chat)',
     description: 'Want to talk it through? Call us. Real people answer, not a menu tree',
     contact: '+44 7442 852 675',
-    action: 'tel:+447442852675'
+    action: 'tel:+447442852675',
+    image: '/images/contact/method-phone.jpg'
   },
   {
     icon: MessageCircle,
     title: 'WhatsApp (Fast Response)',
     description: 'Easiest way to reach us. Message us and we\'ll get back to you same-day',
     contact: '+233 248 769 377',
-    action: 'https://wa.me/233248769377'
+    action: 'https://wa.me/233248769377',
+    image: '/images/contact/method-whatsapp.jpg'
   }
 ]
 
@@ -35,28 +39,32 @@ const processSteps = [
     title: 'Real Talk (30 min)',
     description: 'Tell us where it hurts. We\'ll tell you if we can fix it—and what it actually costs. No vague "transformation" talk.',
     duration: '30 minutes',
-    icon: Phone
+    icon: Phone,
+    image: '/images/contact/process-real-talk.jpg'
   },
   {
     step: 2,
     title: 'Show You What\'s Possible',
     description: 'We build a quick prototype with YOUR data (not generic demos). See if it actually solves your problem before spending big.',
     duration: '1-2 weeks',
-    icon: Users
+    icon: Users,
+    image: '/images/contact/process-proof.jpg'
   },
   {
     step: 3,
     title: 'Fixed-Price Proposal',
     description: 'Exact timeline. Exact cost. No scope creep surprises. You know what you\'re getting before day one.',
     duration: '3-5 days',
-    icon: Calendar
+    icon: Calendar,
+    image: '/images/contact/process-proposal.jpg'
   },
   {
     step: 4,
     title: 'Ship Working Software',
     description: 'We build it, your team tests it, we fix issues. You get software that actually works on Monday morning—not vaporware.',
     duration: '6-8 weeks typical',
-    icon: CheckCircle
+    icon: CheckCircle,
+    image: '/images/contact/process-ship.jpg'
   }
 ]
 
@@ -105,6 +113,17 @@ export default function ContactPage() {
     <div className="min-h-screen">
       {/* Hero Section */}
       <section className="py-20 bg-gradient-to-br from-primary-900 via-primary-800 to-primary-700 relative overflow-hidden">
+        {/* Hero Background Image */}
+        <div className="absolute inset-0">
+          <Image
+            src="/images/contact/hero-consultation.jpg"
+            alt="Professional business consultation"
+            fill
+            className="object-cover opacity-20"
+            priority
+          />
+          <div className="absolute inset-0 bg-gradient-to-br from-primary-900/90 via-primary-800/90 to-primary-700/90" />
+        </div>
         <div className="absolute inset-0 bg-gradient-to-r from-cyan-600/20 to-purple-600/20" />
         <div className="container relative">
           <motion.div
@@ -152,11 +171,23 @@ export default function ContactPage() {
               const Icon = method.icon
               return (
                 <motion.div key={method.title} variants={itemVariants}>
-                  <Card className="text-center hover:shadow-lg transition-all duration-300 hover:-translate-y-1">
-                    <CardContent className="p-8">
-                      <div className="inline-flex h-12 w-12 items-center justify-center rounded-lg bg-gradient-to-br from-cyan-500 to-purple-500 text-white mb-4">
-                        <Icon className="h-6 w-6" />
+                  <Card className="text-center hover:shadow-lg transition-all duration-300 hover:-translate-y-1 overflow-hidden group">
+                    {/* Method Image */}
+                    <div className="relative h-48 overflow-hidden">
+                      <Image
+                        src={method.image}
+                        alt={method.title}
+                        fill
+                        className="object-cover group-hover:scale-110 transition-transform duration-500"
+                      />
+                      <div className="absolute inset-0 bg-gradient-to-t from-black/60 via-black/20 to-transparent" />
+                      <div className="absolute bottom-4 left-1/2 -translate-x-1/2">
+                        <div className="inline-flex h-12 w-12 items-center justify-center rounded-lg bg-gradient-to-br from-cyan-500 to-purple-500 text-white shadow-lg">
+                          <Icon className="h-6 w-6" />
+                        </div>
                       </div>
+                    </div>
+                    <CardContent className="p-8">
                       <h3 className="font-semibold text-gray-900 dark:text-white mb-2">
                         {method.title}
                       </h3>
@@ -244,10 +275,18 @@ export default function ContactPage() {
                   {processSteps.map((step, index) => {
                     const Icon = step.icon
                     return (
-                      <div key={step.step} className="flex space-x-4">
+                      <div key={step.step} className="flex space-x-4 group">
                         <div className="flex-shrink-0">
-                          <div className="inline-flex h-10 w-10 items-center justify-center rounded-lg bg-gradient-to-br from-cyan-500 to-purple-500 text-white font-bold text-sm">
-                            {step.step}
+                          <div className="relative h-20 w-20 rounded-lg overflow-hidden">
+                            <Image
+                              src={step.image}
+                              alt={step.title}
+                              fill
+                              className="object-cover group-hover:scale-110 transition-transform duration-300"
+                            />
+                            <div className="absolute inset-0 bg-gradient-to-br from-cyan-500/80 to-purple-500/80 flex items-center justify-center">
+                              <span className="text-white font-bold text-2xl">{step.step}</span>
+                            </div>
                           </div>
                         </div>
                         <div className="flex-1 min-w-0">

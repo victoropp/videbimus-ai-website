@@ -1,7 +1,6 @@
 import { z } from 'zod'
 import { createTRPCRouter, publicProcedure, protectedProcedure, adminProcedure } from '../init'
 import { TRPCError } from '@trpc/server'
-import { Decimal } from 'decimal.js'
 
 const invoiceItemSchema = z.object({
   description: z.string().min(1).max(200),
@@ -52,8 +51,8 @@ export const financialRouter = createTRPCRouter({
         const whereClause: any = {}
 
         // Non-admin users can only see their own invoices
-        if (ctx.user.role !== 'ADMIN') {
-          whereClause.clientId = ctx.user.id
+        if (ctx.session.user.role !== 'ADMIN') {
+          whereClause.clientId = ctx.session.user.id
         } else if (input.clientId) {
           whereClause.clientId = input.clientId
         }
@@ -67,7 +66,7 @@ export const financialRouter = createTRPCRouter({
         }
 
         const [invoices, total] = await Promise.all([
-          ctx.db.invoice.findMany({
+          ctx.prisma.invoice.findMany({
             where: whereClause,
             include: {
               client: {
@@ -90,7 +89,7 @@ export const financialRouter = createTRPCRouter({
             take: input.limit,
             skip: input.offset,
           }),
-          ctx.db.invoice.count({ where: whereClause }),
+          ctx.prisma.invoice.count({ where: whereClause }),
         ])
 
         return {
@@ -103,7 +102,7 @@ export const financialRouter = createTRPCRouter({
     getById: protectedProcedure
       .input(z.object({ id: z.string() }))
       .query(async ({ ctx, input }) => {
-        const invoice = await ctx.db.invoice.findUnique({
+        const invoice = await ctx.prisma.invoice.findUnique({
           where: { id: input.id },
           include: {
             client: {
@@ -132,7 +131,7 @@ export const financialRouter = createTRPCRouter({
         }
 
         // Check permissions
-        if (ctx.user.role !== 'ADMIN' && invoice.clientId !== ctx.user.id) {
+        if (ctx.session.user.role !== 'ADMIN' && invoice.clientId !== ctx.session.user.id) {
           throw new TRPCError({
             code: 'FORBIDDEN',
             message: 'Access denied',
@@ -149,7 +148,7 @@ export const financialRouter = createTRPCRouter({
 
         // Generate invoice number if not provided
         if (!invoiceData.number) {
-          const lastInvoice = await ctx.db.invoice.findFirst({
+          const lastInvoice = await ctx.prisma.invoice.findFirst({
             orderBy: { createdAt: 'desc' },
             select: { number: true },
           })
@@ -159,21 +158,21 @@ export const financialRouter = createTRPCRouter({
         }
 
         // Create invoice with items
-        const invoice = await ctx.db.invoice.create({
+        const invoice = await ctx.prisma.invoice.create({
           data: {
             ...invoiceData,
-            amount: new Decimal(invoiceData.amount),
-            tax: invoiceData.tax ? new Decimal(invoiceData.tax) : undefined,
-            total: new Decimal(invoiceData.total),
+            amount: invoiceData.amount,
+            tax: invoiceData.tax,
+            total: invoiceData.total,
             items: {
               create: items.map(item => ({
                 ...item,
-                quantity: new Decimal(item.quantity),
-                rate: new Decimal(item.rate),
-                amount: new Decimal(item.amount),
+                quantity: item.quantity,
+                rate: item.rate,
+                amount: item.amount,
               })),
             },
-          },
+          } as any,
           include: {
             client: {
               select: {
@@ -201,7 +200,7 @@ export const financialRouter = createTRPCRouter({
         data: invoiceSchema.partial(),
       }))
       .mutation(async ({ ctx, input }) => {
-        const invoice = await ctx.db.invoice.findUnique({
+        const invoice = await ctx.prisma.invoice.findUnique({
           where: { id: input.id },
         })
 
@@ -212,24 +211,24 @@ export const financialRouter = createTRPCRouter({
           })
         }
 
-        const { items, ...updateData } = input.data
+        const { items, ...updateData } = input.data as any
 
         // Convert decimal fields
         if (updateData.amount !== undefined) {
-          updateData.amount = new Decimal(updateData.amount) as any
+          updateData.amount = updateData.amount as any
         }
         if (updateData.tax !== undefined && updateData.tax !== null) {
-          updateData.tax = new Decimal(updateData.tax) as any
+          updateData.tax = updateData.tax as any
         }
         if (updateData.total !== undefined) {
-          updateData.total = new Decimal(updateData.total) as any
+          updateData.total = updateData.total as any
         }
 
-        const updatedInvoice = await ctx.db.$transaction(async (tx) => {
+        const updatedInvoice = await ctx.prisma.$transaction(async (tx) => {
           // Update invoice
           const invoice = await tx.invoice.update({
             where: { id: input.id },
-            data: updateData,
+            data: updateData as any,
           })
 
           // Update items if provided
@@ -244,9 +243,9 @@ export const financialRouter = createTRPCRouter({
               data: items.map(item => ({
                 ...item,
                 invoiceId: input.id,
-                quantity: new Decimal(item.quantity),
-                rate: new Decimal(item.rate),
-                amount: new Decimal(item.amount),
+                quantity: item.quantity,
+                rate: item.rate,
+                amount: item.amount,
               })),
             })
           }
@@ -279,7 +278,7 @@ export const financialRouter = createTRPCRouter({
     delete: adminProcedure
       .input(z.object({ id: z.string() }))
       .mutation(async ({ ctx, input }) => {
-        const invoice = await ctx.db.invoice.findUnique({
+        const invoice = await ctx.prisma.invoice.findUnique({
           where: { id: input.id },
         })
 
@@ -291,7 +290,7 @@ export const financialRouter = createTRPCRouter({
         }
 
         // Check if invoice has payments
-        const paymentCount = await ctx.db.payment.count({
+        const paymentCount = await ctx.prisma.payment.count({
           where: { invoiceId: input.id },
         })
 
@@ -302,7 +301,7 @@ export const financialRouter = createTRPCRouter({
           })
         }
 
-        return ctx.db.invoice.delete({
+        return ctx.prisma.invoice.delete({
           where: { id: input.id },
         })
       }),
@@ -329,14 +328,14 @@ export const financialRouter = createTRPCRouter({
         }
 
         // Non-admin users can only see payments for their invoices
-        if (ctx.user.role !== 'ADMIN') {
+        if (ctx.session.user.role !== 'ADMIN') {
           whereClause.invoice = {
-            clientId: ctx.user.id,
+            clientId: ctx.session.user.id,
           }
         }
 
         const [payments, total] = await Promise.all([
-          ctx.db.payment.findMany({
+          ctx.prisma.payment.findMany({
             where: whereClause,
             include: {
               invoice: {
@@ -357,7 +356,7 @@ export const financialRouter = createTRPCRouter({
             take: input.limit,
             skip: input.offset,
           }),
-          ctx.db.payment.count({ where: whereClause }),
+          ctx.prisma.payment.count({ where: whereClause }),
         ])
 
         return {
@@ -370,13 +369,13 @@ export const financialRouter = createTRPCRouter({
     create: adminProcedure
       .input(paymentSchema)
       .mutation(async ({ ctx, input }) => {
-        return ctx.db.payment.create({
+        return ctx.prisma.payment.create({
           data: {
             ...input,
-            amount: new Decimal(input.amount),
+            amount: input.amount,
             status: 'COMPLETED', // Default to completed for manual entries
             processedAt: input.processedAt || new Date(),
-          },
+          } as any,
           include: {
             invoice: {
               select: {
@@ -401,7 +400,7 @@ export const financialRouter = createTRPCRouter({
         data: paymentSchema.partial(),
       }))
       .mutation(async ({ ctx, input }) => {
-        const payment = await ctx.db.payment.findUnique({
+        const payment = await ctx.prisma.payment.findUnique({
           where: { id: input.id },
         })
 
@@ -414,12 +413,12 @@ export const financialRouter = createTRPCRouter({
 
         const updateData = { ...input.data }
         if (updateData.amount !== undefined) {
-          updateData.amount = new Decimal(updateData.amount) as any
+          updateData.amount = updateData.amount as any
         }
 
-        return ctx.db.payment.update({
+        return ctx.prisma.payment.update({
           where: { id: input.id },
-          data: updateData,
+          data: updateData as any,
           include: {
             invoice: {
               select: {
@@ -466,24 +465,24 @@ export const financialRouter = createTRPCRouter({
         pendingRevenue,
         paymentStats,
       ] = await Promise.all([
-        ctx.db.invoice.count({ where: whereClause }),
-        ctx.db.invoice.count({ where: { ...whereClause, status: 'PAID' } }),
-        ctx.db.invoice.count({ where: { ...whereClause, status: 'OVERDUE' } }),
-        ctx.db.payment.aggregate({
+        ctx.prisma.invoice.count({ where: whereClause }),
+        ctx.prisma.invoice.count({ where: { ...whereClause, status: 'PAID' } }),
+        ctx.prisma.invoice.count({ where: { ...whereClause, status: 'OVERDUE' } }),
+        ctx.prisma.payment.aggregate({
           where: {
             status: 'COMPLETED',
             ...(whereClause.createdAt ? { createdAt: whereClause.createdAt } : {}),
           },
           _sum: { amount: true },
         }),
-        ctx.db.invoice.aggregate({
+        ctx.prisma.invoice.aggregate({
           where: {
             ...whereClause,
             status: { in: ['SENT', 'OVERDUE'] },
           },
           _sum: { total: true },
         }),
-        ctx.db.payment.groupBy({
+        ctx.prisma.payment.groupBy({
           by: ['method'],
           _count: true,
           _sum: { amount: true },
@@ -498,7 +497,7 @@ export const financialRouter = createTRPCRouter({
         totalInvoices,
         paidInvoices,
         overdueInvoices,
-        draftInvoices: await ctx.db.invoice.count({ where: { ...whereClause, status: 'DRAFT' } }),
+        draftInvoices: await ctx.prisma.invoice.count({ where: { ...whereClause, status: 'DRAFT' } }),
         totalRevenue: totalRevenue._sum.amount?.toNumber() || 0,
         pendingRevenue: pendingRevenue._sum.total?.toNumber() || 0,
         paymentMethodStats: paymentStats.map(stat => ({
@@ -518,25 +517,25 @@ export const financialRouter = createTRPCRouter({
     .query(async ({ ctx, input }) => {
       // This would typically use a raw query for better performance
       // For now, we'll use a simplified approach
-      const payments = await ctx.db.payment.findMany({
+      const payments = await ctx.prisma.payment.findMany({
         where: {
           status: 'COMPLETED',
           processedAt: {
             gte: input.startDate || new Date(Date.now() - 365 * 24 * 60 * 60 * 1000),
             lte: input.endDate || new Date(),
           },
-        },
+        } as any,
         select: {
           amount: true,
           processedAt: true,
-        },
+        } as any,
         orderBy: { processedAt: 'asc' },
       })
 
       // Group payments by period (simplified)
-      const chartData = payments.map(payment => ({
-        date: payment.processedAt?.toISOString().split('T')[0] || '',
-        amount: payment.amount.toNumber(),
+      const chartData = (payments as any[]).map((payment: any) => ({
+        date: payment.processedAt?.toISOString?.().split('T')[0] || '',
+        amount: typeof payment.amount === 'number' ? payment.amount : (payment.amount?.toNumber?.() || 0),
       }))
 
       return chartData

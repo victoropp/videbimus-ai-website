@@ -70,12 +70,11 @@ class VectorStoreService {
 
   constructor() {
     this.config = getServiceConfig().pinecone;
-    
+
     this.pinecone = new Pinecone({
       apiKey: this.config.apiKey,
-      environment: this.config.environment,
     });
-    
+
     this.index = this.pinecone.index(this.config.index);
   }
 
@@ -162,7 +161,7 @@ class VectorStoreService {
     try {
       const response = await aiService.generateEmbeddings(texts, {
         model: 'text-embedding-3-small',
-      });
+      }) as any;
 
       return response.embeddings;
     } catch (error) {
@@ -457,8 +456,8 @@ class VectorStoreService {
     namespace?: string
   ): Promise<SearchResult | null> {
     try {
-      const response = await this.index.namespace(namespace || this.defaultNamespace).fetch([id]);
-      
+      const response: any = await this.index.namespace(namespace || this.defaultNamespace).fetch([id]);
+
       const vector = response.vectors?.[id];
       if (!vector) return null;
 
@@ -485,7 +484,7 @@ class VectorStoreService {
   // Get index statistics
   async getIndexStats(): Promise<IndexStats> {
     try {
-      const stats = await this.index.describeIndexStats();
+      const stats: any = await this.index.describeIndexStats();
       return {
         namespaces: stats.namespaces || {},
         dimension: stats.dimension || 0,

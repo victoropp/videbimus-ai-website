@@ -1,4 +1,4 @@
-import { PrismaClient, type Prisma } from '@prisma/client';
+import { PrismaClient, Prisma } from '@prisma/client';
 import { z } from 'zod';
 
 // Type-safe database configuration schema
@@ -60,7 +60,7 @@ class PrismaManager {
     
     logLevels.push('warn', 'error');
 
-    return new PrismaClient({
+    const clientOptions: any = {
       log: logLevels.map(level => ({
         emit: 'stdout',
         level,
@@ -70,13 +70,19 @@ class PrismaManager {
           url: config.url,
         },
       },
-      __internal: {
+    };
+
+    // Add internal engine configuration if needed (not part of public API)
+    if (config.connectionTimeout || config.poolTimeout) {
+      clientOptions.__internal = {
         engine: {
           connectTimeout: config.connectionTimeout,
           queryTimeout: config.poolTimeout,
         },
-      },
-    });
+      };
+    }
+
+    return new PrismaClient(clientOptions);
   }
 
   async connect(): Promise<void> {

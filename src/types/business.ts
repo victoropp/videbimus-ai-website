@@ -3,7 +3,7 @@
  * @fileoverview Types related to business entities, services, and operations
  */
 
-import type { BaseEntity, ID, Timestamp, Email, URL, Slug, WithImage, WithSEO, ImageData } from './common';
+import type { BaseEntity, ID, Timestamp, Email, URL, Slug, WithImage, WithSEO, ImageData, SEOData } from './common';
 
 // Service Types
 export type ServiceCategory = 'discovery' | 'implementation' | 'transformation' | 'specialized';
@@ -84,26 +84,8 @@ export interface Technology {
   category: 'frontend' | 'backend' | 'database' | 'ai' | 'devops' | 'analytics';
 }
 
-// Team Types
-export interface TeamMember extends BaseEntity, WithImage {
-  name: string;
-  role: string;
-  bio: string;
-  email?: Email;
-  expertise: string[];
-  certifications?: Certification[];
-  social?: {
-    linkedin?: URL;
-    twitter?: URL;
-    github?: URL;
-    website?: URL;
-  };
-  availability?: {
-    status: 'available' | 'busy' | 'unavailable';
-    nextAvailable?: Timestamp;
-  };
-}
-
+// Team Types - Using Prisma-aligned definition later in file (line 432)
+// Certification type for backward compatibility
 export interface Certification {
   id: ID;
   name: string;
@@ -114,18 +96,7 @@ export interface Certification {
   verificationUrl?: URL;
 }
 
-// Testimonial Types
-export interface Testimonial extends BaseEntity, WithImage {
-  name: string;
-  role: string;
-  company: string;
-  content: string;
-  rating: number;
-  serviceId?: ID;
-  projectId?: ID;
-  featured: boolean;
-  verified: boolean;
-}
+// Testimonial Types - Using Prisma-aligned definition later in file (line 429)
 
 // Case Study Types
 export interface CaseStudy {
@@ -384,6 +355,9 @@ export interface NewsletterPreferences {
 // SYSTEM AND MONITORING TYPES - Match Prisma Schema
 // ============================================
 
+// Common Types
+export type Priority = 'low' | 'medium' | 'high' | 'urgent';
+
 // Contact Types
 export type ContactStatus = 'NEW' | 'IN_PROGRESS' | 'RESPONDED' | 'CLOSED' | 'SPAM';
 export type NewsletterStatus = 'SUBSCRIBED' | 'UNSUBSCRIBED' | 'BOUNCED' | 'COMPLAINED';
@@ -434,6 +408,7 @@ export interface TeamMember extends BaseEntity {
   role: string;
   bio?: string;
   image?: string;
+  imageAlt?: string; // Alt text for team member image
   email?: string; // Unique
   linkedin?: string;
   twitter?: string;

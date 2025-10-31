@@ -1,4 +1,4 @@
-import { NextAuthOptions } from 'next-auth';
+// NextAuth v5 no longer exports NextAuthOptions
 import { PrismaAdapter } from '@auth/prisma-adapter';
 import GoogleProvider from 'next-auth/providers/google';
 import GitHubProvider from 'next-auth/providers/github';
@@ -108,7 +108,7 @@ class AuthService {
   }
 
   // Get NextAuth configuration
-  getNextAuthConfig(): NextAuthOptions {
+  getNextAuthConfig(): any {
     const providers = [];
 
     // Add Google provider if configured
@@ -147,24 +147,24 @@ class AuthService {
           email: { label: 'Email', type: 'email' },
           password: { label: 'Password', type: 'password' },
         },
-        async authorize(credentials) {
+        async authorize(credentials: any) {
           if (!credentials?.email || !credentials?.password) {
             return null;
           }
 
           try {
             const user = await prisma.user.findUnique({
-              where: { email: credentials.email },
+              where: { email: credentials.email as string },
               include: { accounts: true },
             });
 
-            if (!user || !user.hashedPassword) {
+            if (!user || !user.password) {
               return null;
             }
 
             const isPasswordValid = await bcrypt.compare(
               credentials.password,
-              user.hashedPassword
+              user.password
             );
 
             if (!isPasswordValid) {
@@ -272,7 +272,7 @@ class AuthService {
                   name: user.name,
                   image: user.image,
                   emailVerified: new Date(),
-                  role: 'USER',
+                  role: 'CLIENT',
                 },
               });
 
@@ -349,8 +349,8 @@ class AuthService {
         data: {
           email: validatedData.email,
           name: validatedData.name,
-          hashedPassword,
-          role: 'USER',
+          password: hashedPassword,
+          role: 'CLIENT',
           emailVerified: null, // Will be set when email is verified
         },
         include: {
@@ -574,8 +574,8 @@ class AuthService {
 
       // Update user password
       await prisma.user.update({
-        where: { email: resetToken.email },
-        data: { hashedPassword },
+        where: { id: resetToken.userId },
+        data: { password: hashedPassword },
       });
 
       // Delete used token
@@ -586,7 +586,7 @@ class AuthService {
       // Invalidate all existing sessions
       await prisma.session.deleteMany({
         where: {
-          user: { email: resetToken.email },
+          userId: resetToken.userId
         },
       });
 
@@ -751,14 +751,23 @@ class AuthService {
     const token = crypto.randomUUID();
     const expires = new Date(Date.now() + 60 * 60 * 1000); // 1 hour
 
-    // Delete any existing reset tokens for this email
-    await prisma.passwordResetToken.deleteMany({
+    // Find user by email
+    const user = await prisma.user.findUnique({
       where: { email },
+    });
+
+    if (!user) {
+      throw new Error('User not found');
+    }
+
+    // Delete any existing reset tokens for this user
+    await prisma.passwordResetToken.deleteMany({
+      where: { userId: user.id },
     });
 
     await prisma.passwordResetToken.create({
       data: {
-        email,
+        userId: user.id,
         token,
         expires,
       },
@@ -769,27 +778,38 @@ class AuthService {
 
   private async handleNewUserSignup(userId: string): Promise<void> {
     try {
-      // Set up default user preferences
-      await prisma.user.update({
+      const user = await prisma.user.findUnique({
         where: { id: userId },
-        data: {
-          preferences: {
-            theme: 'system',
-            language: 'en',
-            notifications: {
-              email: true,
-              push: true,
-              marketing: false,
-            },
-          },
-        },
+        select: { email: true, name: true }
       });
 
-      // You could also:
-      // - Send welcome email
-      // - Create default folders/projects
-      // - Set up onboarding flow
-      // - Track analytics event
+      if (!user) {
+        throw new Error('User not found');
+      }
+
+      // Log user activity
+      await prisma.userActivity.create({
+        data: {
+          userId,
+          action: 'user_registered',
+          metadata: {
+            registrationDate: new Date().toISOString(),
+            email: user.email
+          }
+        }
+      });
+
+      // Create analytics entry
+      await prisma.analytics.create({
+        data: {
+          userId,
+          event: 'registration',
+          properties: {
+            source: 'signup_form',
+            timestamp: new Date().toISOString()
+          }
+        }
+      });
     } catch (error) {
       console.error('Failed to handle new user signup:', error);
     }
