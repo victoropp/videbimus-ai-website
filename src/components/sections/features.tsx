@@ -97,11 +97,11 @@ export function Features() {
           className="text-center mb-16"
         >
           <h2 className="font-display text-3xl font-bold tracking-tight text-gray-900 dark:text-white sm:text-4xl mb-4">
-            Why Work With Us Instead of Hiring or Doing It Yourself?
+            Why Work With Us Instead of Hiring or Building In-House?
           </h2>
           <p className="mx-auto max-w-2xl text-lg text-gray-600 dark:text-gray-300">
-            Hiring data scientists costs $150K+/year (plus 6 months to find them). DIY takes forever and usually fails.
-            We get you results in weeks for a fraction of the cost.
+            Hiring a data science team costs $150K+ per person (good luck finding them). Building in-house takes forever and usually fails.
+            We're the team you can't afford to hire full-time—but at a price you can afford.
           </p>
         </motion.div>
 

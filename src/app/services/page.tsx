@@ -217,6 +217,126 @@ export default function ServicesPage() {
         </div>
       </section>
 
+      {/* Two Main Offerings */}
+      <section className="py-20 bg-gradient-to-br from-gray-50 to-cyan-50/30 dark:from-gray-900 dark:to-cyan-950/10">
+        <div className="container">
+          <motion.div
+            initial={{ opacity: 0, y: 20 }}
+            whileInView={{ opacity: 1, y: 0 }}
+            viewport={{ once: true }}
+            transition={{ duration: 0.6 }}
+            className="text-center mb-12"
+          >
+            <h2 className="font-display text-3xl font-bold tracking-tight text-gray-900 dark:text-white sm:text-4xl mb-4">
+              Two Ways We Save You Money
+            </h2>
+            <p className="mx-auto max-w-2xl text-lg text-gray-600 dark:text-gray-300">
+              Pick one. Pick both. Whatever's bleeding cash right now.
+            </p>
+          </motion.div>
+
+          <div className="grid lg:grid-cols-2 gap-8 max-w-5xl mx-auto">
+            {/* Data Science Services */}
+            <motion.div
+              initial={{ opacity: 0, x: -20 }}
+              whileInView={{ opacity: 1, x: 0 }}
+              viewport={{ once: true }}
+              transition={{ duration: 0.6 }}
+            >
+              <Card className="h-full border-2 border-cyan-200 dark:border-cyan-800 hover:shadow-2xl transition-all duration-300">
+                <CardHeader className="pb-4">
+                  <div className="flex items-center mb-3">
+                    <BarChart3 className="h-8 w-8 text-cyan-500 mr-3" />
+                    <CardTitle className="text-2xl">Data Science Services</CardTitle>
+                  </div>
+                  <div className="text-lg font-semibold text-cyan-600 dark:text-cyan-400 mb-3">
+                    Turn Data Into Decisions
+                  </div>
+                  <CardDescription className="text-base">
+                    Drowning in spreadsheets? Can't see what's coming? We turn your data mess into predictions you can bet on.
+                  </CardDescription>
+                </CardHeader>
+                <CardContent className="space-y-4">
+                  <div className="space-y-2">
+                    <div className="flex items-start">
+                      <CheckCircle className="h-5 w-5 text-cyan-500 mr-2 mt-0.5 flex-shrink-0" />
+                      <span className="text-gray-700 dark:text-gray-300"><strong>Predict what's coming:</strong> Demand, failures, churn—before they cost you</span>
+                    </div>
+                    <div className="flex items-start">
+                      <CheckCircle className="h-5 w-5 text-cyan-500 mr-2 mt-0.5 flex-shrink-0" />
+                      <span className="text-gray-700 dark:text-gray-300"><strong>See patterns you're missing:</strong> Anomalies, trends, opportunities hiding in your data</span>
+                    </div>
+                    <div className="flex items-start">
+                      <CheckCircle className="h-5 w-5 text-cyan-500 mr-2 mt-0.5 flex-shrink-0" />
+                      <span className="text-gray-700 dark:text-gray-300"><strong>Dashboards that make sense:</strong> Real-time visibility without the BS metrics</span>
+                    </div>
+                    <div className="flex items-start">
+                      <CheckCircle className="h-5 w-5 text-cyan-500 mr-2 mt-0.5 flex-shrink-0" />
+                      <span className="text-gray-700 dark:text-gray-300"><strong>Connect the data silos:</strong> One source of truth, finally</span>
+                    </div>
+                  </div>
+                  <div className="pt-4 border-t border-gray-200 dark:border-gray-700">
+                    <p className="text-sm text-gray-600 dark:text-gray-400 font-medium mb-2">Who needs this:</p>
+                    <p className="text-sm text-gray-600 dark:text-gray-400">
+                      Retail (demand forecasting), Manufacturing (predictive maintenance), Finance (fraud detection), Healthcare (patient outcomes)
+                    </p>
+                  </div>
+                </CardContent>
+              </Card>
+            </motion.div>
+
+            {/* AI & Automation Services */}
+            <motion.div
+              initial={{ opacity: 0, x: 20 }}
+              whileInView={{ opacity: 1, x: 0 }}
+              viewport={{ once: true }}
+              transition={{ duration: 0.6 }}
+            >
+              <Card className="h-full border-2 border-purple-200 dark:border-purple-800 hover:shadow-2xl transition-all duration-300">
+                <CardHeader className="pb-4">
+                  <div className="flex items-center mb-3">
+                    <Bot className="h-8 w-8 text-purple-500 mr-3" />
+                    <CardTitle className="text-2xl">AI & Automation Services</CardTitle>
+                  </div>
+                  <div className="text-lg font-semibold text-purple-600 dark:text-purple-400 mb-3">
+                    Turn Tasks Into Automation
+                  </div>
+                  <CardDescription className="text-base">
+                    Team burning hours on grunt work? We automate the soul-crushing stuff so they can do real work.
+                  </CardDescription>
+                </CardHeader>
+                <CardContent className="space-y-4">
+                  <div className="space-y-2">
+                    <div className="flex items-start">
+                      <CheckCircle className="h-5 w-5 text-purple-500 mr-2 mt-0.5 flex-shrink-0" />
+                      <span className="text-gray-700 dark:text-gray-300"><strong>Kill the manual work:</strong> Data entry, approvals, copying between systems—gone</span>
+                    </div>
+                    <div className="flex items-start">
+                      <CheckCircle className="h-5 w-5 text-purple-500 mr-2 mt-0.5 flex-shrink-0" />
+                      <span className="text-gray-700 dark:text-gray-300"><strong>24/7 AI assistants:</strong> Chatbots that don't suck, handle real questions</span>
+                    </div>
+                    <div className="flex items-start">
+                      <CheckCircle className="h-5 w-5 text-purple-500 mr-2 mt-0.5 flex-shrink-0" />
+                      <span className="text-gray-700 dark:text-gray-300"><strong>Document processing:</strong> Extract data from PDFs, invoices, forms—automatically</span>
+                    </div>
+                    <div className="flex items-start">
+                      <CheckCircle className="h-5 w-5 text-purple-500 mr-2 mt-0.5 flex-shrink-0" />
+                      <span className="text-gray-700 dark:text-gray-300"><strong>Workflow optimization:</strong> Cut approval chains, speed up everything</span>
+                    </div>
+                  </div>
+                  <div className="pt-4 border-t border-gray-200 dark:border-gray-700">
+                    <p className="text-sm text-gray-600 dark:text-gray-400 font-medium mb-2">Who needs this:</p>
+                    <p className="text-sm text-gray-600 dark:text-gray-400">
+                      Customer Service (AI chatbots), HR (resume screening), Supply Chain (inventory automation), Finance (invoice processing)
+                    </p>
+                  </div>
+                </CardContent>
+              </Card>
+            </motion.div>
+          </div>
+        </div>
+      </section>
+
       {/* Main Service Tiers */}
       <section className="py-24 bg-white dark:bg-gray-950">
         <div className="container">

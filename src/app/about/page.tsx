@@ -206,11 +206,18 @@ export default function AboutPage() {
 
                 {/* Content Section */}
                 <CardContent className="p-8">
-                  <p className="text-lg text-gray-600 dark:text-gray-300 leading-relaxed">
+                  <p className="text-lg text-gray-600 dark:text-gray-300 leading-relaxed mb-4">
                     Stop the waste. We've seen too many companies burn millions on "AI transformation" projects
-                    that never ship. Our mission? Get you results in weeks, not years. Whether you're in Oil & Gas
-                    losing money on equipment failures, or Insurance drowning in manual claims—we build solutions
-                    that actually work and pay for themselves.
+                    that never ship. Our mission? Get you results in weeks, not years.
+                  </p>
+                  <p className="text-lg text-gray-600 dark:text-gray-300 leading-relaxed">
+                    <strong>Turn Data Into Decisions:</strong> Predict equipment failures before they happen. Forecast demand so you never run out.
+                    Catch fraud before it bleeds you dry.
+                    <br /><br />
+                    <strong>Turn Tasks Into Automation:</strong> Kill the manual work drowning your team. AI chatbots that actually work.
+                    Invoice processing without the data entry hell.
+                    <br /><br />
+                    Whether you need predictions or automation (or both)—we build solutions that work and pay for themselves.
                   </p>
                 </CardContent>
               </Card>
