@@ -31,9 +31,12 @@ class PrismaManager {
   private getConfig(): DatabaseConfig {
     // Map debug to warn since Prisma doesn't support debug level
     const logLevel = process.env.LOG_LEVEL === 'debug' ? 'warn' : process.env.LOG_LEVEL;
-    
+
+    // Use a placeholder URL if DATABASE_URL is not set to prevent validation errors
+    const databaseUrl = process.env.DATABASE_URL || 'postgresql://placeholder:placeholder@localhost:5432/placeholder';
+
     const config = {
-      url: process.env.DATABASE_URL || '',
+      url: databaseUrl,
       poolSize: parseInt(process.env.DATABASE_POOL_SIZE || '20', 10),
       poolTimeout: parseInt(process.env.DATABASE_POOL_TIMEOUT || '30000', 10),
       connectionTimeout: parseInt(process.env.DATABASE_CONNECTION_TIMEOUT || '60000', 10),
@@ -316,10 +319,13 @@ export const prismaManager = PrismaManager.getInstance();
 // Export the prisma client getter for convenience
 export const getPrismaClient = () => prismaManager.getClient();
 
-// Auto-connect in non-test environments
-if (process.env.NODE_ENV !== 'test') {
+// Auto-connect in non-test environments, but only if DATABASE_URL is set
+// This prevents the app from hanging if the database is not configured
+if (process.env.NODE_ENV !== 'test' && process.env.DATABASE_URL) {
   prismaManager.connect().catch(error => {
     console.error('Failed to initialize database connection:', error);
+    // Don't throw - allow the app to start even if database connection fails
+    // Database-dependent features will fail gracefully when accessed
   });
 }
 
