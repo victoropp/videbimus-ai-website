@@ -7,8 +7,8 @@ import { Team } from '@/components/sections/team'
 import { CTA } from '@/components/sections/cta'
 
 export const metadata: Metadata = {
-  title: 'Cut Costs 45% & Automate Manual Work | Videbimus AI',
-  description: 'Stop wasting money on manual processes. SMBs and growing companies save $50K+/month by automating operations and leveraging business data—no complexity, real results in 6-8 weeks.',
+  title: 'Reduce Costs & Automate Manual Work | Videbimus AI',
+  description: 'Stop wasting money on manual processes. SMBs and growing companies save money by automating operations and leveraging business data—no complexity, real results fast.',
   keywords: [
     'reduce operational costs',
     'business process automation',
@@ -23,7 +23,7 @@ export const metadata: Metadata = {
   ],
   openGraph: {
     title: 'Stop Drowning in Data. Start Making Better Decisions | Videbimus AI',
-    description: 'Your team is burning hours on manual tasks. We help companies cut costs 45%, automate repetitive work, and turn data into profit—without 6-figure budgets.',
+    description: 'Your team is burning hours on manual tasks. We help companies reduce costs, automate repetitive work, and turn data into profit—without 6-figure budgets.',
     images: [
       {
         url: '/og-home.jpg',

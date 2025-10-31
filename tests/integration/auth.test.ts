@@ -244,7 +244,12 @@ describe('Authentication Integration Tests', () => {
   describe('Two-Factor Authentication', () => {
     it('should generate TOTP secret', async () => {
       const generateSecret = (): string => {
-        return Math.random().toString(36).substring(2, 18).toUpperCase()
+        // Generate a secure random string of at least 16 characters
+        let secret = ''
+        while (secret.length < 16) {
+          secret += Math.random().toString(36).substring(2)
+        }
+        return secret.substring(0, 16).toUpperCase()
       }
 
       const secret = generateSecret()

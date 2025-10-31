@@ -17,8 +17,8 @@ const features = [
   {
     icon: Zap,
     title: 'You Need Results Yesterday, Not Next Year',
-    description: 'Tired of "6-month implementations" that take 18? We ship working solutions in 6-8 weeks. See it, use it, benefit from it—fast.',
-    metrics: 'Live in 6-8 Weeks',
+    description: 'Tired of "6-month implementations" that take 18? We ship working solutions quickly. See it, use it, benefit from it—fast.',
+    metrics: 'Rapid Deployment',
     image: '/images/home/feature-fast-implementation.jpg',
     imageAlt: 'Rapid AI implementation and deployment timeline showing quick results'
   },
@@ -169,16 +169,16 @@ export function Features() {
         >
           <div className="grid grid-cols-2 md:grid-cols-4 gap-8 text-center">
             <div>
-              <div className="text-3xl font-bold text-gray-900 dark:text-white mb-2">45%</div>
-              <div className="text-sm text-gray-600 dark:text-gray-400">Average Cost Cut</div>
+              <div className="text-3xl font-bold text-gray-900 dark:text-white mb-2">Proven</div>
+              <div className="text-sm text-gray-600 dark:text-gray-400">Cost Reduction</div>
             </div>
             <div>
-              <div className="text-3xl font-bold text-gray-900 dark:text-white mb-2">$50K+</div>
-              <div className="text-sm text-gray-600 dark:text-gray-400">Saved Per Month</div>
+              <div className="text-3xl font-bold text-gray-900 dark:text-white mb-2">Real</div>
+              <div className="text-sm text-gray-600 dark:text-gray-400">Monthly Savings</div>
             </div>
             <div>
-              <div className="text-3xl font-bold text-gray-900 dark:text-white mb-2">6-8 Weeks</div>
-              <div className="text-sm text-gray-600 dark:text-gray-400">To Go Live</div>
+              <div className="text-3xl font-bold text-gray-900 dark:text-white mb-2">Fast</div>
+              <div className="text-sm text-gray-600 dark:text-gray-400">Go Live</div>
             </div>
             <div>
               <div className="text-3xl font-bold text-gray-900 dark:text-white mb-2">20+</div>

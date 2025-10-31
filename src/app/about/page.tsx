@@ -22,8 +22,8 @@ import { Team } from '@/components/sections/team'
 
 const stats = [
   { label: 'Real Projects Shipped', value: '50+', icon: Award },
-  { label: 'Average Cost Saved', value: '$50K/mo', icon: TrendingUp },
-  { label: 'Time to First Results', value: '6-8 Weeks', icon: Zap },
+  { label: 'Client Focus', value: 'ROI-Driven', icon: TrendingUp },
+  { label: 'Implementation', value: 'Rapid', icon: Zap },
   { label: 'Team Experience', value: '50+ Years', icon: Users },
 ]
 
@@ -31,7 +31,7 @@ const values = [
   {
     icon: Zap,
     title: 'Fast Is Better Than Perfect',
-    description: 'Working software in 6 weeks beats a "perfect plan" in 6 months. We ship fast, learn fast, improve fast. Your competitors aren\'t waiting.',
+    description: 'Working software quickly beats a "perfect plan" eventually. We ship fast, learn fast, improve fast. Your competitors aren\'t waiting.',
     image: '/images/about/value-fast-sprint.jpg'
   },
   {

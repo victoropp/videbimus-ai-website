@@ -70,10 +70,10 @@ const mainServices: Service[] = [
   {
     id: 'implementation',
     title: 'Build & Launch',
-    description: 'You know the problem. We build the solution. Ship working software in 6-8 weeks that your team will actually use on Monday morning. Most popular for single high-impact projects.',
-    duration: '6-8 weeks',
+    description: 'You know the problem. We build the solution. Ship working software quickly that your team will actually use on Monday morning. Most popular for single high-impact projects.',
+    duration: 'Rapid delivery',
     features: [
-      'Working software in 6-8 weeks (not months)',
+      'Working software in weeks (not months)',
       'Built with YOUR processes in mind',
       'Integrates with what you already use',
       'Predictive systems that actually predict (failure, demand, churn)',
@@ -202,15 +202,15 @@ export default function ServicesPage() {
             <div className="flex flex-wrap items-center justify-center gap-4 text-white/90">
               <div className="flex items-center space-x-2">
                 <DollarSign className="h-5 w-5 text-green-400" />
-                <span>$50K+ Avg Monthly Savings</span>
+                <span>Significant Cost Savings</span>
               </div>
               <div className="flex items-center space-x-2">
                 <Clock className="h-5 w-5 text-yellow-400" />
-                <span>6-8 Weeks to Live Solution</span>
+                <span>Rapid Implementation</span>
               </div>
               <div className="flex items-center space-x-2">
                 <CheckCircle className="h-5 w-5 text-cyan-400" />
-                <span>ROI in First 90 Days</span>
+                <span>Fast ROI</span>
               </div>
             </div>
           </motion.div>
