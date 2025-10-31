@@ -47,7 +47,7 @@
     "test:ci": "npm run test:coverage && npm run test:integration && npm run test:security && npm run test:e2e:desktop && npm run test:lighthouse",
     "playwright:install": "playwright install",
     "playwright:install-deps": "playwright install-deps",
-    "prepare": "husky install",
+    "prepare": "husky install || true",
     "pre-commit": "lint-staged"
   },
   "dependencies": {
