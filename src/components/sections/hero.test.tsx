@@ -43,7 +43,7 @@ describe('Hero', () => {
     render(<Hero />)
 
     // Look for new outcome-focused content
-    const description = screen.getByText(/cut operational costs by 45%|automate repetitive work/i)
+    const description = screen.getByText(/reduce operational costs|automate repetitive work/i)
     expect(description).toBeInTheDocument()
   })
 

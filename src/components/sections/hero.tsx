@@ -101,7 +101,7 @@ export function Hero() {
             className="mx-auto max-w-2xl text-lg leading-8 text-gray-600 dark:text-gray-300 sm:text-xl mb-10"
           >
             Your team is burning hours on manual tasks while competitors move faster.
-            We help SMBs and growing companies cut operational costs by 45%, automate repetitive work,
+            We help SMBs and growing companies reduce operational costs, automate repetitive work,
             and actually use the mountains of data you're sitting on—without the complexity or 6-figure price tag.
           </motion.p>
 
@@ -144,16 +144,16 @@ export function Hero() {
             className="grid grid-cols-1 sm:grid-cols-3 gap-8 text-center"
           >
             <div className="flex flex-col items-center">
-              <div className="text-3xl font-bold text-gray-900 dark:text-white mb-2">45%</div>
-              <div className="text-sm text-gray-600 dark:text-gray-400">Avg Cost Reduction (First 90 Days)</div>
+              <div className="text-3xl font-bold text-gray-900 dark:text-white mb-2">Fast</div>
+              <div className="text-sm text-gray-600 dark:text-gray-400">Rapid Implementation & Results</div>
             </div>
             <div className="flex flex-col items-center">
-              <div className="text-3xl font-bold text-gray-900 dark:text-white mb-2">6-8 Weeks</div>
-              <div className="text-sm text-gray-600 dark:text-gray-400">To First Working Solution</div>
+              <div className="text-3xl font-bold text-gray-900 dark:text-white mb-2">Proven</div>
+              <div className="text-sm text-gray-600 dark:text-gray-400">Battle-Tested Solutions</div>
             </div>
             <div className="flex flex-col items-center">
-              <div className="text-3xl font-bold text-gray-900 dark:text-white mb-2">$50K+</div>
-              <div className="text-sm text-gray-600 dark:text-gray-400">Saved Per Month (Typical Client)</div>
+              <div className="text-3xl font-bold text-gray-900 dark:text-white mb-2">Practical</div>
+              <div className="text-sm text-gray-600 dark:text-gray-400">No Complexity, Real ROI</div>
             </div>
           </motion.div>
         </motion.div>
