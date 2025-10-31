@@ -7,7 +7,7 @@
   "license": "PROPRIETARY",
   "scripts": {
     "dev": "next dev",
-    "build": "npx prisma generate && set SKIP_TYPE_CHECK=1&& next build",
+    "build": "prisma generate && next build",
     "start": "next start",
     "lint": "next lint",
     "type-check": "tsc --noEmit",
@@ -18,7 +18,7 @@
     "db:seed": "tsx prisma/seed.ts",
     "db:reset": "prisma migrate reset",
     "db:setup": "node scripts/setup-db.js",
-    "postinstall": "prisma generate || true",
+    "postinstall": "prisma generate",
     "test": "vitest",
     "test:ui": "vitest --ui",
     "test:run": "vitest run",
