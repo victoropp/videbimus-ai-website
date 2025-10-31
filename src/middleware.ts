@@ -16,12 +16,12 @@ export async function middleware(request: NextRequest) {
 
   // Configure CSP based on environment
   // Development: Allow unsafe-eval for Next.js hot reloading and development tools
-  // Production: Strict CSP with nonce-based script execution
+  // Production: Relaxed CSP to allow Next.js inline scripts
   const cspHeader = [
     "default-src 'self'",
     isDevelopment
       ? `script-src 'self' 'unsafe-eval' 'unsafe-inline' https:`
-      : `script-src 'self' 'nonce-${nonce}' 'strict-dynamic' https:`,
+      : `script-src 'self' 'unsafe-inline' 'unsafe-eval' https:`,
     "style-src 'self' 'unsafe-inline' https://fonts.googleapis.com",
     "img-src 'self' data: blob: https:",
     "font-src 'self' data: https://fonts.gstatic.com",

@@ -17,7 +17,8 @@ export function TRPCProvider({ children }: { children: React.ReactNode }) {
       queries: {
         staleTime: 5 * 60 * 1000, // 5 minutes
         refetchOnWindowFocus: false,
-        retry: 1, // Reduce retries to fail faster
+        retry: false, // Disable retries entirely
+        networkMode: 'offlineFirst', // Don't block on network issues
       },
     },
   }))
@@ -27,6 +28,12 @@ export function TRPCProvider({ children }: { children: React.ReactNode }) {
       links: [
         httpBatchLink({
           url: `${getBaseUrl()}/api/trpc`,
+          fetch(url, options) {
+            return fetch(url, {
+              ...options,
+              signal: AbortSignal.timeout(10000), // 10 second timeout
+            })
+          },
           headers() {
             return {
               // Add any headers you need here
