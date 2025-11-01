@@ -56,10 +56,10 @@ The business case for real-time ML is clear:
 
 **Architecture**:
 
-```bash
+\`\`\`bash
 API Gateway (10ms) → Load Balancer (5ms) → Model Server (20ms) → GPU (15ms)
 Total: ~50ms p99 latency
-```
+\`\`\`
 
 > [!success] Best Practice: Measure P99, Not Average
 > Always measure p99 latency, not just average. Real-time systems fail when they're inconsistent—your worst-case performance matters more than your best-case.
@@ -91,12 +91,12 @@ Total: ~50ms p99 latency
 
 **Strategy**:
 
-```python
+\`\`\`python
 # Cascade decision logic
 1. Fast linear model (5ms): Handles 80% of cases
 2. If confidence < threshold: Medium gradient boosting model (20ms)
 3. If still uncertain: Deep neural network (100ms)
-```
+\`\`\`
 
 **Benefit**: 80% of predictions in 5ms, average latency 15ms (vs. 100ms for all)
 
@@ -825,10 +825,10 @@ The difference is intervention. Causal models answer:
 
 **Example**: Does education cause higher income?
 
-```bash
+\`\`\`bash
 Family wealth → Education → Income
 Family wealth → --------→ Income (confounder)
-```
+\`\`\`
 
 > [!danger] The Confounder Problem
 > The biggest mistake in causal inference is ignoring confounders—variables that affect both treatment and outcome. Missing even one major confounder can completely invalidate your causal conclusions.
@@ -1310,10 +1310,10 @@ Vendor lock-in is real, expensive, and increasingly avoidable. Smart organizatio
 
 **Strategy**:
 
-```bash
+\`\`\`bash
 # Define infra in Terraform → Deploy to any cloud
 # Same k8s manifests → Run on EKS, AKS, GKE, or on-prem
-```
+\`\`\`
 
 > [!success] Start Portable From Day One
 > Start with infrastructure portability from day one. Migrating from proprietary infrastructure is 10x harder than building portable infrastructure initially.

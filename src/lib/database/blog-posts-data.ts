@@ -924,11 +924,11 @@ model = ModelTrainer(config).train(features)
 
 **MLOps pipeline architecture**:
 
-```
+\`\`\`
 Data Collection → Feature Engineering → Training → Validation
      ↓                                                ↓
 Monitoring ← Production Deployment ← Model Registry ← Testing
-```
+\`\`\`
 
 **Key components**:
 
