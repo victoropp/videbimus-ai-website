@@ -1,5 +1,7 @@
 import { PrismaClient } from '@prisma/client';
 import { hash } from 'bcryptjs';
+import { createBlogPosts } from './blog-posts-data';
+import { remainingBlogPosts } from './blog-posts-data-remaining';
 
 const prisma = new PrismaClient();
 
@@ -50,6 +52,59 @@ async function main() {
   });
 
   console.log('✅ Client user created');
+
+  // Create team member user accounts (for blog post authorship)
+  const victorOpponUser = await prisma.user.upsert({
+    where: { email: 'victor.collins.oppon@videbimusai.com' },
+    update: {},
+    create: {
+      email: 'victor.collins.oppon@videbimusai.com',
+      name: 'Victor Collins Oppon',
+      password: await hash('teamMember123', 12),
+      role: 'ADMIN',
+      isActive: true,
+    },
+  });
+
+  const saiRajAliUser = await prisma.user.upsert({
+    where: { email: 'sai.raj.ali@videbimusai.com' },
+    update: {},
+    create: {
+      email: 'sai.raj.ali@videbimusai.com',
+      name: 'Sai Raj Ali',
+      password: await hash('teamMember123', 12),
+      role: 'CONSULTANT',
+      isActive: true,
+    },
+  });
+
+  const shawannahAllyUser = await prisma.user.upsert({
+    where: { email: 'shawanah.ally@videbimusai.com' },
+    update: {},
+    create: {
+      email: 'shawanah.ally@videbimusai.com',
+      name: 'Shawanah Ally',
+      password: await hash('teamMember123', 12),
+      role: 'CONSULTANT',
+      isActive: true,
+    },
+  });
+
+  const rukayatSalauUser = await prisma.user.upsert({
+    where: { email: 'rukayat.salau@videbimusai.com' },
+    update: {},
+    create: {
+      email: 'rukayat.salau@videbimusai.com',
+      name: 'Rukayat Salau',
+      password: await hash('teamMember123', 12),
+      role: 'CONSULTANT',
+      isActive: true,
+    },
+  });
+
+  const teamMemberUsers = [victorOpponUser, saiRajAliUser, shawannahAllyUser, rukayatSalauUser];
+
+  console.log('✅ Team member user accounts created');
 
   // Create team members
   const teamMembers = await Promise.all([
@@ -197,117 +252,17 @@ async function main() {
 
   console.log('✅ Blog categories created');
 
-  // Create sample blog posts
-  const blogPosts = await Promise.all([
-    prisma.blogPost.upsert({
-      where: { slug: 'future-of-enterprise-ai-2024' },
-      update: {},
-      create: {
-        title: 'The Future of Enterprise AI in 2024: Trends and Predictions',
-        slug: 'future-of-enterprise-ai-2024',
-        excerpt: 'Explore the key trends shaping enterprise AI adoption, from generative AI integration to ethical AI governance frameworks.',
-        content: `# The Future of Enterprise AI in 2024: Trends and Predictions
+  // Create comprehensive blog posts (12 thought-leadership articles)
+  const blogPostsData = [
+    ...createBlogPosts(categories, teamMemberUsers),
+    ...remainingBlogPosts(categories, teamMemberUsers),
+  ];
 
-As we navigate through 2024, artificial intelligence continues to reshape the enterprise landscape at an unprecedented pace. Organizations are moving beyond experimental phases to implement AI solutions that drive measurable business outcomes.
+  const blogPosts = await Promise.all(
+    blogPostsData.map(postData => prisma.blogPost.upsert(postData))
+  );
 
-## Key Trends Shaping Enterprise AI
-
-### 1. Generative AI Integration
-Generative AI has moved from proof-of-concept to production deployment. Companies are integrating large language models into their workflows, creating custom AI assistants, and automating content creation processes.
-
-### 2. AI Governance and Ethics
-With increased AI adoption comes the critical need for robust governance frameworks. Organizations are implementing AI ethics committees, bias detection systems, and compliance monitoring tools.
-
-### 3. Edge AI and Real-time Processing
-The demand for real-time AI processing is driving the adoption of edge computing solutions, enabling faster decision-making and reduced latency.
-
-## Implementation Strategies
-
-Successful AI implementation requires:
-- Clear business objectives and success metrics
-- Cross-functional team collaboration
-- Robust data infrastructure
-- Continuous monitoring and optimization
-
-## Conclusion
-
-The future of enterprise AI is bright, but success requires strategic planning, ethical considerations, and a commitment to continuous learning and adaptation.`,
-        status: 'PUBLISHED',
-        published: true,
-        publishedAt: new Date(),
-        featured: true,
-        authorId: adminUser.id,
-        categoryId: categories[0].id,
-        tags: ['AI Strategy', 'Enterprise AI', 'Digital Transformation', '2024 Trends'],
-        seoTitle: 'Enterprise AI Trends 2024 | Future of Business Intelligence',
-        seoDescription: 'Discover the latest enterprise AI trends for 2024, including generative AI integration, governance frameworks, and implementation strategies.',
-        readTime: 8,
-        views: 1250,
-      },
-    }),
-    prisma.blogPost.upsert({
-      where: { slug: 'machine-learning-deployment-best-practices' },
-      update: {},
-      create: {
-        title: 'Machine Learning Deployment: Best Practices for Production Systems',
-        slug: 'machine-learning-deployment-best-practices',
-        excerpt: 'Learn proven strategies for deploying ML models to production, including MLOps practices, monitoring, and scaling considerations.',
-        content: `# Machine Learning Deployment: Best Practices for Production Systems
-
-Deploying machine learning models to production is one of the most challenging aspects of the ML lifecycle. This comprehensive guide covers essential practices for successful ML deployment.
-
-## Pre-Deployment Checklist
-
-### Model Validation
-- Comprehensive testing on holdout datasets
-- Performance metrics validation
-- Bias and fairness assessments
-- Edge case handling verification
-
-### Infrastructure Readiness
-- Scalable serving infrastructure
-- Monitoring and alerting systems
-- Data pipeline validation
-- Security and compliance checks
-
-## Deployment Strategies
-
-### Blue-Green Deployment
-Deploy new models alongside existing ones, allowing for quick rollbacks if issues arise.
-
-### Canary Releases
-Gradually roll out new models to a subset of users, monitoring performance before full deployment.
-
-### A/B Testing
-Compare new models against existing ones using controlled experiments.
-
-## Monitoring and Maintenance
-
-Continuous monitoring is crucial for maintaining model performance:
-- Data drift detection
-- Model performance degradation alerts
-- Feature importance tracking
-- Business impact measurement
-
-## Conclusion
-
-Successful ML deployment requires careful planning, robust infrastructure, and continuous monitoring. By following these best practices, organizations can ensure their ML models deliver consistent value in production environments.`,
-        status: 'PUBLISHED',
-        published: true,
-        publishedAt: new Date(Date.now() - 7 * 24 * 60 * 60 * 1000), // 1 week ago
-        featured: false,
-        authorId: consultantUser.id,
-        categoryId: categories[1].id,
-        tags: ['MLOps', 'Deployment', 'Production ML', 'Best Practices'],
-        seoTitle: 'ML Deployment Best Practices | Production Machine Learning',
-        seoDescription: 'Master machine learning deployment with proven MLOps practices, monitoring strategies, and scaling techniques for production systems.',
-        readTime: 12,
-        views: 892,
-      },
-    }),
-  ]);
-
-  console.log('✅ Blog posts created');
+  console.log('✅ Blog posts created (12 comprehensive articles)');
 
   // Create case studies
   const caseStudies = await Promise.all([
@@ -557,7 +512,7 @@ This project showcases the effectiveness of modern ML techniques in financial fr
   console.log('- Team Members: 3');
   console.log('- Testimonials: 3');
   console.log('- Blog Categories: 4');
-  console.log('- Blog Posts: 2');
+  console.log('- Blog Posts: 12');
   console.log('- Case Studies: 2');
   console.log('- Projects: 1');
   console.log('- Tasks: 3');

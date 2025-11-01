@@ -22,7 +22,10 @@
       "Bash(npm install:*)",
       "Bash(npm run type-check:*)",
       "Bash(npm run build:*)",
-      "Bash(npm uninstall:*)"
+      "Bash(npm uninstall:*)",
+      "Bash(npx prisma db seed:*)",
+      "Bash(npx tsx:*)",
+      "Bash(\"C:\\Program Files\\PostgreSQL\\17\\bin\\pg_ctl.exe\" -D \"D:\\PostgreSQL\\17\\data\" start)"
     ],
     "deny": [],
     "ask": []
