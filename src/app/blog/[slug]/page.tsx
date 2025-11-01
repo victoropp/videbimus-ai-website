@@ -1,11 +1,12 @@
 'use client'
 
-import { useState, useEffect, useCallback } from 'react'
+import React, { useState, useEffect, useCallback } from 'react'
 import { useParams, useRouter } from 'next/navigation'
 import { motion } from 'framer-motion'
 import Image from 'next/image'
 import { Calendar, Clock, User, Eye, Heart, Share2, MessageSquare, Tag, ArrowLeft, ArrowRight } from 'lucide-react'
 import ReactMarkdown from 'react-markdown'
+import type { Components } from 'react-markdown'
 import { Prism as SyntaxHighlighter } from 'react-syntax-highlighter'
 import { tomorrow } from 'react-syntax-highlighter/dist/esm/styles/prism'
 import { Button } from '@/components/ui/button'
@@ -13,6 +14,11 @@ import { Badge } from '@/components/ui/badge'
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card'
 import { Separator } from '@/components/ui/separator'
 import SEOHead from '@/components/blog/seo-head'
+import { ReadingProgress } from '@/components/blog/reading-progress'
+import { TableOfContents } from '@/components/blog/table-of-contents'
+import { CodeBlock } from '@/components/blog/code-block'
+import { Callout } from '@/components/blog/callout'
+import { BlogImage } from '@/components/blog/blog-image'
 import type { BlogPost } from '@/types'
 
 export default function BlogPostPage() {
@@ -144,7 +150,8 @@ export default function BlogPostPage() {
   return (
     <div className="min-h-screen">
       <SEOHead post={post} />
-      
+      <ReadingProgress />
+
       {/* Hero Section */}
       <section className="py-16 bg-gradient-to-br from-primary-900 via-primary-800 to-primary-700 relative overflow-hidden">
         <div className="absolute inset-0 bg-gradient-to-r from-cyan-600/20 to-purple-600/20" />
@@ -280,28 +287,138 @@ export default function BlogPostPage() {
                   initial={{ opacity: 0, y: 20 }}
                   animate={{ opacity: 1, y: 0 }}
                   transition={{ duration: 0.6, delay: 0.2 }}
-                  className="prose prose-lg dark:prose-dark max-w-none"
+                  className="prose prose-lg dark:prose-invert max-w-none prose-headings:scroll-mt-24 prose-a:text-cyan-600 dark:prose-a:text-cyan-400 prose-code:text-purple-600 dark:prose-code:text-purple-400 prose-pre:bg-transparent prose-pre:p-0"
                 >
                   <ReactMarkdown
                     components={{
-                      code({node, className, children, ...props}: any) {
+                      // Code blocks with syntax highlighting
+                      code(props) {
+                        const { node, inline, className, children, ...rest } = props as any
                         const match = /language-(\w+)/.exec(className || '')
-                        const inline = node?.position ? false : true
-                        return !inline && match ? (
-                          <SyntaxHighlighter
-                            style={tomorrow}
-                            language={match[1]}
-                            PreTag="div"
-                            {...props}
-                          >
-                            {String(children).replace(/\n$/, '')}
-                          </SyntaxHighlighter>
-                        ) : (
-                          <code className={className} {...props}>
+                        const codeString = String(children).replace(/\n$/, '')
+
+                        if (!inline && match) {
+                          return (
+                            <CodeBlock
+                              code={codeString}
+                              language={match[1]}
+                              showLineNumbers={true}
+                            />
+                          )
+                        }
+
+                        return (
+                          <code className={className} {...rest}>
                             {children}
                           </code>
                         )
-                      }
+                      },
+                      // H2 headings with IDs for TOC linking
+                      h2: ({children, ...props}) => {
+                        const text = String(children)
+                        const id = text
+                          .toLowerCase()
+                          .replace(/[^\w\s-]/g, '')
+                          .replace(/\s+/g, '-')
+                          .replace(/-+/g, '-')
+                          .trim()
+                        return (
+                          <h2
+                            id={id}
+                            className="group relative scroll-mt-24"
+                            {...props}
+                          >
+                            {children}
+                            <a
+                              href={`#${id}`}
+                              className="absolute -left-6 top-1/2 -translate-y-1/2 opacity-0 group-hover:opacity-100 transition-opacity text-cyan-500 hover:text-cyan-600 no-underline"
+                              aria-label={`Link to ${text}`}
+                            >
+                              #
+                            </a>
+                          </h2>
+                        )
+                      },
+                      // H3 headings with IDs for TOC linking
+                      h3: ({children, ...props}) => {
+                        const text = String(children)
+                        const id = text
+                          .toLowerCase()
+                          .replace(/[^\w\s-]/g, '')
+                          .replace(/\s+/g, '-')
+                          .replace(/-+/g, '-')
+                          .trim()
+                        return (
+                          <h3
+                            id={id}
+                            className="group relative scroll-mt-24"
+                            {...props}
+                          >
+                            {children}
+                            <a
+                              href={`#${id}`}
+                              className="absolute -left-5 top-1/2 -translate-y-1/2 opacity-0 group-hover:opacity-100 transition-opacity text-cyan-500 hover:text-cyan-600 text-sm no-underline"
+                              aria-label={`Link to ${text}`}
+                            >
+                              #
+                            </a>
+                          </h3>
+                        )
+                      },
+                      // Blockquotes as Callout components
+                      blockquote: ({children, ...props}) => {
+                        // Check if blockquote contains a callout type indicator
+                        const childrenArray = React.Children.toArray(children)
+                        const firstChild = childrenArray[0]
+
+                        if (firstChild && typeof firstChild === 'object' && 'props' in firstChild) {
+                          const firstChildProps = firstChild.props
+                          if (firstChildProps && firstChildProps.children) {
+                            const text = String(firstChildProps.children[0] || '')
+                            const calloutMatch = text.match(/^\[!(info|warning|success|danger)\](.*)/)
+
+                            if (calloutMatch) {
+                              const type = calloutMatch[1] as 'info' | 'warning' | 'success' | 'danger'
+                              const title = calloutMatch[2]?.trim() || undefined
+
+                              // Remove the indicator from children
+                              const newChildren = React.Children.map(childrenArray, (child, index) => {
+                                if (index === 0 && typeof child === 'object' && 'props' in child) {
+                                  const childProps = child.props
+                                  if (childProps && childProps.children) {
+                                    const modifiedChildren = [...childProps.children]
+                                    modifiedChildren[0] = text.replace(/^\[!(info|warning|success|danger)\][^\n]*\n?/, '')
+                                    return React.cloneElement(child as React.ReactElement, {
+                                      children: modifiedChildren
+                                    })
+                                  }
+                                }
+                                return child
+                              })
+
+                              return (
+                                <Callout type={type} title={title}>
+                                  {newChildren}
+                                </Callout>
+                              )
+                            }
+                          }
+                        }
+
+                        // Default blockquote rendering
+                        return <blockquote {...props}>{children}</blockquote>
+                      },
+                      // Images with BlogImage component
+                      img: ({src, alt, ...props}) => {
+                        if (!src) return null
+                        return (
+                          <BlogImage
+                            src={src}
+                            alt={alt || ''}
+                            caption={alt}
+                          />
+                        )
+                      },
                     }}
                   >
                     {post.content}
@@ -367,12 +484,24 @@ export default function BlogPostPage() {
               </article>
 
               {/* Sidebar */}
-              <aside className="lg:w-80 mt-12 lg:mt-0">
-                {/* Author Info */}
+              <aside className="lg:w-80 mt-12 lg:mt-0 space-y-6">
+                {/* Table of Contents */}
                 <motion.div
                   initial={{ opacity: 0, x: 20 }}
                   animate={{ opacity: 1, x: 0 }}
                   transition={{ duration: 0.6, delay: 0.3 }}
+                  className="hidden lg:block"
+                >
+                  <div className="sticky top-6">
+                    <TableOfContents content={post.content} />
+                  </div>
+                </motion.div>
+
+                {/* Author Info */}
+                <motion.div
+                  initial={{ opacity: 0, x: 20 }}
+                  animate={{ opacity: 1, x: 0 }}
+                  transition={{ duration: 0.6, delay: 0.4 }}
                 >
                   <Card className="sticky top-6">
                     <CardHeader>
@@ -397,7 +526,7 @@ export default function BlogPostPage() {
                     </CardHeader>
                     <CardContent>
                       <p className="text-gray-600 dark:text-gray-300 mb-4">
-                        Expert in AI and machine learning with years of experience helping businesses 
+                        Expert in AI and machine learning with years of experience helping businesses
                         implement cutting-edge solutions.
                       </p>
                       <Button variant="outline" size="sm" className="w-full">

@@ -152,6 +152,77 @@
     @apply bg-cyan-500/20 text-cyan-900 dark:text-cyan-100;
   }
 
+  /* Blog Prose Refinements - Optimal Reading Experience */
+  .prose {
+    /* Smooth font rendering */
+    -webkit-font-smoothing: antialiased;
+    -moz-osx-font-smoothing: grayscale;
+    text-rendering: optimizeLegibility;
+    font-feature-settings: "kern" 1, "liga" 1;
+  }
+
+  /* Enhanced readability for long-form content */
+  .prose p {
+    text-align: justify;
+    hyphens: auto;
+    -webkit-hyphens: auto;
+    -moz-hyphens: auto;
+  }
+
+  /* Improved list spacing */
+  .prose ul ul,
+  .prose ol ol,
+  .prose ul ol,
+  .prose ol ul {
+    margin-top: 0.75rem;
+    margin-bottom: 0.75rem;
+  }
+
+  /* Better code block styling */
+  .prose pre {
+    position: relative;
+  }
+
+  .prose pre::-webkit-scrollbar {
+    height: 8px;
+  }
+
+  .prose pre::-webkit-scrollbar-track {
+    @apply bg-gray-800 rounded;
+  }
+
+  .prose pre::-webkit-scrollbar-thumb {
+    @apply bg-cyan-600 rounded;
+  }
+
+  .prose pre::-webkit-scrollbar-thumb:hover {
+    @apply bg-cyan-500;
+  }
+
+  /* Table enhancements */
+  .prose table {
+    font-variant-numeric: tabular-nums;
+  }
+
+  /* Better blockquote styling */
+  .prose blockquote {
+    font-feature-settings: "liga" 1, "dlig" 1;
+  }
+
+  /* Smooth transitions for interactive elements */
+  .prose a,
+  .prose summary {
+    transition: all 0.2s ease-in-out;
+  }
+
+  /* Print-optimized line height */
+  @media print {
+    .prose {
+      text-align: left;
+      hyphens: none;
+    }
+  }
+
   /* Hide scrollbar for elements with overflow-x-auto */
   .hide-scrollbar {
     -ms-overflow-style: none;
@@ -233,5 +304,368 @@
 
   .animate-delay-1000 {
     animation-delay: 1s;
+  }
+}
+
+/* Print styles for professional blog article printing */
+@media print {
+  @page {
+    margin: 2cm 2.5cm;
+    size: A4 portrait;
+  }
+
+  @page :first {
+    margin-top: 1.5cm;
+  }
+
+  @page :left {
+    margin-left: 3cm;
+    margin-right: 2cm;
+  }
+
+  @page :right {
+    margin-left: 2cm;
+    margin-right: 3cm;
+  }
+
+  /* Hide non-essential elements */
+  nav,
+  aside,
+  footer,
+  .no-print,
+  button,
+  .reading-progress,
+  .table-of-contents,
+  .share-buttons,
+  .comment-section,
+  .sidebar,
+  .navigation,
+  .cookie-banner,
+  .ad,
+  .advertisement {
+    display: none !important;
+  }
+
+  /* Optimize content for print */
+  body {
+    @apply bg-white text-black;
+    font-size: 12pt;
+    line-height: 1.6;
+    color: #000 !important;
+    margin: 0;
+    padding: 0;
+  }
+
+  /* Remove all shadows and backgrounds */
+  * {
+    box-shadow: none !important;
+    text-shadow: none !important;
+  }
+
+  /* Typography for print */
+  .prose h1,
+  .prose-lg h1 {
+    font-size: 24pt;
+    font-weight: 700;
+    page-break-after: avoid;
+    page-break-inside: avoid;
+    margin-top: 0;
+    margin-bottom: 1.5rem;
+    color: #000 !important;
+    background: none !important;
+    -webkit-text-fill-color: inherit !important;
+  }
+
+  .prose h2,
+  .prose-lg h2 {
+    font-size: 20pt;
+    font-weight: 600;
+    page-break-after: avoid;
+    page-break-inside: avoid;
+    border-bottom: 2pt solid #000 !important;
+    padding-bottom: 0.5rem;
+    margin-top: 2rem;
+    margin-bottom: 1rem;
+    color: #000 !important;
+  }
+
+  .prose h3,
+  .prose-lg h3 {
+    font-size: 16pt;
+    font-weight: 600;
+    page-break-after: avoid;
+    page-break-inside: avoid;
+    margin-top: 1.5rem;
+    margin-bottom: 0.75rem;
+    color: #000 !important;
+  }
+
+  .prose h4,
+  .prose-lg h4 {
+    font-size: 14pt;
+    font-weight: 600;
+    page-break-after: avoid;
+    page-break-inside: avoid;
+    margin-top: 1rem;
+    margin-bottom: 0.5rem;
+    color: #000 !important;
+  }
+
+  .prose h5,
+  .prose h6 {
+    font-size: 12pt;
+    font-weight: 600;
+    page-break-after: avoid;
+    color: #000 !important;
+  }
+
+  /* Paragraph optimization */
+  .prose p,
+  .prose-lg p {
+    font-size: 12pt;
+    line-height: 1.6;
+    margin-top: 0.75rem;
+    margin-bottom: 0.75rem;
+    text-align: left;
+    orphans: 3;
+    widows: 3;
+    hyphens: none;
+    color: #000 !important;
+  }
+
+  /* Avoid breaking inside elements */
+  .prose li,
+  .prose blockquote,
+  .prose figure {
+    page-break-inside: avoid;
+    orphans: 3;
+    widows: 3;
+  }
+
+  /* Lists */
+  .prose ul,
+  .prose ol {
+    page-break-before: avoid;
+    margin-top: 0.75rem;
+    margin-bottom: 0.75rem;
+  }
+
+  .prose li {
+    font-size: 12pt;
+    line-height: 1.6;
+    color: #000 !important;
+  }
+
+  /* Code blocks */
+  .prose pre {
+    page-break-inside: avoid;
+    border: 1pt solid #333 !important;
+    background: #f8f8f8 !important;
+    padding: 0.75rem !important;
+    margin: 1rem 0 !important;
+    font-size: 10pt;
+    line-height: 1.4;
+    white-space: pre-wrap;
+    word-wrap: break-word;
+  }
+
+  .prose pre code {
+    background: transparent !important;
+    color: #000 !important;
+    font-size: 10pt;
+    border: none !important;
+  }
+
+  .prose code {
+    background: #f0f0f0 !important;
+    color: #000 !important;
+    padding: 0.125rem 0.25rem !important;
+    border: 1pt solid #ddd !important;
+    font-size: 11pt;
+    font-family: 'Courier New', monospace;
+    word-break: break-word;
+  }
+
+  /* Images */
+  .prose img {
+    max-width: 100% !important;
+    height: auto !important;
+    page-break-inside: avoid;
+    page-break-after: avoid;
+    display: block;
+    margin: 1.5rem auto;
+    border: 1pt solid #ddd;
+  }
+
+  .prose figure {
+    margin: 1.5rem 0;
+    page-break-inside: avoid;
+  }
+
+  .prose figcaption {
+    font-size: 10pt;
+    font-style: italic;
+    color: #666 !important;
+    text-align: center;
+    margin-top: 0.5rem;
+  }
+
+  /* Tables */
+  .prose table {
+    page-break-inside: avoid;
+    border-collapse: collapse;
+    width: 100%;
+    margin: 1rem 0;
+    font-size: 11pt;
+    border: 1pt solid #000;
+  }
+
+  .prose thead {
+    background: #e8e8e8 !important;
+    border-bottom: 2pt solid #000;
+  }
+
+  .prose th,
+  .prose td {
+    border: 1pt solid #333 !important;
+    padding: 0.5rem !important;
+    text-align: left;
+    vertical-align: top;
+    color: #000 !important;
+    background: none !important;
+  }
+
+  .prose th {
+    font-weight: 700;
+    background: #e8e8e8 !important;
+  }
+
+  .prose tbody tr {
+    border-bottom: 1pt solid #ddd !important;
+  }
+
+  .prose tbody tr:hover {
+    background: none !important;
+  }
+
+  /* Links - show URLs for external links */
+  .prose a {
+    color: #000 !important;
+    text-decoration: underline;
+    word-wrap: break-word;
+  }
+
+  .prose a[href^="http"]:not([href*="videbimus"])::after {
+    content: " (" attr(href) ")";
+    font-size: 9pt;
+    color: #666;
+    word-break: break-all;
+  }
+
+  /* Internal links - no URL display */
+  .prose a[href^="/"]:after,
+  .prose a[href^="#"]:after {
+    content: "";
+  }
+
+  /* Blockquotes */
+  .prose blockquote {
+    border-left: 4pt solid #333 !important;
+    padding-left: 1rem;
+    margin: 1rem 0;
+    font-style: italic;
+    background: #f9f9f9 !important;
+    page-break-inside: avoid;
+    color: #000 !important;
+  }
+
+  .prose blockquote::before {
+    display: none !important;
+  }
+
+  .prose blockquote p {
+    margin: 0.5rem 0;
+  }
+
+  /* Horizontal rules */
+  .prose hr {
+    border: none !important;
+    border-top: 2pt solid #000 !important;
+    margin: 2rem 0;
+    background: none !important;
+  }
+
+  /* Strong and emphasis */
+  .prose strong {
+    font-weight: 700;
+    color: #000 !important;
+  }
+
+  .prose em {
+    font-style: italic;
+  }
+
+  /* Keyboard elements */
+  .prose kbd {
+    background: #f0f0f0 !important;
+    border: 1pt solid #ccc !important;
+    padding: 0.125rem 0.25rem;
+    font-family: 'Courier New', monospace;
+    font-size: 10pt;
+    color: #000 !important;
+  }
+
+  /* Show article metadata */
+  .article-header {
+    margin-bottom: 2rem;
+    border-bottom: 2pt solid #000;
+    padding-bottom: 1rem;
+    page-break-after: avoid;
+  }
+
+  .article-title {
+    font-size: 28pt;
+    font-weight: 700;
+    margin-bottom: 1rem;
+    color: #000 !important;
+  }
+
+  .article-meta {
+    font-size: 10pt;
+    color: #666 !important;
+    margin-top: 0.5rem;
+  }
+
+  /* Optimize spacing */
+  .prose {
+    max-width: 100% !important;
+    margin: 0 !important;
+    padding: 0 !important;
+  }
+
+  /* Page breaks - strategic placement */
+  .prose h1 {
+    page-break-before: always;
+  }
+
+  .prose h1:first-child {
+    page-break-before: avoid;
+  }
+
+  /* Ensure proper spacing */
+  .prose > * + * {
+    margin-top: 0.75rem;
+  }
+
+  /* Print URL at bottom of first page */
+  body::after {
+    content: "Source: " attr(data-url);
+    display: block;
+    margin-top: 2rem;
+    padding-top: 1rem;
+    border-top: 1pt solid #ccc;
+    font-size: 9pt;
+    color: #666;
+    page-break-before: avoid;
   }
 }

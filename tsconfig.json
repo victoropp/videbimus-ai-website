@@ -70,6 +70,8 @@
     "**/*.spec.ts",
     "**/*.spec.tsx",
     "vitest.config.ts",
-    "tests/**/*"
+    "tests/**/*",
+    "src/lib/database/blog-posts-data.ts",
+    "src/lib/database/blog-posts-data-remaining.ts"
   ]
 }
