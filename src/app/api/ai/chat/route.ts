@@ -2,6 +2,8 @@ import { NextRequest, NextResponse } from 'next/server';
 import { z } from 'zod';
 import { enterpriseChatService } from '@/lib/ai/enterprise-chat-service';
 import { auth } from '@/auth';
+import { rateLimiters, getRequestIdentifier, createRateLimitResponse } from '@/lib/middleware/rate-limit';
+import { validateAndSanitize } from '@/lib/security/sanitize';
 
 const chatRequestSchema = z.object({
   message: z.string().min(1).max(4000),
@@ -16,10 +18,35 @@ const chatRequestSchema = z.object({
 
 export async function POST(req: NextRequest) {
   try {
+    // Apply rate limiting
+    const identifier = getRequestIdentifier(req);
+    const rateLimitResult = await rateLimiters.aiChat.check(identifier, 'chat');
+
+    if (!rateLimitResult.success) {
+      return createRateLimitResponse(
+        rateLimitResult,
+        'Too many chat requests. Please wait a moment before sending another message.'
+      );
+    }
+
     const session = await auth();
     const body = await req.json();
-    const { message, sessionId, systemPrompt, useRAG, temperature, maxTokens, model, stream } = 
+    const { message, sessionId, systemPrompt, useRAG, temperature, maxTokens, model, stream } =
       chatRequestSchema.parse(body);
+
+    // Validate and sanitize message input
+    const sanitizeResult = validateAndSanitize(message, 'chat');
+    if (!sanitizeResult.isValid) {
+      return NextResponse.json(
+        {
+          error: 'Invalid message content',
+          details: sanitizeResult.errors
+        },
+        { status: 400 }
+      );
+    }
+
+    const sanitizedMessage = sanitizeResult.sanitized;
 
     // Route to BlenderBot model if selected
     if (model === 'blenderbot-400m') {
@@ -31,7 +58,7 @@ export async function POST(req: NextRequest) {
         body: JSON.stringify({
           messages: [
             { role: 'system', content: systemPrompt || 'You are a helpful AI assistant.' },
-            { role: 'user', content: message }
+            { role: 'user', content: sanitizedMessage }
           ],
           settings: {
             maxTokens,
@@ -59,7 +86,7 @@ export async function POST(req: NextRequest) {
 
     if (stream) {
       // Handle streaming response with enterprise chat service
-      const messageStream = await enterpriseChatService.streamMessage(message, {
+      const messageStream = await enterpriseChatService.streamMessage(sanitizedMessage, {
         sessionId: sessionId || '',
         userId: userId || '',
         systemPrompt: systemPrompt || '',
@@ -99,19 +126,22 @@ export async function POST(req: NextRequest) {
         },
       });
 
+      const allowedOrigin = process.env.NEXT_PUBLIC_APP_URL || req.headers.get('origin') || '*';
+
       return new Response(readable, {
         headers: {
           'Content-Type': 'text/event-stream',
           'Cache-Control': 'no-cache',
           'Connection': 'keep-alive',
-          'Access-Control-Allow-Origin': '*',
+          'Access-Control-Allow-Origin': allowedOrigin,
           'Access-Control-Allow-Methods': 'GET, POST, PUT, DELETE, OPTIONS',
           'Access-Control-Allow-Headers': 'Content-Type, Authorization',
+          'Access-Control-Allow-Credentials': 'true',
         },
       });
     } else {
       // Handle regular response with enterprise chat service
-      const result = await enterpriseChatService.sendMessage(message, {
+      const result = await enterpriseChatService.sendMessage(sanitizedMessage, {
         sessionId: sessionId || '',
         userId: userId || '',
         systemPrompt: systemPrompt || '',
@@ -143,6 +173,14 @@ export async function POST(req: NextRequest) {
 
 export async function GET(req: NextRequest) {
   try {
+    // Apply rate limiting (more lenient for GET requests)
+    const identifier = getRequestIdentifier(req);
+    const rateLimitResult = await rateLimiters.api.check(identifier, 'get-sessions');
+
+    if (!rateLimitResult.success) {
+      return createRateLimitResponse(rateLimitResult);
+    }
+
     const session = await auth();
     
     // For non-authenticated users, return empty sessions
@@ -176,6 +214,14 @@ export async function GET(req: NextRequest) {
 
 export async function DELETE(req: NextRequest) {
   try {
+    // Apply rate limiting
+    const identifier = getRequestIdentifier(req);
+    const rateLimitResult = await rateLimiters.api.check(identifier, 'delete-session');
+
+    if (!rateLimitResult.success) {
+      return createRateLimitResponse(rateLimitResult);
+    }
+
     const session = await auth();
     
     const { searchParams } = new URL(req.url);

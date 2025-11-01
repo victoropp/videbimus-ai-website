@@ -4,6 +4,7 @@ import { enterpriseKnowledgeBase, QueryIntent, KnowledgeDocument } from './enter
 import { aiConfig } from './config';
 import { semanticCache } from './semantic-cache';
 import { agentOrchestrator } from './agent-orchestrator';
+import { cacheManager, CacheKey } from '@/lib/cache/redis';
 
 export interface ConversationContext {
   userId?: string;
@@ -66,8 +67,13 @@ export interface ChatResponse {
 }
 
 export class EnterpriseChatService {
-  private sessions: Map<string, EnhancedChatSession> = new Map();
-  private conversationMemory: Map<string, ConversationContext> = new Map();
+  private readonly SESSION_TTL = 7200; // 2 hours in seconds
+  private readonly CONTEXT_TTL = 7200; // 2 hours in seconds
+  private readonly USER_SESSIONS_TTL = 3600; // 1 hour for user session list
+
+  // Fallback in-memory storage for when Redis is unavailable
+  private fallbackSessions: Map<string, EnhancedChatSession> = new Map();
+  private fallbackConversationMemory: Map<string, ConversationContext> = new Map();
 
   async createSession(userId?: string, title?: string): Promise<EnhancedChatSession> {
     const sessionId = uuidv4();
@@ -112,26 +118,156 @@ export class EnterpriseChatService {
     };
 
     session.messages.push(welcomeMessage);
-    this.sessions.set(sessionId, session);
-    this.conversationMemory.set(sessionId, context);
+
+    // Save to Redis with TTL
+    await this.saveSession(session);
+    await this.saveContext(sessionId, context);
+
+    // Also add to user's session list if userId exists
+    if (userId) {
+      await this.addToUserSessions(userId, sessionId);
+    }
 
     return session;
   }
 
+  /**
+   * Save session to Redis with fallback to in-memory
+   */
+  private async saveSession(session: EnhancedChatSession): Promise<void> {
+    try {
+      const key = CacheKey.session(session.id);
+      await cacheManager.set(key, session, this.SESSION_TTL);
+    } catch (error) {
+      console.warn('Failed to save session to Redis, using fallback:', error);
+      this.fallbackSessions.set(session.id, session);
+    }
+  }
+
+  /**
+   * Save conversation context to Redis
+   */
+  private async saveContext(sessionId: string, context: ConversationContext): Promise<void> {
+    try {
+      const key = `${CacheKey.session(sessionId)}:context`;
+      await cacheManager.set(key, context, this.CONTEXT_TTL);
+    } catch (error) {
+      console.warn('Failed to save context to Redis, using fallback:', error);
+      this.fallbackConversationMemory.set(sessionId, context);
+    }
+  }
+
+  /**
+   * Add session to user's session list
+   */
+  private async addToUserSessions(userId: string, sessionId: string): Promise<void> {
+    try {
+      const key = CacheKey.userSessions(userId);
+      const sessions = await cacheManager.get<string[]>(key) || [];
+
+      // Add to front of list (most recent first)
+      if (!sessions.includes(sessionId)) {
+        sessions.unshift(sessionId);
+
+        // Keep only last 50 sessions
+        const trimmed = sessions.slice(0, 50);
+        await cacheManager.set(key, trimmed, this.USER_SESSIONS_TTL);
+      }
+    } catch (error) {
+      console.warn('Failed to update user sessions list:', error);
+    }
+  }
+
   async getSession(sessionId: string): Promise<EnhancedChatSession | null> {
-    return this.sessions.get(sessionId) || null;
+    try {
+      const key = CacheKey.session(sessionId);
+      const session = await cacheManager.get<EnhancedChatSession>(key);
+
+      if (session) {
+        // Convert date strings back to Date objects
+        session.createdAt = new Date(session.createdAt);
+        session.updatedAt = new Date(session.updatedAt);
+        session.messages = session.messages.map(msg => ({
+          ...msg,
+          timestamp: new Date(msg.timestamp)
+        }));
+        return session;
+      }
+
+      // Fallback to in-memory
+      return this.fallbackSessions.get(sessionId) || null;
+    } catch (error) {
+      console.warn('Failed to get session from Redis, using fallback:', error);
+      return this.fallbackSessions.get(sessionId) || null;
+    }
   }
 
   async getUserSessions(userId: string): Promise<EnhancedChatSession[]> {
-    return Array.from(this.sessions.values())
-      .filter(session => session.userId === userId)
-      .sort((a, b) => b.updatedAt.getTime() - a.updatedAt.getTime());
+    try {
+      const key = CacheKey.userSessions(userId);
+      const sessionIds = await cacheManager.get<string[]>(key) || [];
+
+      // Fetch all sessions in parallel
+      const sessions = await Promise.all(
+        sessionIds.map(id => this.getSession(id))
+      );
+
+      // Filter out null values and return
+      return sessions.filter(session => session !== null) as EnhancedChatSession[];
+    } catch (error) {
+      console.warn('Failed to get user sessions from Redis, using fallback:', error);
+
+      // Fallback to in-memory
+      return Array.from(this.fallbackSessions.values())
+        .filter(session => session.userId === userId)
+        .sort((a, b) => b.updatedAt.getTime() - a.updatedAt.getTime());
+    }
   }
 
   async deleteSession(sessionId: string): Promise<boolean> {
-    const deleted = this.sessions.delete(sessionId);
-    this.conversationMemory.delete(sessionId);
-    return deleted;
+    try {
+      // Get session to find userId before deleting
+      const session = await this.getSession(sessionId);
+
+      // Delete from Redis
+      const sessionKey = CacheKey.session(sessionId);
+      const contextKey = `${sessionKey}:context`;
+
+      await cacheManager.del([sessionKey, contextKey]);
+
+      // Remove from user's session list
+      if (session?.userId) {
+        await this.removeFromUserSessions(session.userId, sessionId);
+      }
+
+      // Also delete from fallback storage
+      this.fallbackSessions.delete(sessionId);
+      this.fallbackConversationMemory.delete(sessionId);
+
+      return true;
+    } catch (error) {
+      console.warn('Failed to delete session from Redis:', error);
+
+      // Fallback delete
+      const deleted = this.fallbackSessions.delete(sessionId);
+      this.fallbackConversationMemory.delete(sessionId);
+      return deleted;
+    }
+  }
+
+  /**
+   * Remove session from user's session list
+   */
+  private async removeFromUserSessions(userId: string, sessionId: string): Promise<void> {
+    try {
+      const key = CacheKey.userSessions(userId);
+      const sessions = await cacheManager.get<string[]>(key) || [];
+
+      const filtered = sessions.filter(id => id !== sessionId);
+      await cacheManager.set(key, filtered, this.USER_SESSIONS_TTL);
+    } catch (error) {
+      console.warn('Failed to remove from user sessions list:', error);
+    }
   }
 
   async sendMessage(message: string, options: ChatOptions = {}): Promise<ChatResponse> {
@@ -287,8 +423,9 @@ export class EnterpriseChatService {
     // Check if escalation is recommended
     const escalationRecommended = this.shouldRecommendEscalation(session, intent, providerResponse.confidence);
 
-    // Save session
-    this.sessions.set(session.id, session);
+    // Save session to Redis
+    await this.saveSession(session);
+    await this.saveContext(session.id, session.context);
 
     return {
       response: processedContent,
@@ -351,7 +488,10 @@ export class EnterpriseChatService {
       context.conversationTone = 'technical';
     }
 
-    this.conversationMemory.set(session.id, context);
+    // Save context to Redis (async, don't wait)
+    this.saveContext(session.id, context).catch(error => {
+      console.warn('Failed to save conversation context:', error);
+    });
   }
 
   private prepareEnhancedContext(session: EnhancedChatSession, systemPrompt?: string, knowledgeDocuments?: KnowledgeDocument[]): EnhancedChatMessage[] {
@@ -615,7 +755,11 @@ export class EnterpriseChatService {
     };
 
     session.updatedAt = new Date();
-    this.sessions.set(sessionId, session);
+
+    // Save updated session to Redis
+    await this.saveSession(session);
+    await this.saveContext(sessionId, session.context);
+
     return true;
   }
 
@@ -812,8 +956,9 @@ export class EnterpriseChatService {
       confidence: 0.8,
     }, session.context.intent);
 
-    // Save session
-    this.sessions.set(session.id, session);
+    // Save session to Redis
+    await this.saveSession(session);
+    await this.saveContext(session.id, session.context);
 
     // Final done message
     yield {
@@ -852,7 +997,13 @@ export class EnterpriseChatService {
     providerPerformance: Array<{ provider: string; usage: number; avgConfidence: number }>;
     satisfactionScore: number;
   }> {
-    const sessions = Array.from(this.sessions.values());
+    // NOTE: This method uses fallback storage only
+    // To implement with Redis, we would need to:
+    // 1. Maintain a global session index in Redis
+    // 2. Use Redis Scan to iterate through session: keys
+    // 3. Aggregate analytics data in Redis using sorted sets/hashes
+    // For MVP, we use in-memory fallback for analytics
+    const sessions = Array.from(this.fallbackSessions.values());
     
     const intentCounts = new Map<string, number>();
     const providerStats = new Map<string, { count: number; totalConfidence: number }>();
