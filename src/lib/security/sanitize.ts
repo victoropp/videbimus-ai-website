@@ -1,18 +1,7 @@
-import DOMPurify from 'dompurify';
-import { JSDOM } from 'jsdom';
+import DOMPurify from 'isomorphic-dompurify';
 
-// Lazy-load DOMPurify instance to avoid build-time initialization issues
-let purify: ReturnType<typeof DOMPurify> | null = null;
-
-function getPurify() {
-  if (!purify) {
-    // Create a DOMPurify instance for server-side use
-    const window = new JSDOM('').window;
-    // @ts-ignore - jsdom's window is compatible with DOMPurify
-    purify = DOMPurify(window);
-  }
-  return purify;
-}
+// isomorphic-dompurify automatically handles both browser and Node.js environments
+// No need for manual JSDOM setup
 
 /**
  * Sanitization configuration for different use cases
@@ -74,7 +63,7 @@ export function sanitizeHtml(
     return '';
   }
 
-  return getPurify().sanitize(dirty, config);
+  return DOMPurify.sanitize(dirty, config);
 }
 
 /**
@@ -86,7 +75,7 @@ export function sanitizePlainText(input: string): string {
   }
 
   // Remove all HTML tags
-  let sanitized = getPurify().sanitize(input, SanitizeConfig.strict);
+  let sanitized = DOMPurify.sanitize(input, SanitizeConfig.strict);
 
   // Decode HTML entities
   sanitized = sanitized
@@ -114,7 +103,7 @@ export function sanitizeChatMessage(message: string): string {
   sanitized = sanitized.replace(/\n{3,}/g, '\n\n');
 
   // Sanitize HTML with markdown config
-  sanitized = getPurify().sanitize(sanitized, SanitizeConfig.markdown);
+  sanitized = DOMPurify.sanitize(sanitized, SanitizeConfig.markdown);
 
   return sanitized.trim();
 }
@@ -131,7 +120,7 @@ export function sanitizeEmail(email: string): string {
   let sanitized = email.trim().toLowerCase();
 
   // Remove HTML tags
-  sanitized = getPurify().sanitize(sanitized, SanitizeConfig.strict);
+  sanitized = DOMPurify.sanitize(sanitized, SanitizeConfig.strict);
 
   // Validate basic email format
   const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
@@ -153,7 +142,7 @@ export function sanitizeUrl(url: string): string {
   let sanitized = url.trim();
 
   // Remove HTML tags
-  sanitized = getPurify().sanitize(sanitized, SanitizeConfig.strict);
+  sanitized = DOMPurify.sanitize(sanitized, SanitizeConfig.strict);
 
   // Only allow http, https, and mailto protocols
   const allowedProtocols = ['http:', 'https:', 'mailto:'];
