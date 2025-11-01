@@ -1,4 +1,10 @@
-import DOMPurify from 'isomorphic-dompurify';
+import DOMPurify from 'dompurify';
+import { JSDOM } from 'jsdom';
+
+// Create a DOMPurify instance for server-side use
+const window = new JSDOM('').window;
+// @ts-ignore - jsdom's window is compatible with DOMPurify
+const purify = DOMPurify(window);
 
 /**
  * Sanitization configuration for different use cases
@@ -60,7 +66,7 @@ export function sanitizeHtml(
     return '';
   }
 
-  return DOMPurify.sanitize(dirty, config);
+  return purify.sanitize(dirty, config);
 }
 
 /**
@@ -72,7 +78,7 @@ export function sanitizePlainText(input: string): string {
   }
 
   // Remove all HTML tags
-  let sanitized = DOMPurify.sanitize(input, SanitizeConfig.strict);
+  let sanitized = purify.sanitize(input, SanitizeConfig.strict);
 
   // Decode HTML entities
   sanitized = sanitized
@@ -100,7 +106,7 @@ export function sanitizeChatMessage(message: string): string {
   sanitized = sanitized.replace(/\n{3,}/g, '\n\n');
 
   // Sanitize HTML with markdown config
-  sanitized = DOMPurify.sanitize(sanitized, SanitizeConfig.markdown);
+  sanitized = purify.sanitize(sanitized, SanitizeConfig.markdown);
 
   return sanitized.trim();
 }
@@ -117,7 +123,7 @@ export function sanitizeEmail(email: string): string {
   let sanitized = email.trim().toLowerCase();
 
   // Remove HTML tags
-  sanitized = DOMPurify.sanitize(sanitized, SanitizeConfig.strict);
+  sanitized = purify.sanitize(sanitized, SanitizeConfig.strict);
 
   // Validate basic email format
   const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
@@ -139,7 +145,7 @@ export function sanitizeUrl(url: string): string {
   let sanitized = url.trim();
 
   // Remove HTML tags
-  sanitized = DOMPurify.sanitize(sanitized, SanitizeConfig.strict);
+  sanitized = purify.sanitize(sanitized, SanitizeConfig.strict);
 
   // Only allow http, https, and mailto protocols
   const allowedProtocols = ['http:', 'https:', 'mailto:'];

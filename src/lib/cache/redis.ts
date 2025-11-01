@@ -528,11 +528,15 @@ class CacheManager {
 // Export singleton instance
 export const cacheManager = CacheManager.getInstance();
 
-// Auto-connect in non-test environments
-if (process.env.NODE_ENV !== 'test') {
-  cacheManager.connect().catch(error => {
-    console.warn('Failed to initialize cache connection:', error);
-  });
+// Auto-connect only in runtime (not during build)
+// Skip connection during Next.js build phase
+if (process.env.NODE_ENV !== 'test' && typeof window === 'undefined' && !process.env.NEXT_PHASE) {
+  // Only connect if we're in a server runtime context, not during build
+  if (process.env.VERCEL || process.env.NODE_ENV === 'development') {
+    cacheManager.connect().catch(error => {
+      console.warn('Failed to initialize cache connection:', error);
+    });
+  }
 }
 
 // Export utilities
