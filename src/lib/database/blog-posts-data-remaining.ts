@@ -223,7 +223,7 @@ Real-time ML isn't just about fast models—it's about architectural patterns th
         published: true,
         publishedAt: new Date(Date.now() - 30 * 24 * 60 * 60 * 1000),
         featured: false,
-        authorId: teamMemberUsers[1].id, // Sai Raj Ali
+        authorId: teamMemberUsers[0].id, // Victor Collins Oppon
         categoryId: categories[1].id, // Machine Learning
         tags: ['Real-Time ML', 'Low Latency', 'Architecture', 'Performance', 'Model Serving'],
         seoTitle: 'Real-Time Machine Learning: Low-Latency Architecture Patterns (2025)',
@@ -520,7 +520,7 @@ The future of work is being written now. Make sure your organization helps write
         published: true,
         publishedAt: new Date(Date.now() - 35 * 24 * 60 * 60 * 1000),
         featured: false,
-        authorId: teamMemberUsers[3].id, // Rukayat Salau
+        authorId: teamMemberUsers[0].id, // Victor Collins Oppon
         categoryId: categories[3].id, // Industry Insights
         tags: ['Future of Work', 'AI Augmentation', 'Automation', 'Workforce Strategy', 'Change Management'],
         seoTitle: 'AI Augmentation vs Automation: Strategic Workforce Framework (2025)',
@@ -766,7 +766,7 @@ Where is your organization on the maturity curve? More importantly: where does i
         published: true,
         publishedAt: new Date(Date.now() - 40 * 24 * 60 * 60 * 1000),
         featured: false,
-        authorId: teamMemberUsers[1].id, // Sai Raj Ali
+        authorId: teamMemberUsers[0].id, // Victor Collins Oppon
         categoryId: categories[1].id, // Machine Learning
         tags: ['MLOps', 'Maturity Model', 'Assessment', 'DevOps', 'Best Practices'],
         seoTitle: 'MLOps Maturity Model: Complete Assessment Framework (2025)',
@@ -994,7 +994,7 @@ The future of ML is causal. Are you ready?`,
         published: true,
         publishedAt: new Date(Date.now() - 45 * 24 * 60 * 60 * 1000),
         featured: false,
-        authorId: teamMemberUsers[2].id, // Shawanah Ally
+        authorId: teamMemberUsers[0].id, // Victor Collins Oppon
         categoryId: categories[2].id, // Data Science
         tags: ['Causal Inference', 'Statistics', 'Decision Making', 'Econometrics', 'A/B Testing'],
         seoTitle: 'Causal Inference in Machine Learning: Beyond Correlation (2025)',
@@ -1254,7 +1254,7 @@ The future of AI is fair—make sure your systems are on the right side of that 
         published: true,
         publishedAt: new Date(Date.now() - 50 * 24 * 60 * 60 * 1000),
         featured: false,
-        authorId: teamMemberUsers[3].id, // Rukayat Salau
+        authorId: teamMemberUsers[0].id, // Victor Collins Oppon
         categoryId: categories[0].id, // Artificial Intelligence
         tags: ['AI Ethics', 'Bias Mitigation', 'Fairness', 'Responsible AI', 'ML Audit'],
         seoTitle: 'Bias Detection in ML: Complete Mitigation Framework (2025)',
@@ -1533,7 +1533,7 @@ Your cloud vendor should be a partner, not a prison. Build accordingly.`,
         published: true,
         publishedAt: new Date(Date.now() - 55 * 24 * 60 * 60 * 1000),
         featured: false,
-        authorId: teamMemberUsers[1].id, // Sai Raj Ali
+        authorId: teamMemberUsers[0].id, // Victor Collins Oppon
         categoryId: categories[1].id, // Machine Learning
         tags: ['Multi-Cloud', 'Cloud Strategy', 'Vendor Lock-in', 'Cost Optimization', 'Infrastructure'],
         seoTitle: 'Multi-Cloud AI Strategy: Avoiding Vendor Lock-in Guide (2025)',
@@ -1850,7 +1850,7 @@ Your next presentation: Start with the answer. Tell a story. Drive action.`,
         published: true,
         publishedAt: new Date(Date.now() - 60 * 24 * 60 * 60 * 1000),
         featured: false,
-        authorId: teamMemberUsers[2].id, // Shawanah Ally
+        authorId: teamMemberUsers[0].id, // Victor Collins Oppon
         categoryId: categories[2].id, // Data Science
         tags: ['Data Storytelling', 'Visualization', 'Communication', 'Business Impact', 'Presentation'],
         seoTitle: 'Data Storytelling: Transform Analytics into Business Action (2025)',

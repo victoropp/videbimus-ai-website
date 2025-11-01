@@ -679,7 +679,7 @@ The choice is simple: **Build AI people trust, or build AI that fails.** The fra
         published: true,
         publishedAt: new Date(Date.now() - 10 * 24 * 60 * 60 * 1000), // 10 days ago
         featured: true,
-        authorId: teamMemberUsers[3].id, // Rukayat Salau
+        authorId: teamMemberUsers[0].id, // Victor Collins Oppon
         categoryId: categories[0].id, // Artificial Intelligence
         tags: ['AI Ethics', 'Responsible AI', 'Fairness', 'Governance', 'Bias Mitigation', 'Transparency'],
         seoTitle: 'Responsible AI Framework: Complete Guide to Ethical ML (2025)',
@@ -1088,7 +1088,7 @@ The companies winning with AI aren't those with the best research teams—they'r
         published: true,
         publishedAt: new Date(Date.now() - 15 * 24 * 60 * 60 * 1000), // 15 days ago
         featured: false,
-        authorId: teamMemberUsers[1].id, // Sai Raj Ali
+        authorId: teamMemberUsers[0].id, // Victor Collins Oppon
         categoryId: categories[1].id, // Machine Learning
         tags: ['MLOps', 'Production ML', 'Deployment', 'Scaling', 'Infrastructure'],
         seoTitle: 'Scaling ML from Prototype to Production: Complete Guide (2025)',
@@ -1527,7 +1527,7 @@ The path to AI success doesn't start with algorithms. It starts with data qualit
         published: true,
         publishedAt: new Date(Date.now() - 20 * 24 * 60 * 60 * 1000), // 20 days ago
         featured: false,
-        authorId: teamMemberUsers[2].id, // Shawanah Ally
+        authorId: teamMemberUsers[0].id, // Victor Collins Oppon
         categoryId: categories[2].id, // Data Science
         tags: ['Data Quality', 'Data Governance', 'Data Engineering', 'ML Pipeline', 'Best Practices'],
         seoTitle: 'Data Quality for AI: Complete Framework and Best Practices (2025)',
@@ -2021,7 +2021,7 @@ The future of AI is governed—make sure you're on the right side of that future
         published: true,
         publishedAt: new Date(Date.now() - 25 * 24 * 60 * 60 * 1000), // 25 days ago
         featured: true,
-        authorId: teamMemberUsers[3].id, // Rukayat Salau
+        authorId: teamMemberUsers[0].id, // Victor Collins Oppon
         categoryId: categories[3].id, // Industry Insights
         tags: ['AI Governance', 'Compliance', 'Regulation', 'Risk Management', 'EU AI Act'],
         seoTitle: 'AI Governance 2025: Complete Compliance Framework (EU AI Act & More)',
