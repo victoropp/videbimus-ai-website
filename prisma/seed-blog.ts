@@ -6,10 +6,10 @@ async function main() {
   // ── Author ─────────────────────────────────────────────────────────────────
   const author = await prisma.user.upsert({
     where: { email: 'consulting@videbimusai.com' },
-    update: { name: 'Videbimus AI' },
+    update: { name: 'Victor Collins Oppon' },
     create: {
       email: 'consulting@videbimusai.com',
-      name: 'Videbimus AI',
+      name: 'Victor Collins Oppon',
       role: 'ADMIN',
       isActive: true,
     },
