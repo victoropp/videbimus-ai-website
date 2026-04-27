@@ -7,7 +7,7 @@ const LISTMONK_AUTH = 'Basic ' + Buffer.from(
 ).toString('base64')
 const NTFY_URL = process.env.NTFY_URL || 'https://notify.chrysoliteai.com'
 const NTFY_TOPIC = process.env.NTFY_TOPIC || 'videbimus-contact'
-const OWNER_EMAIL = process.env.CONTACT_OWNER_EMAIL || 'consulting@videbimusai.com'
+const OWNER_EMAIL = process.env.CONTACT_OWNER_EMAIL || 'info@videbimusai.com'
 const NOTIFY_TEMPLATE_ID = parseInt(process.env.LISTMONK_CONTACT_NOTIFY_TEMPLATE || '12')
 const AUTOREPLY_TEMPLATE_ID = parseInt(process.env.LISTMONK_CONTACT_AUTOREPLY_TEMPLATE || '13')
 
