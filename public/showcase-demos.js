@@ -85,12 +85,12 @@
         [m,           merchRisk * 0.34]
       ].sort((x, y) => y[1] - x[1]).slice(0, 3);
       factors.innerHTML = items.map(([k, v]) =>
-        `<span class="chip">${k} <b style="color:var(--signal); margin-left:6px">+${(v*100).toFixed(0)}</b></span>`
+        `<span class="sc-chip">${k} <b style="color:var(--signal); margin-left:6px">+${(v*100).toFixed(0)}</b></span>`
       ).join("");
     }
 
     [amount, hour].forEach(el => el.addEventListener("input", () => {
-      $(`label[for=${el.id}] .val`, root).textContent =
+      $(`label[for=${el.id}] .sc-val`, root).textContent =
         el.id === "fr-amount" ? "£" + fmt(+el.value)
         : `${pad2(+el.value)}:00`;
       score();
@@ -112,7 +112,7 @@
     const conf = $("#xr-conf", root);
     const findEl = $("#xr-finding", root);
     const probEl = $("#xr-prob", root);
-    const conditionSeg = $$(".seg button", $("#xr-cond", root));
+    const conditionSeg = $$(".sc-seg button", $("#xr-cond", root));
     let condition = "pneumonia";
 
     const W = canvas.width = 360, H = canvas.height = 260;
@@ -227,7 +227,7 @@
 
     function renderGrid() {
       grid.innerHTML = items.map(it =>
-        `<button class="chip ${cartItems.has(it.id) ? "on" : ""}" data-id="${it.id}">${it.name}</button>`
+        `<button class="sc-chip ${cartItems.has(it.id) ? "on" : ""}" data-id="${it.id}">${it.name}</button>`
       ).join("");
       $$("[data-id]", grid).forEach(b => b.addEventListener("click", () => {
         const id = b.dataset.id;
@@ -254,7 +254,7 @@
         ? `<span style="color:var(--muted-2); font-family:var(--mono); font-size:10px; letter-spacing:0.18em; text-transform:uppercase">— add items above —</span>`
         : Array.from(cartItems).map(id => {
             const it = items.find(x => x.id === id);
-            return `<span class="chip on">${it.name}</span>`;
+            return `<span class="sc-chip on">${it.name}</span>`;
           }).join("");
 
       out.innerHTML = sorted.map(it => `
@@ -342,7 +342,7 @@
     }
 
     [vibSlider, tempSlider].forEach(el => el.addEventListener("input", () => {
-      const lab = $(`label[for=${el.id}] .val`, root);
+      const lab = $(`label[for=${el.id}] .sc-val`, root);
       if (el.id === "rul-vib") lab.textContent = (+el.value).toFixed(1) + " mm/s";
       if (el.id === "rul-temp") lab.textContent = (+el.value).toFixed(0) + " °C";
       render();
@@ -356,7 +356,7 @@
   function initLoad(root) {
     const svg = $("#en-svg", root);
     const tempSl = $("#en-temp", root);
-    const dayBtns = $$(".seg button", $("#en-day", root));
+    const dayBtns = $$(".sc-seg button", $("#en-day", root));
     const peakOut = $("#en-peak", root);
     const totOut  = $("#en-tot", root);
     let day = "weekday";
@@ -414,7 +414,7 @@
       b.classList.add("on"); day = b.dataset.day; render();
     }));
     tempSl.addEventListener("input", () => {
-      $(`label[for=en-temp] .val`, root).textContent = (+tempSl.value).toFixed(0) + " °C";
+      $(`label[for=en-temp] .sc-val`, root).textContent = (+tempSl.value).toFixed(0) + " °C";
       render();
     });
     render();
@@ -524,7 +524,7 @@
     }
 
     stopsSl.addEventListener("input", () => {
-      $(`label[for=log-stops] .val`, root).textContent = stopsSl.value + " stops";
+      $(`label[for=log-stops] .sc-val`, root).textContent = stopsSl.value + " stops";
       gen();
     });
     optBtn.addEventListener("click", optimize);
@@ -580,7 +580,7 @@
     }
 
     [tenure, monthly, support].forEach(el => el.addEventListener("input", () => {
-      const lab = $(`label[for=${el.id}] .val`, root);
+      const lab = $(`label[for=${el.id}] .sc-val`, root);
       if (el.id === "tc-ten") lab.textContent = el.value + " mo";
       if (el.id === "tc-mon") lab.textContent = "£" + el.value;
       if (el.id === "tc-sup") lab.textContent = el.value + " calls";
@@ -639,17 +639,17 @@
       lane.style.color = "var(--ink)"; lane.style.borderColor = "transparent";
 
       tags.innerHTML = Array.from(found).slice(0, 5).map(k =>
-        `<span class="chip">#${k.replace(/\s+/g,"-")}</span>`
+        `<span class="sc-chip">#${k.replace(/\s+/g,"-")}</span>`
       ).join("") || `<span style="color:var(--muted-2); font-family:var(--mono); font-size:10px; letter-spacing:0.18em; text-transform:uppercase">— no signals yet —</span>`;
     }
 
     text.addEventListener("input", analyze);
     photoSlider.addEventListener("input", () => {
-      $("label[for=cl-photo] .val", root).textContent = photoSlider.value + "%";
+      $("label[for=cl-photo] .sc-val", root).textContent = photoSlider.value + "%";
       analyze();
     });
     claim.addEventListener("input", () => {
-      $("label[for=cl-amount] .val", root).textContent = "£" + fmt(+claim.value);
+      $("label[for=cl-amount] .sc-val", root).textContent = "£" + fmt(+claim.value);
       analyze();
     });
     analyze();
@@ -747,7 +747,7 @@
     }
 
     [rain, tempo, ndvi].forEach(el => el.addEventListener("input", () => {
-      const lab = $(`label[for=${el.id}] .val`, root);
+      const lab = $(`label[for=${el.id}] .sc-val`, root);
       if (el.id === "ag-rain") lab.textContent = el.value + " mm";
       if (el.id === "ag-temp") lab.textContent = el.value + " °C";
       if (el.id === "ag-ndvi") lab.textContent = (+el.value / 100).toFixed(2);
@@ -805,7 +805,7 @@
       }).join("");
     }
     [income, debt, utilSlider, history, dq].forEach(el => el.addEventListener("input", () => {
-      const lab = $(`label[for=${el.id}] .val`, root);
+      const lab = $(`label[for=${el.id}] .sc-val`, root);
       if (el.id === "cr-inc") lab.textContent = "£" + fmt(+el.value);
       if (el.id === "cr-debt") lab.textContent = "£" + fmt(+el.value);
       if (el.id === "cr-util") lab.textContent = el.value + "%";
@@ -869,7 +869,7 @@
       action.style.color = "var(--ink)"; action.style.borderColor = "transparent";
     }
     [age, bmi, bp, a1c].forEach(el => el.addEventListener("input", () => {
-      const lab = $(`label[for=${el.id}] .val`, root);
+      const lab = $(`label[for=${el.id}] .sc-val`, root);
       if (el.id === "pt-age") lab.textContent = el.value + " yr";
       if (el.id === "pt-bmi") lab.textContent = (+el.value).toFixed(1);
       if (el.id === "pt-bp") lab.textContent = el.value + " mmHg";
@@ -911,8 +911,8 @@
     document.querySelectorAll(".reveal").forEach(el => io.observe(el));
 
     // nav scrolled state
-    const nav = document.querySelector(".nav");
-    const onScroll = () => nav.classList.toggle("scrolled", window.scrollY > 24);
+    const nav = document.querySelector(".nav") || document.querySelector("header");
+    const onScroll = () => { if (nav) nav.classList.toggle("scrolled", window.scrollY > 24); };
     window.addEventListener("scroll", onScroll, { passive: true });
     onScroll();
 
