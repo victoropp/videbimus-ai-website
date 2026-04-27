@@ -72,27 +72,26 @@ export class UniversalAIClient {
   }
 
   private selectBestProvider(): AIProvider {
-    // Priority order based on speed and reliability
-    // Hugging Face first since it's free and always available
+    // Priority: Groq (free, ultra-fast) → Cohere → HuggingFace → others
     const providers: { provider: AIProvider; apiKey?: string }[] = [
-      { provider: 'huggingface', apiKey: 'free' }, // Always available - no auth needed
       { provider: 'groq', apiKey: aiConfig.groqApiKey },
+      { provider: 'cohere', apiKey: aiConfig.cohereApiKey },
       { provider: 'together', apiKey: aiConfig.togetherApiKey },
       { provider: 'google', apiKey: aiConfig.googleApiKey },
-      { provider: 'cohere', apiKey: aiConfig.cohereApiKey },
-      { provider: 'replicate', apiKey: aiConfig.replicateApiKey },
+      { provider: 'huggingface', apiKey: aiConfig.huggingfaceApiKey },
       { provider: 'openai', apiKey: aiConfig.openaiApiKey },
       { provider: 'anthropic', apiKey: aiConfig.anthropicApiKey },
+      { provider: 'replicate', apiKey: aiConfig.replicateApiKey },
     ];
 
     for (const { provider, apiKey } of providers) {
-      if (provider === 'huggingface' || this.isValidApiKey(apiKey)) {
+      if (this.isValidApiKey(apiKey)) {
         console.log(`Selected ${provider} as primary provider`);
         return provider;
       }
     }
 
-    // Default to Hugging Face if nothing else is available
+    // Default to Hugging Face as last resort (public API, no key needed)
     return 'huggingface';
   }
 
@@ -307,7 +306,7 @@ export class UniversalAIClient {
   }
 
   private async groqCompletion(options: ChatCompletionOptions) {
-    const { messages, model = 'mixtral-8x7b-32768', temperature = 0.7, maxTokens = 1000, stream } = options;
+    const { messages, model = 'llama3-8b-8192', temperature = 0.7, maxTokens = 1000, stream } = options;
     
     try {
       const completion = await groq.chat.completions.create({

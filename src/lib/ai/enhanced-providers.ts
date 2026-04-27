@@ -395,7 +395,7 @@ export class EnhancedAIProviders {
 
   private async callGroq(client: Groq, request: ChatCompletionRequest): Promise<Partial<ProviderResponse>> {
     const response = await client.chat.completions.create({
-      model: request.model || 'mixtral-8x7b-32768',
+      model: request.model || 'llama3-8b-8192',
       messages: request.messages.map(msg => ({
         role: msg.role as any,
         content: msg.content,
@@ -726,7 +726,7 @@ export class EnhancedAIProviders {
 
   private async *streamGroq(client: Groq, request: ChatCompletionRequest): AsyncGenerator<StreamChunk> {
     const stream = await client.chat.completions.create({
-      model: request.model || 'mixtral-8x7b-32768',
+      model: request.model || 'llama3-8b-8192',
       messages: request.messages.map(msg => ({
         role: msg.role as any,
         content: msg.content,
@@ -863,7 +863,7 @@ export class EnhancedAIProviders {
       if (!client) return false;
       const response = await client.chat.completions.create({
         messages: [{ role: 'user', content: 'Hi' }],
-        model: 'mixtral-8x7b-32768',
+        model: 'llama3-8b-8192',
         max_tokens: 10,
       });
       return response.choices.length > 0;
