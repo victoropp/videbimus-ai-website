@@ -173,12 +173,12 @@ export default function BlogPage() {
     })
   }
 
-  const getAuthorImage = (post: BlogPost): string => {
-    return post.author?.image || '/images/blog/author-1.jpg'
+  const getAuthorName = (post: BlogPost): string => {
+    return post.author?.name || 'Victor Collins Oppon'
   }
 
-  const getAuthorName = (post: BlogPost): string => {
-    return post.author?.name || 'Anonymous'
+  const getAuthorInitials = (name: string): string => {
+    return name.split(' ').map(n => n[0]).join('').slice(0, 3).toUpperCase()
   }
 
   const getPostImage = (post: BlogPost): string => {
@@ -367,13 +367,8 @@ export default function BlogPage() {
 
                       <div className="flex items-center space-x-4 text-sm text-gray-500 dark:text-gray-400">
                         <div className="flex items-center space-x-2">
-                          <div className="relative h-8 w-8 rounded-full overflow-hidden">
-                            <Image
-                              src={getAuthorImage(featuredPost)}
-                              alt={getAuthorName(featuredPost)}
-                              fill
-                              className="object-cover"
-                            />
+                          <div className="h-8 w-8 rounded-full bg-gradient-to-br from-cyan-500 to-purple-600 flex items-center justify-center text-white text-xs font-bold flex-shrink-0">
+                            {getAuthorInitials(getAuthorName(featuredPost))}
                           </div>
                           <span>{getAuthorName(featuredPost)}</span>
                         </div>
@@ -467,13 +462,8 @@ export default function BlogPage() {
                       <CardContent className="pt-0">
                         <div className="flex items-center justify-between text-sm text-gray-500 dark:text-gray-400">
                           <div className="flex items-center space-x-2">
-                            <div className="relative h-6 w-6 rounded-full overflow-hidden">
-                              <Image
-                                src={getAuthorImage(post)}
-                                alt={getAuthorName(post)}
-                                fill
-                                className="object-cover"
-                              />
+                            <div className="h-6 w-6 rounded-full bg-gradient-to-br from-cyan-500 to-purple-600 flex items-center justify-center text-white text-[9px] font-bold flex-shrink-0">
+                              {getAuthorInitials(getAuthorName(post))}
                             </div>
                             <span>{getAuthorName(post)}</span>
                           </div>
