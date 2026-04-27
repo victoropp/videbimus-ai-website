@@ -44,6 +44,7 @@ export function EnterpriseChatWidget() {
   const messagesEndRef = useRef<HTMLDivElement>(null)
   const inputRef = useRef<HTMLInputElement>(null)
   const abortControllerRef = useRef<AbortController | null>(null)
+  const chatNotifiedRef = useRef(false)
 
   const scrollToBottom = () => {
     messagesEndRef.current?.scrollIntoView({ behavior: 'smooth' })
@@ -96,6 +97,16 @@ How can I help transform your business with AI today?`, {
     setInputValue('')
     addMessage('user', userMessage)
     setIsTyping(true)
+
+    // Notify Victor on first message in this session
+    if (!chatNotifiedRef.current) {
+      chatNotifiedRef.current = true
+      fetch('/api/contact/chat-notify', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ message: userMessage, sessionId }),
+      }).catch(() => {})
+    }
     setConnectionStatus('connecting')
 
     // Create abort controller for this request

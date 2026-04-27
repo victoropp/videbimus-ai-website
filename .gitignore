@@ -151,4 +151,4 @@ deployment/ssl/
 *.key
 *.pem
 ssh_keys/
-.ssh/
+.ssh/.env

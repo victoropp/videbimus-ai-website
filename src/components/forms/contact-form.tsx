@@ -34,24 +34,19 @@ export function ContactForm() {
 
   const onSubmit = async (data: ContactFormData) => {
     setFormState('loading')
-    
     try {
-      // Simulate API call
-      await new Promise(resolve => setTimeout(resolve, 2000))
-      
-      // Here you would typically send the data to your backend
-      console.log('Form data:', data)
-      
+      const res = await fetch('/api/contact', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ ...data, source: 'contact_form' }),
+      })
+      if (!res.ok) throw new Error('Failed to send')
       setFormState('success')
       reset()
-      
-      // Reset to idle after showing success message
-      setTimeout(() => setFormState('idle'), 5000)
+      setTimeout(() => setFormState('idle'), 6000)
     } catch (error) {
       console.error('Form submission error:', error)
       setFormState('error')
-      
-      // Reset to idle after showing error message
       setTimeout(() => setFormState('idle'), 5000)
     }
   }
