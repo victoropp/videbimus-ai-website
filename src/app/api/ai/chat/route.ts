@@ -1,18 +1,5 @@
 import { NextRequest, NextResponse } from 'next/server';
 import { z } from 'zod';
-import { enterpriseChatService } from '@/lib/ai/enterprise-chat-service';
-import { rateLimiters, getRequestIdentifier, createRateLimitResponse } from '@/lib/middleware/rate-limit';
-import { validateAndSanitize } from '@/lib/security/sanitize';
-
-// Lazy-load auth to avoid PrismaAdapter crashing the Lambda on startup when DB is unavailable
-async function getSession() {
-  try {
-    const { auth } = await import('@/auth');
-    return await auth();
-  } catch {
-    return null;
-  }
-}
 
 const chatRequestSchema = z.object({
   message: z.string().min(1).max(4000),
@@ -25,9 +12,34 @@ const chatRequestSchema = z.object({
   stream: z.boolean().default(false),
 });
 
+// All heavy imports are lazy to avoid Lambda startup crashes
+async function getChatService() {
+  const { enterpriseChatService } = await import('@/lib/ai/enterprise-chat-service');
+  return enterpriseChatService;
+}
+
+async function getRateLimiters() {
+  const { rateLimiters, getRequestIdentifier, createRateLimitResponse } = await import('@/lib/middleware/rate-limit');
+  return { rateLimiters, getRequestIdentifier, createRateLimitResponse };
+}
+
+async function getSanitize() {
+  const { validateAndSanitize } = await import('@/lib/security/sanitize');
+  return validateAndSanitize;
+}
+
+async function getSession() {
+  try {
+    const { auth } = await import('@/auth');
+    return await auth();
+  } catch {
+    return null;
+  }
+}
+
 export async function POST(req: NextRequest) {
   try {
-    // Apply rate limiting
+    const { rateLimiters, getRequestIdentifier, createRateLimitResponse } = await getRateLimiters();
     const identifier = getRequestIdentifier(req);
     const rateLimitResult = await rateLimiters.aiChat.check(identifier, 'chat');
 
@@ -38,42 +50,34 @@ export async function POST(req: NextRequest) {
       );
     }
 
-    const session = await getSession();
     const body = await req.json();
     const { message, sessionId, systemPrompt, useRAG, temperature, maxTokens, model, stream } =
       chatRequestSchema.parse(body);
 
-    // Validate and sanitize message input
+    const validateAndSanitize = await getSanitize();
     const sanitizeResult = validateAndSanitize(message, 'chat');
     if (!sanitizeResult.isValid) {
       return NextResponse.json(
-        {
-          error: 'Invalid message content',
-          details: sanitizeResult.errors
-        },
+        { error: 'Invalid message content', details: sanitizeResult.errors },
         { status: 400 }
       );
     }
 
     const sanitizedMessage = sanitizeResult.sanitized;
+    const session = await getSession();
+    const userId = session?.user?.id;
 
     // Route to BlenderBot model if selected
     if (model === 'blenderbot-400m') {
       const qwenResponse = await fetch(new URL('/api/ai/chat/qwen', req.url).toString(), {
         method: 'POST',
-        headers: {
-          'Content-Type': 'application/json',
-        },
+        headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({
           messages: [
             { role: 'system', content: systemPrompt || 'You are a helpful AI assistant.' },
             { role: 'user', content: sanitizedMessage }
           ],
-          settings: {
-            maxTokens,
-            temperature,
-            stream,
-          }
+          settings: { maxTokens, temperature, stream },
         }),
       });
 
@@ -85,35 +89,30 @@ export async function POST(req: NextRequest) {
             'Connection': 'keep-alive',
           },
         });
-      } else {
-        const data = await qwenResponse.json();
-        return NextResponse.json(data);
       }
+      const data = await qwenResponse.json();
+      return NextResponse.json(data);
     }
 
-    const userId = session?.user?.id;
+    const chatService = await getChatService();
 
     if (stream) {
-      // Handle streaming response with enterprise chat service
-      const messageStream = await enterpriseChatService.streamMessage(sanitizedMessage, {
+      const messageStream = await chatService.streamMessage(sanitizedMessage, {
         sessionId: sessionId || '',
         userId: userId || '',
         systemPrompt: systemPrompt || '',
         useKnowledgeBase: useRAG,
         temperature: temperature || 0.7,
         maxTokens: maxTokens || 1000,
-        model: model || 'gpt-3.5-turbo',
+        model: model || 'llama3-8b-8192',
       });
 
-      // Create streaming response
       const encoder = new TextEncoder();
       const readable = new ReadableStream({
         async start(controller) {
           try {
             for await (const chunk of messageStream) {
-              const data = JSON.stringify(chunk);
-              controller.enqueue(encoder.encode(`data: ${data}\n\n`));
-              
+              controller.enqueue(encoder.encode(`data: ${JSON.stringify(chunk)}\n\n`));
               if (chunk.done) {
                 controller.enqueue(encoder.encode('data: [DONE]\n\n'));
                 break;
@@ -121,9 +120,8 @@ export async function POST(req: NextRequest) {
             }
           } catch (error) {
             console.error('Streaming error:', error);
-            // Send error message through stream
             const errorChunk = JSON.stringify({
-              content: "I apologize for the technical difficulty. Please try again or contact our support team.",
+              content: 'I apologize for the technical difficulty. Please try again.',
               done: true,
               error: true,
             });
@@ -135,126 +133,97 @@ export async function POST(req: NextRequest) {
         },
       });
 
-      const allowedOrigin = process.env.NEXT_PUBLIC_APP_URL || req.headers.get('origin') || '*';
-
       return new Response(readable, {
         headers: {
           'Content-Type': 'text/event-stream',
           'Cache-Control': 'no-cache',
           'Connection': 'keep-alive',
-          'Access-Control-Allow-Origin': allowedOrigin,
+          'Access-Control-Allow-Origin': process.env.NEXT_PUBLIC_APP_URL || '*',
           'Access-Control-Allow-Methods': 'GET, POST, PUT, DELETE, OPTIONS',
           'Access-Control-Allow-Headers': 'Content-Type, Authorization',
           'Access-Control-Allow-Credentials': 'true',
         },
       });
-    } else {
-      // Handle regular response with enterprise chat service
-      const result = await enterpriseChatService.sendMessage(sanitizedMessage, {
-        sessionId: sessionId || '',
-        userId: userId || '',
-        systemPrompt: systemPrompt || '',
-        useKnowledgeBase: useRAG,
-        temperature: temperature || 0.7,
-        maxTokens: maxTokens || 1000,
-        model: model || 'gpt-3.5-turbo',
-        enableAnalytics: true,
-      });
-
-      return NextResponse.json(result);
     }
+
+    const result = await chatService.sendMessage(sanitizedMessage, {
+      sessionId: sessionId || '',
+      userId: userId || '',
+      systemPrompt: systemPrompt || '',
+      useKnowledgeBase: useRAG,
+      temperature: temperature || 0.7,
+      maxTokens: maxTokens || 1000,
+      model: model || 'llama3-8b-8192',
+      enableAnalytics: true,
+    });
+
+    return NextResponse.json(result);
   } catch (error) {
     console.error('Chat API error:', error);
-    
     if (error instanceof z.ZodError) {
       return NextResponse.json(
         { error: 'Invalid request data', details: error.errors },
         { status: 400 }
       );
     }
-
-    return NextResponse.json(
-      { error: 'Internal server error' },
-      { status: 500 }
-    );
+    return NextResponse.json({ error: 'Internal server error' }, { status: 500 });
   }
 }
 
 export async function GET(req: NextRequest) {
   try {
-    // Apply rate limiting (more lenient for GET requests)
+    const { rateLimiters, getRequestIdentifier, createRateLimitResponse } = await getRateLimiters();
     const identifier = getRequestIdentifier(req);
     const rateLimitResult = await rateLimiters.api.check(identifier, 'get-sessions');
-
-    if (!rateLimitResult.success) {
-      return createRateLimitResponse(rateLimitResult);
-    }
+    if (!rateLimitResult.success) return createRateLimitResponse(rateLimitResult);
 
     const session = await getSession();
-    if (!session?.user?.id) {
-      return NextResponse.json([]);
-    }
+    if (!session?.user?.id) return NextResponse.json([]);
 
+    const chatService = await getChatService();
     const { searchParams } = new URL(req.url);
     const sessionId = searchParams.get('sessionId');
 
     if (sessionId) {
-      // Get specific session
-      const chatSession = await enterpriseChatService.getSession(sessionId);
+      const chatSession = await chatService.getSession(sessionId);
       if (!chatSession || (chatSession.userId && chatSession.userId !== session.user.id)) {
         return NextResponse.json({ error: 'Session not found' }, { status: 404 });
       }
       return NextResponse.json(chatSession);
-    } else {
-      // Get all user sessions
-      const sessions = await enterpriseChatService.getUserSessions(session.user.id);
-      return NextResponse.json(sessions);
     }
+
+    const sessions = await chatService.getUserSessions(session.user.id);
+    return NextResponse.json(sessions);
   } catch (error) {
     console.error('Get chat sessions error:', error);
-    return NextResponse.json(
-      { error: 'Internal server error' },
-      { status: 500 }
-    );
+    return NextResponse.json({ error: 'Internal server error' }, { status: 500 });
   }
 }
 
 export async function DELETE(req: NextRequest) {
   try {
-    // Apply rate limiting
+    const { rateLimiters, getRequestIdentifier, createRateLimitResponse } = await getRateLimiters();
     const identifier = getRequestIdentifier(req);
     const rateLimitResult = await rateLimiters.api.check(identifier, 'delete-session');
-
-    if (!rateLimitResult.success) {
-      return createRateLimitResponse(rateLimitResult);
-    }
+    if (!rateLimitResult.success) return createRateLimitResponse(rateLimitResult);
 
     const session = await getSession();
     const { searchParams } = new URL(req.url);
     const sessionId = searchParams.get('sessionId');
+    if (!sessionId) return NextResponse.json({ error: 'Session ID required' }, { status: 400 });
 
-    if (!sessionId) {
-      return NextResponse.json({ error: 'Session ID required' }, { status: 400 });
-    }
+    const chatService = await getChatService();
+    const chatSession = await chatService.getSession(sessionId);
+    if (!chatSession) return NextResponse.json({ error: 'Session not found' }, { status: 404 });
 
-    // For non-authenticated users, still allow deletion of their session
-    const chatSession = await enterpriseChatService.getSession(sessionId);
-    if (!chatSession) {
-      return NextResponse.json({ error: 'Session not found' }, { status: 404 });
-    }
-
-    // If user is authenticated, verify ownership
     if (session?.user?.id && chatSession.userId && chatSession.userId !== session.user.id) {
       return NextResponse.json({ error: 'Unauthorized' }, { status: 403 });
     }
 
-    const success = await enterpriseChatService.deleteSession(sessionId);
+    const success = await chatService.deleteSession(sessionId);
     return NextResponse.json({ success });
   } catch (error) {
     console.error('Delete chat session error:', error);
-    return NextResponse.json(
-      { error: 'Internal server error' },
-      { status: 500 }
-    );
+    return NextResponse.json({ error: 'Internal server error' }, { status: 500 });
   }
-}// Force rebuild
+}
