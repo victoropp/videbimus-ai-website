@@ -306,7 +306,7 @@ export class UniversalAIClient {
   }
 
   private async groqCompletion(options: ChatCompletionOptions) {
-    const { messages, model = 'llama3-8b-8192', temperature = 0.7, maxTokens = 1000, stream } = options;
+    const { messages, model = 'llama-3.1-8b-instant', temperature = 0.7, maxTokens = 1000, stream } = options;
     
     try {
       const completion = await groq.chat.completions.create({

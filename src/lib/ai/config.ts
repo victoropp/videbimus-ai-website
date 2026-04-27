@@ -93,7 +93,7 @@ export const modelConfigs = {
     'tiiuae/falcon-7b-instruct': { maxTokens: 2048, contextWindow: 2048 },
   },
   groq: {
-    'llama3-8b-8192': { maxTokens: 8192, contextWindow: 8192 },
+    'llama-3.1-8b-instant': { maxTokens: 8192, contextWindow: 8192 },
     'llama-3.1-8b-instant': { maxTokens: 8192, contextWindow: 131072 },
     'llama-3.3-70b-versatile': { maxTokens: 8192, contextWindow: 131072 },
     'mixtral-8x7b-32768': { maxTokens: 32768, contextWindow: 32768 },

@@ -104,7 +104,7 @@ export async function POST(req: NextRequest) {
         useKnowledgeBase: useRAG,
         temperature: temperature || 0.7,
         maxTokens: maxTokens || 1000,
-        model: model || 'llama3-8b-8192',
+        model: model || 'llama-3.1-8b-instant',
       });
 
       const encoder = new TextEncoder();
@@ -153,7 +153,7 @@ export async function POST(req: NextRequest) {
       useKnowledgeBase: useRAG,
       temperature: temperature || 0.7,
       maxTokens: maxTokens || 1000,
-      model: model || 'llama3-8b-8192',
+      model: model || 'llama-3.1-8b-instant',
       enableAnalytics: true,
     });
 

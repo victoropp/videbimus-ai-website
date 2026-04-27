@@ -67,65 +67,65 @@ export class EnhancedAIProviders {
       ['groq', {
         name: 'Groq',
         priority: 9,
-        maxRetries: 3,
-        timeoutMs: 30000,
-        rateLimitDelay: 1000,
+        maxRetries: 2,
+        timeoutMs: 15000,
+        rateLimitDelay: 500,
         healthCheck: async () => this.testGroqConnection()
       }],
       ['openai', {
         name: 'OpenAI',
         priority: 8,
-        maxRetries: 3,
-        timeoutMs: 60000,
-        rateLimitDelay: 2000,
+        maxRetries: 1,
+        timeoutMs: 30000,
+        rateLimitDelay: 500,
         healthCheck: async () => this.testOpenAIConnection()
       }],
       ['anthropic', {
         name: 'Anthropic',
         priority: 8,
-        maxRetries: 3,
-        timeoutMs: 60000,
-        rateLimitDelay: 1500,
+        maxRetries: 1,
+        timeoutMs: 30000,
+        rateLimitDelay: 500,
         healthCheck: async () => this.testAnthropicConnection()
       }],
       ['google', {
         name: 'Google AI',
         priority: 7,
-        maxRetries: 3,
-        timeoutMs: 45000,
-        rateLimitDelay: 1000,
+        maxRetries: 1,
+        timeoutMs: 20000,
+        rateLimitDelay: 500,
         healthCheck: async () => this.testGoogleConnection()
       }],
       ['cohere', {
         name: 'Cohere',
         priority: 6,
-        maxRetries: 3,
-        timeoutMs: 45000,
-        rateLimitDelay: 1500,
+        maxRetries: 1,
+        timeoutMs: 20000,
+        rateLimitDelay: 500,
         healthCheck: async () => this.testCohereConnection()
       }],
       ['huggingface', {
         name: 'Hugging Face',
         priority: 5,
-        maxRetries: 2,
-        timeoutMs: 120000,
-        rateLimitDelay: 3000,
+        maxRetries: 1,
+        timeoutMs: 30000,
+        rateLimitDelay: 500,
         healthCheck: async () => this.testHuggingFaceConnection()
       }],
       ['together', {
         name: 'Together AI',
         priority: 7,
-        maxRetries: 3,
-        timeoutMs: 45000,
-        rateLimitDelay: 1000,
+        maxRetries: 1,
+        timeoutMs: 20000,
+        rateLimitDelay: 500,
         healthCheck: async () => this.testTogetherConnection()
       }],
       ['replicate', {
         name: 'Replicate',
         priority: 4,
-        maxRetries: 2,
-        timeoutMs: 180000,
-        rateLimitDelay: 5000,
+        maxRetries: 1,
+        timeoutMs: 60000,
+        rateLimitDelay: 500,
         healthCheck: async () => this.testReplicateConnection()
       }]
     ];
@@ -372,7 +372,7 @@ export class EnhancedAIProviders {
 
   private async callGroq(client: Groq, request: ChatCompletionRequest): Promise<Partial<ProviderResponse>> {
     const response = await client.chat.completions.create({
-      model: request.model || 'llama3-8b-8192',
+      model: request.model || 'llama-3.1-8b-instant',
       messages: request.messages.map(msg => ({
         role: msg.role as any,
         content: msg.content,
@@ -695,7 +695,7 @@ export class EnhancedAIProviders {
 
   private async *streamGroq(client: Groq, request: ChatCompletionRequest): AsyncGenerator<StreamChunk> {
     const stream = await client.chat.completions.create({
-      model: request.model || 'llama3-8b-8192',
+      model: request.model || 'llama-3.1-8b-instant',
       messages: request.messages.map(msg => ({
         role: msg.role as any,
         content: msg.content,
@@ -832,7 +832,7 @@ export class EnhancedAIProviders {
       if (!client) return false;
       const response = await client.chat.completions.create({
         messages: [{ role: 'user', content: 'Hi' }],
-        model: 'llama3-8b-8192',
+        model: 'llama-3.1-8b-instant',
         max_tokens: 10,
       });
       return response.choices.length > 0;
