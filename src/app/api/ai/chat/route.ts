@@ -1,9 +1,18 @@
 import { NextRequest, NextResponse } from 'next/server';
 import { z } from 'zod';
 import { enterpriseChatService } from '@/lib/ai/enterprise-chat-service';
-import { auth } from '@/auth';
 import { rateLimiters, getRequestIdentifier, createRateLimitResponse } from '@/lib/middleware/rate-limit';
 import { validateAndSanitize } from '@/lib/security/sanitize';
+
+// Lazy-load auth to avoid PrismaAdapter crashing the Lambda on startup when DB is unavailable
+async function getSession() {
+  try {
+    const { auth } = await import('@/auth');
+    return await auth();
+  } catch {
+    return null;
+  }
+}
 
 const chatRequestSchema = z.object({
   message: z.string().min(1).max(4000),
@@ -29,13 +38,7 @@ export async function POST(req: NextRequest) {
       );
     }
 
-    // Auth is optional — unauthenticated users can still chat
-    let session = null;
-    try {
-      session = await auth();
-    } catch {
-      // DB unavailable or auth misconfigured — continue as unauthenticated
-    }
+    const session = await getSession();
     const body = await req.json();
     const { message, sessionId, systemPrompt, useRAG, temperature, maxTokens, model, stream } =
       chatRequestSchema.parse(body);
@@ -187,10 +190,7 @@ export async function GET(req: NextRequest) {
       return createRateLimitResponse(rateLimitResult);
     }
 
-    let session = null;
-    try { session = await auth(); } catch { /* continue unauthenticated */ }
-
-    // For non-authenticated users, return empty sessions
+    const session = await getSession();
     if (!session?.user?.id) {
       return NextResponse.json([]);
     }
@@ -229,9 +229,7 @@ export async function DELETE(req: NextRequest) {
       return createRateLimitResponse(rateLimitResult);
     }
 
-    let session = null;
-    try { session = await auth(); } catch { /* continue unauthenticated */ }
-
+    const session = await getSession();
     const { searchParams } = new URL(req.url);
     const sessionId = searchParams.get('sessionId');
 
