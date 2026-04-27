@@ -35,6 +35,7 @@ import { Card, CardContent, CardHeader } from '@/components/ui/card'
 import { Badge } from '@/components/ui/badge'
 import { ScrollArea } from '@/components/ui/scroll-area'
 import { cn } from '@/lib/utils'
+import ReactMarkdown from 'react-markdown'
 
 // Business context from Videbimus AI
 const BUSINESS_CONTEXT = {
@@ -45,13 +46,13 @@ const BUSINESS_CONTEXT = {
       name: 'AI Discovery & Strategy',
       duration: '2-4 weeks',
       features: ['AI Readiness Assessment', 'Strategic Roadmap', 'POC Development', 'ROI Analysis'],
-      startingPrice: '$25,000'
+      startingPrice: 'from £5,000'
     },
     implementation: {
       name: 'AI Implementation',
-      duration: '3-6 months', 
+      duration: '3-6 months',
       features: ['Custom AI Solutions', 'System Integration', 'Team Training', 'Ongoing Support'],
-      startingPrice: '$100,000'
+      startingPrice: 'from £25,000'
     },
     transformation: {
       name: 'Enterprise Transformation',
@@ -555,23 +556,23 @@ Always be helpful, professional, and focused on providing value. Use data and st
       show_services: () => {
         const servicesMessage = `Our AI transformation services:
 
-🎯 **AI Discovery & Strategy** (2-4 weeks, from $25K)
-• AI readiness assessment
-• Strategic roadmap development
-• Proof of concept
-• ROI analysis
+🎯 **AI Discovery & Strategy** (2–4 weeks, from £5,000)
+- AI readiness assessment
+- Strategic roadmap development
+- Proof of concept
+- ROI analysis
 
-⚙️ **AI Implementation** (3-6 months, from $100K)
-• Custom AI solution development
-• System integration
-• Team training
-• Ongoing support
+⚙️ **AI Implementation** (3–6 months, from £25,000)
+- Custom AI solution development
+- System integration
+- Team training
+- Ongoing support
 
-🏢 **Enterprise Transformation** (6-18 months, custom pricing)
-• Full AI platform development
-• Center of Excellence setup
-• Governance framework
-• 24/7 enterprise support
+🏢 **Enterprise Transformation** (6–18 months, custom pricing)
+- Full AI platform development
+- Centre of Excellence setup
+- Governance framework
+- 24/7 enterprise support
 
 Which service interests you most?`
         addMessage('assistant', servicesMessage, {
@@ -580,7 +581,7 @@ Which service interests you most?`
       },
       show_pricing: () => {
         addMessage('assistant', 'I\'ll help you find the right pricing package. What\'s your approximate budget range for AI initiatives?', {
-          quickReplies: ['< $50K', '$50K - $200K', '$200K - $500K', '> $500K', 'Need to discuss']
+          quickReplies: ['< £50K', '£50K – £150K', '£150K – £500K', '> £500K', 'Need to discuss']
         })
       },
       schedule_demo: () => {
@@ -784,7 +785,13 @@ Which service interests you most?`
                                     ? 'bg-red-50 dark:bg-red-900/20 text-red-800 dark:text-red-200'
                                     : 'bg-gray-100 dark:bg-gray-800 text-gray-800 dark:text-gray-200'
                               )}>
-                                <div className="text-sm whitespace-pre-wrap">{message.content}</div>
+                                {message.type === 'user' ? (
+                                  <div className="text-sm whitespace-pre-wrap">{message.content}</div>
+                                ) : (
+                                  <div className="text-sm prose prose-sm dark:prose-invert max-w-none prose-p:my-1 prose-ul:my-1 prose-li:my-0.5 prose-headings:my-1.5 prose-headings:font-semibold prose-strong:font-semibold prose-code:bg-black/10 prose-code:px-1 prose-code:rounded prose-code:text-xs">
+                                    <ReactMarkdown>{message.content}</ReactMarkdown>
+                                  </div>
+                                )}
                               </div>
                               
                               {/* Action Buttons */}

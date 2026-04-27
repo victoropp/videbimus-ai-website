@@ -20,6 +20,7 @@ import { Input } from '@/components/ui/input'
 import { Card, CardContent, CardHeader } from '@/components/ui/card'
 import { Badge } from '@/components/ui/badge'
 import { cn } from '@/lib/utils'
+import ReactMarkdown from 'react-markdown'
 
 interface Message {
   id: string
@@ -331,7 +332,13 @@ How can I help transform your business with AI today?`, {
                                   ? 'bg-red-50 dark:bg-red-900/20 text-red-800 dark:text-red-200'
                                   : 'bg-gray-100 dark:bg-gray-800 text-gray-800 dark:text-gray-200'
                             )}>
-                              <div className="text-sm whitespace-pre-wrap">{message.content}</div>
+                              {message.type === 'user' ? (
+                                <div className="text-sm whitespace-pre-wrap">{message.content}</div>
+                              ) : (
+                                <div className="text-sm prose prose-sm dark:prose-invert max-w-none prose-p:my-1 prose-ul:my-1 prose-li:my-0.5 prose-headings:my-1.5 prose-headings:font-semibold prose-strong:font-semibold prose-code:bg-black/10 prose-code:px-1 prose-code:rounded prose-code:text-xs">
+                                  <ReactMarkdown>{message.content}</ReactMarkdown>
+                                </div>
+                              )}
                             </div>
                             {message.type === 'assistant' && (
                               <div className="flex items-center gap-2 px-1">
