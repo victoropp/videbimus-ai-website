@@ -166,10 +166,8 @@ export async function POST(req: NextRequest) {
         { status: 400 }
       );
     }
-    const msg = error instanceof Error ? error.message : String(error);
-    const stack = error instanceof Error ? error.stack?.split('\n').slice(0, 5).join(' | ') : '';
-    console.error('CHAT_API_ERROR:', msg, stack);
-    return NextResponse.json({ error: 'Internal server error', detail: msg, stack }, { status: 500 });
+    console.error('Chat API error:', error);
+    return NextResponse.json({ error: 'Internal server error' }, { status: 500 });
   }
 }
 
