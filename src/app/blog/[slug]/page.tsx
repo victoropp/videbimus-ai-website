@@ -223,16 +223,9 @@ export default function BlogPostPage() {
               {/* Article Meta */}
               <div className="flex flex-wrap items-center gap-6 text-gray-300">
                 <div className="flex items-center space-x-3">
-                  {post.author.image && (
-                    <div className="relative h-10 w-10 rounded-full overflow-hidden ring-2 ring-white/20">
-                      <Image
-                        src={typeof post.author.image === 'string' ? post.author.image : '/avatar-placeholder.png'}
-                        alt={post.author.name || ''}
-                        fill
-                        className="object-cover"
-                      />
-                    </div>
-                  )}
+                  <div className="h-10 w-10 rounded-full bg-gradient-to-br from-cyan-500 to-purple-600 flex items-center justify-center text-white text-xs font-bold ring-2 ring-white/20 flex-shrink-0">
+                    {(post.author.name || 'V').split(' ').map((n: string) => n[0]).join('').slice(0, 3).toUpperCase()}
+                  </div>
                   <div>
                     <div className="flex items-center space-x-1">
                       <span className="font-medium text-white">{post.author.name}</span>
@@ -506,16 +499,9 @@ export default function BlogPostPage() {
                   <Card className="sticky top-6">
                     <CardHeader>
                       <CardTitle className="flex items-center space-x-3">
-                        {post.author.image && (
-                          <div className="relative h-12 w-12 rounded-full overflow-hidden">
-                            <Image
-                              src={typeof post.author.image === 'string' ? post.author.image : '/avatar-placeholder.png'}
-                              alt={post.author.name || ''}
-                              fill
-                              className="object-cover"
-                            />
-                          </div>
-                        )}
+                        <div className="h-12 w-12 rounded-full bg-gradient-to-br from-cyan-500 to-purple-600 flex items-center justify-center text-white text-sm font-bold flex-shrink-0">
+                          {(post.author.name || 'V').split(' ').map((n: string) => n[0]).join('').slice(0, 3).toUpperCase()}
+                        </div>
                         <div>
                           <h3 className="font-semibold">{post.author.name}</h3>
                           <p className="text-sm text-gray-600 dark:text-gray-300 font-normal">
@@ -526,8 +512,7 @@ export default function BlogPostPage() {
                     </CardHeader>
                     <CardContent>
                       <p className="text-gray-600 dark:text-gray-300 mb-4">
-                        Expert in AI and machine learning with years of experience helping businesses
-                        implement cutting-edge solutions.
+                        Expert in AI and machine learning with years of experience helping businesses implement cutting-edge solutions.
                       </p>
                       <Button variant="outline" size="sm" className="w-full">
                         View Profile
