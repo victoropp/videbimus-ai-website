@@ -174,7 +174,7 @@ export default function BlogPage() {
   }
 
   const getAuthorImage = (post: BlogPost): string => {
-    return post.author?.image || '/images/blog/default-avatar.jpg'
+    return post.author?.image || '/images/blog/author-1.jpg'
   }
 
   const getAuthorName = (post: BlogPost): string => {
@@ -182,7 +182,7 @@ export default function BlogPage() {
   }
 
   const getPostImage = (post: BlogPost): string => {
-    return post.featuredImage || '/images/blog/default-post.jpg'
+    return post.featuredImage || '/images/blog/featured-ai-future-business.jpg'
   }
 
   const getPostTags = (post: BlogPost): string[] => {

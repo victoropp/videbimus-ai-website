@@ -50,23 +50,26 @@ async function main() {
     publishedAt: Date
     readTime: number
     tagNames: string[]
+    featuredImage?: string
   }) => {
+    const postData = {
+      title: data.title,
+      slug: data.slug,
+      excerpt: data.excerpt,
+      content: data.content,
+      status: 'PUBLISHED',
+      published: true,
+      featured: data.featured,
+      publishedAt: data.publishedAt,
+      readTime: data.readTime,
+      authorId: author.id,
+      categoryId: data.categoryId,
+      ...(data.featuredImage ? { featuredImage: data.featuredImage } : {}),
+    }
     const post = await prisma.blogPost.upsert({
       where: { slug: data.slug },
-      update: {},
-      create: {
-        title: data.title,
-        slug: data.slug,
-        excerpt: data.excerpt,
-        content: data.content,
-        status: 'PUBLISHED',
-        published: true,
-        featured: data.featured,
-        publishedAt: data.publishedAt,
-        readTime: data.readTime,
-        authorId: author.id,
-        categoryId: data.categoryId,
-      },
+      update: { featuredImage: data.featuredImage },
+      create: postData,
     })
     // Tags
     for (const tagName of data.tagNames) {
@@ -90,6 +93,7 @@ async function main() {
     publishedAt: new Date('2026-04-20'),
     readTime: 8,
     categoryId: catStrategy.id,
+    featuredImage: '/images/blog/posts/agentic-ai-enterprise.jpg',
     tagNames: ['AI Agents', 'Agentic AI', 'Enterprise AI'],
     title: 'The Agentic Revolution: Why 40% of Enterprise Apps Will Run on AI Agents by End of 2026',
     excerpt: 'Multi-agent AI systems are no longer a research curiosity. Gartner predicts 40% of enterprise applications will embed AI agents by December 2026 — up from less than 5% just twelve months ago. Here is what that shift means for your business.',
@@ -144,6 +148,7 @@ At Videbimus AI, we have been building multi-agent systems for clients in oil an
     publishedAt: new Date('2026-04-18'),
     readTime: 7,
     categoryId: catResearch.id,
+    featuredImage: '/images/blog/posts/stanford-ai-index.jpg',
     tagNames: ['Enterprise AI', 'Data Science', 'LLMs'],
     title: 'Stanford\'s 2026 AI Index: 88% Enterprise Adoption, $172B Consumer Value — and a Warning Nobody Is Talking About',
     excerpt: 'The definitive annual benchmark on global AI is out. The headline numbers are extraordinary. But buried inside the Stanford AI Index 2026 is a transparency regression that should concern every business building on AI.',
@@ -202,6 +207,7 @@ The Stanford Index's 2026 findings, taken together, suggest three strategic infl
     publishedAt: new Date('2026-04-15'),
     readTime: 9,
     categoryId: catRegulation.id,
+    featuredImage: '/images/blog/posts/eu-ai-act.jpg',
     tagNames: ['EU AI Act', 'Enterprise AI'],
     title: 'EU AI Act: August 2026 Deadline Is Closer Than You Think — A Practical Compliance Guide for Business',
     excerpt: 'The EU AI Act reaches full force on 2 August 2026. Training data disclosures, CE marking for high-risk systems, mandatory AI labels on generated content — here is what your business needs to do before the deadline hits.',
@@ -274,6 +280,7 @@ For businesses with EU exposure, the immediate priorities are:
     publishedAt: new Date('2026-04-12'),
     readTime: 7,
     categoryId: catIndustry.id,
+    featuredImage: '/images/blog/posts/insurance-ai.jpg',
     tagNames: ['Insurance', 'Predictive Analytics', 'Enterprise AI'],
     title: 'Insurance AI Crosses the Chasm: 60% of Claims Automated at Ping An, Consumer Trust Doubles in One Year',
     excerpt: 'Something significant happened in insurance AI in 2025–2026. Consumer trust doubled. Automation rates at leading insurers crossed 60%. And the market is tracking toward $14.35 billion by 2035. The laggards are running out of time.',
@@ -328,6 +335,7 @@ In our experience working with insurers in the UK and West Africa, the organisat
     publishedAt: new Date('2026-04-08'),
     readTime: 8,
     categoryId: catAfrica.id,
+    featuredImage: '/images/blog/posts/africa-ai.jpg',
     tagNames: ['Africa', 'Data Science', 'Enterprise AI'],
     title: 'Africa Is Not Behind on AI — It Is Building a Different Kind of AI Altogether',
     excerpt: 'The global AI narrative positions Africa as a market waiting to catch up. The reality is more interesting: Africa is pioneering frugal AI innovation built for low-bandwidth, multilingual, low-data environments — and those models travel.',
@@ -384,6 +392,7 @@ AI systems that work with limited data, in multiple languages, on low-end hardwa
     publishedAt: new Date('2026-04-03'),
     readTime: 8,
     categoryId: catIndustry.id,
+    featuredImage: '/images/blog/posts/oil-gas-ai.jpg',
     tagNames: ['Oil & Gas', 'AI Agents', 'Predictive Analytics', 'Agentic AI'],
     title: 'Domain AI Agents for Upstream Oil & Gas: How Subsurface Intelligence Is Eliminating $7.64B in Inefficiency',
     excerpt: 'The AI in oil and gas market reaches $7.64B in 2026. But the real story is not the market size — it is the arrival of domain-specific AI agents that understand geophysics, reservoir dynamics, and subsurface data at the level of a senior engineer.',
