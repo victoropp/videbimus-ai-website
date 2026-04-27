@@ -29,7 +29,13 @@ export async function POST(req: NextRequest) {
       );
     }
 
-    const session = await auth();
+    // Auth is optional — unauthenticated users can still chat
+    let session = null;
+    try {
+      session = await auth();
+    } catch {
+      // DB unavailable or auth misconfigured — continue as unauthenticated
+    }
     const body = await req.json();
     const { message, sessionId, systemPrompt, useRAG, temperature, maxTokens, model, stream } =
       chatRequestSchema.parse(body);
@@ -181,8 +187,9 @@ export async function GET(req: NextRequest) {
       return createRateLimitResponse(rateLimitResult);
     }
 
-    const session = await auth();
-    
+    let session = null;
+    try { session = await auth(); } catch { /* continue unauthenticated */ }
+
     // For non-authenticated users, return empty sessions
     if (!session?.user?.id) {
       return NextResponse.json([]);
@@ -222,8 +229,9 @@ export async function DELETE(req: NextRequest) {
       return createRateLimitResponse(rateLimitResult);
     }
 
-    const session = await auth();
-    
+    let session = null;
+    try { session = await auth(); } catch { /* continue unauthenticated */ }
+
     const { searchParams } = new URL(req.url);
     const sessionId = searchParams.get('sessionId');
 
@@ -236,7 +244,7 @@ export async function DELETE(req: NextRequest) {
     if (!chatSession) {
       return NextResponse.json({ error: 'Session not found' }, { status: 404 });
     }
-    
+
     // If user is authenticated, verify ownership
     if (session?.user?.id && chatSession.userId && chatSession.userId !== session.user.id) {
       return NextResponse.json({ error: 'Unauthorized' }, { status: 403 });
