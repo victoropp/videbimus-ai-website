@@ -180,7 +180,7 @@ export function CustomerServiceBot() {
     const pageType = ctx.pageUrl.includes('services') ? 'services' : 
                      ctx.pageUrl.includes('pricing') ? 'pricing options' : 
                      'AI solutions';
-    return `👋 Welcome to Videbimus AI! I'm Alex, your AI consultant. I see you're exploring our ${pageType}. Can I help you find what you're looking for?`;
+    return `👋 Welcome to Videbimus AI! I'm Veda, your AI consultant. I see you're exploring our ${pageType}. Can I help you find what you're looking for?`;
   };
 
   // Proactive engagement triggers
@@ -363,7 +363,7 @@ export function CustomerServiceBot() {
   // Initialize welcome message
   useEffect(() => {
     if (isOpen && messages.length === 0) {
-      const welcomeMessage = `👋 Hi! I'm Alex, your AI consultant at Videbimus AI. 
+      const welcomeMessage = `👋 Hi! I'm Veda, your AI consultant at Videbimus AI. 
 
 I'm here to help you:
 • 🎯 Discover how AI can transform your business
@@ -518,7 +518,7 @@ What brings you here today?`
 
   // Generate contextual system prompt
   const generateSystemPrompt = () => {
-    return `You are Alex, a senior AI consultant at Videbimus AI. You are professional, knowledgeable, and focused on helping businesses transform with AI.
+    return `You are Veda, a senior AI consultant at Videbimus AI. You are professional, knowledgeable, and focused on helping businesses transform with AI.
 
 Current conversation stage: ${conversationStage}
 Lead score: ${leadScore}/100
@@ -707,7 +707,7 @@ Which service interests you most?`
                     )} />
                   </div>
                   <div>
-                    <h3 className="font-semibold">Alex - AI Consultant</h3>
+                    <h3 className="font-semibold">Veda - AI Consultant</h3>
                     <p className="text-xs opacity-90">
                       {leadScore > 50 ? '🔥 High Intent' : 
                        leadScore > 20 ? '⭐ Qualified Lead' : 
