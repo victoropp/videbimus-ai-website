@@ -137,7 +137,7 @@ If you are advising an organisation on its AI posture, three questions cut throu
 
 ---
 
-At Videbimus AI, we have been building multi-agent systems for clients in oil and gas, insurance, and financial services since 2024. If your organisation is in the 61% that has not yet moved agents into production — or the 79% struggling to do so — the window to close that gap is now, not after your competitors have.
+The window to act is now. If your organisation is in the 61% that has not yet moved agents into production — or the 79% struggling to do so — the gap will only widen as early movers compound their advantage.
 
 *Explore our [AI Discovery & Strategy](/services) service to map your agentic AI roadmap in 2–4 weeks.*`,
   })
@@ -198,7 +198,7 @@ The Stanford Index's 2026 findings, taken together, suggest three strategic infl
 
 ---
 
-*Videbimus AI helps organisations turn findings like these into concrete strategy. Our AI Readiness Assessment benchmarks your organisation against current capability curves and identifies where the highest-ROI opportunities lie. [Contact our team](/contact) to start the conversation.*`,
+*Ready to turn these findings into concrete strategy? [Get in touch](/contact) to start the conversation.*`,
   })
 
   await upsertPost({
@@ -271,7 +271,7 @@ For businesses with EU exposure, the immediate priorities are:
 
 ---
 
-*Videbimus AI has worked with clients in regulated industries to map their AI deployments against emerging compliance requirements. If you need help classifying your AI systems or building a compliance-ready deployment architecture, [speak with our team](/contact).*`,
+*Need help classifying your AI systems or building a compliance-ready deployment architecture? [Speak with our team](/contact).*`,
   })
 
   await upsertPost({
@@ -365,7 +365,7 @@ This is not just an African problem. It is a global AI problem. And African rese
 
 The techniques being developed for low-resource language modelling — cross-lingual transfer learning, multilingual embeddings trained on small corpora, community-contributed data annotation — have direct applications for indigenous languages worldwide. West African NLP research is not a regional curiosity. It is contributing to the foundational infrastructure of the next generation of language models.
 
-At Videbimus AI, with teams based in the UK and Ghana, we sit at an interesting intersection of this work. The practical challenges of building AI systems that work in Accra — where a client might switch between English, Twi, and Pidgin in a single conversation — have made us significantly better at building multilingual systems for clients anywhere.
+The practical challenges of building AI systems that work in Accra — where a client might switch between English, Twi, and Pidgin in a single conversation — are the same challenges that produce better multilingual systems for clients anywhere in the world.
 
 ## The Talent Gap Is Real But Narrowing
 
@@ -383,7 +383,7 @@ AI systems that work with limited data, in multiple languages, on low-end hardwa
 
 ---
 
-*Videbimus AI operates from the UK and Ghana, and we have built AI systems specifically designed to work in African market conditions. If you are building AI products for emerging markets or need expertise in multilingual, low-resource AI deployments, [our team is ready to help](/contact).*`,
+*If you are building AI products for emerging markets or need expertise in multilingual, low-resource AI deployments, [our team is ready to help](/contact).*`,
   })
 
   await upsertPost({
@@ -453,7 +453,7 @@ The sequencing logic that has proven most effective:
 
 ---
 
-*Videbimus AI built the Petroverse AI platform from the ground up. If you are an operator, a services company, or a technology provider in oil and gas and want to understand how domain AI agents can be deployed in your specific context, [speak with our team](/contact).*`,
+*If you are an operator, a services company, or a technology provider in oil and gas and want to understand how domain AI agents can be deployed in your specific context, [speak with our team](/contact).*`,
   })
 
   console.log('✅ Blog seeded with 6 articles, 5 categories, and 12 tags')
