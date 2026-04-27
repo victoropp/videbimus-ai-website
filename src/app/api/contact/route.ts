@@ -1,5 +1,5 @@
 import { NextRequest, NextResponse } from 'next/server'
-import { prisma } from '@/lib/database/client'
+import { prisma } from '@/lib/prisma'
 
 const LISTMONK_URL = process.env.LISTMONK_URL || 'https://mail.chrysoliteai.com'
 const LISTMONK_AUTH = 'Basic ' + Buffer.from(
