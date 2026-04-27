@@ -24,6 +24,7 @@ const navigation: NavItem[] = [
     href: '/ai',
     description: 'Interactive AI Demos'
   },
+  { name: 'ML Showcase', href: '/showcase', description: '12 Live Interactive ML Demos' },
   { name: 'Case Studies', href: '/case-studies' },
   { name: 'Blog', href: '/blog' },
   { name: 'Contact', href: '/contact' },
