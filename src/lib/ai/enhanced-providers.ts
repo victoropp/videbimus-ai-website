@@ -233,52 +233,29 @@ export class EnhancedAIProviders {
     return true;
   }
 
-  async getHealthyProviders(): Promise<string[]> {
-    const healthyProviders: string[] = [];
-    
-    for (const [providerName, config] of this.providers) {
-      if (this.clients.has(providerName)) {
-        try {
-          const isHealthy = await Promise.race([
-            config.healthCheck(),
-            new Promise<boolean>((_, reject) => 
-              setTimeout(() => reject(new Error('Health check timeout')), 5000)
-            )
-          ]);
-          
-          if (isHealthy) {
-            healthyProviders.push(providerName);
-          }
-        } catch (error) {
-          console.warn(`Health check failed for ${providerName}:`, error);
-        }
-      }
-    }
-
-    // Sort by priority
-    return healthyProviders.sort((a, b) => {
+  // Returns providers sorted by priority — no health checks, just what's configured
+  getAvailableProviders(): string[] {
+    const available = Array.from(this.clients.keys());
+    return available.sort((a, b) => {
       const priorityA = this.providers.get(a)?.priority || 0;
       const priorityB = this.providers.get(b)?.priority || 0;
       return priorityB - priorityA;
     });
   }
 
+  // Keep for backwards compat but skip the slow health checks
+  async getHealthyProviders(): Promise<string[]> {
+    return this.getAvailableProviders();
+  }
+
   async chatCompletion(request: ChatCompletionRequest): Promise<ProviderResponse | AsyncGenerator<StreamChunk>> {
     const startTime = Date.now();
-    
+
     if (request.stream) {
       return this.streamCompletion(request, startTime);
     }
-    
-    const healthyProviders = await this.getHealthyProviders();
-    
-    // Add available clients as fallback
-    const allProviders = [...healthyProviders];
-    for (const clientName of this.clients.keys()) {
-      if (!allProviders.includes(clientName)) {
-        allProviders.push(clientName);
-      }
-    }
+
+    const allProviders = this.getAvailableProviders();
 
     if (allProviders.length === 0) {
       return this.generateIntelligentFallback(request, startTime);
@@ -584,15 +561,7 @@ export class EnhancedAIProviders {
   }
 
   private async *streamCompletion(request: ChatCompletionRequest, startTime: number): AsyncGenerator<StreamChunk> {
-    const healthyProviders = await this.getHealthyProviders();
-    
-    // Add available clients as fallback
-    const allProviders = [...healthyProviders];
-    for (const clientName of this.clients.keys()) {
-      if (!allProviders.includes(clientName)) {
-        allProviders.push(clientName);
-      }
-    }
+    const allProviders = this.getAvailableProviders();
 
     if (allProviders.length === 0) {
       const fallbackResponse = this.generateIntelligentFallback(request, startTime);
