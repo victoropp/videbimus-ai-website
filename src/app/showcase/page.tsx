@@ -656,6 +656,10 @@ input[type="range"].sc-ctrl input,
   font-family: "JetBrains Mono", ui-monospace, monospace;
   font-size: 11px; letter-spacing: 0.06em; text-transform: uppercase; outline: none; width: 100%;
 }
+.sc-demo-inner select option {
+  background: #1a1a2e; color: #e2e8f0;
+  font-size: 12px; text-transform: uppercase; letter-spacing: 0.06em;
+}
 .sc-demo-inner textarea {
   width: 100%; min-height: 52px; resize: vertical;
   background: rgba(255,255,255,0.06); border: 1px solid rgba(255,255,255,0.15);
