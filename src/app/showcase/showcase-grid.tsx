@@ -233,10 +233,11 @@ export function ShowcaseGrid({ models }: { models: Model[] }) {
 
   const filtered = active === 'All' ? models : models.filter(m => m.sector === active)
 
-  // Group by sector for the "All" view
+  // Only group by sector when a specific sector is filtered
+  const showSectorHeader = active !== 'All'
   const sectors = active === 'All'
-    ? [...new Set(models.map(m => m.sector))]
-    : [active]
+    ? ['All']
+    : [...new Set(filtered.map(m => m.sector))]
 
   return (
     <div>
@@ -257,22 +258,18 @@ export function ShowcaseGrid({ models }: { models: Model[] }) {
         ))}
       </div>
 
-      {/* Sector groups */}
-      <div className="space-y-16">
+      <div className="space-y-5">
         {sectors.map(sector => {
-          const sectorModels = filtered.filter(m => m.sector === sector)
+          const sectorModels = sector === 'All' ? filtered : filtered.filter(m => m.sector === sector)
           if (!sectorModels.length) return null
           const accentColor = sectorModels[0].accent
 
           return (
             <div key={sector}>
-              {/* Sector header — only in All view */}
-              {active === 'All' && (
+              {/* Sector header — only when a specific sector is active */}
+              {showSectorHeader && (
                 <div className="flex items-center gap-4 mb-6">
-                  <div
-                    className="w-1 h-8 rounded-full shrink-0"
-                    style={{ background: accentColor }}
-                  />
+                  <div className="w-1 h-8 rounded-full shrink-0" style={{ background: accentColor }} />
                   <h3 className="text-sm font-mono font-bold tracking-widest uppercase text-gray-400 dark:text-gray-500">
                     {sector}
                   </h3>
