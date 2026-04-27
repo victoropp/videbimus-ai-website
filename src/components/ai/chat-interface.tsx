@@ -45,18 +45,16 @@ interface ChatSettings {
 const defaultSettings: ChatSettings = {
   useRAG: true,
   temperature: 0.7,
-  maxTokens: 2048,
-  model: 'gpt-4-turbo-preview',
+  maxTokens: 1024,
+  model: 'llama-3.1-8b-instant',
   systemPrompt: '',
 };
 
 const modelOptions = [
-  { value: 'gpt-4-turbo-preview', label: 'GPT-4 Turbo' },
-  { value: 'gpt-4', label: 'GPT-4' },
-  { value: 'gpt-3.5-turbo', label: 'GPT-3.5 Turbo' },
-  { value: 'claude-3-sonnet-20240229', label: 'Claude 3 Sonnet' },
-  { value: 'claude-3-opus-20240229', label: 'Claude 3 Opus' },
-  { value: 'blenderbot-400m', label: 'BlenderBot (HF) 🆕' },
+  { value: 'llama-3.1-8b-instant', label: 'LLaMA 3.1 8B (Groq) — Fast' },
+  { value: 'llama-3.3-70b-versatile', label: 'LLaMA 3.3 70B (Groq) — Powerful' },
+  { value: 'gemma2-9b-it', label: 'Gemma 2 9B (Groq)' },
+  { value: 'command', label: 'Cohere Command' },
 ];
 
 export function ChatInterface() {

@@ -1,8 +1,32 @@
-import { aiClient, hf } from './providers';
-import { aiConfig } from './config';
+import { hf } from './providers';
+import { enhancedProviders, type ProviderResponse } from './enhanced-providers';
 import { z } from 'zod';
 
-// Sentiment Analysis
+async function groqChat(prompt: string, maxTokens = 600): Promise<string> {
+  try {
+    const result = await enhancedProviders.chatCompletion({
+      messages: [{ role: 'user', content: prompt }],
+      temperature: 0.1,
+      maxTokens,
+    }) as ProviderResponse;
+    return result.content || '';
+  } catch {
+    return '';
+  }
+}
+
+function extractJson(text: string): string {
+  // Strip markdown code fences if present
+  const fenced = text.match(/```(?:json)?\s*([\s\S]*?)```/);
+  if (fenced) return fenced[1].trim();
+  // Try to find first { or [
+  const start = text.search(/[\[{]/);
+  if (start >= 0) return text.slice(start);
+  return text;
+}
+
+// ─── Sentiment Analysis ───────────────────────────────────────────────────────
+
 export interface SentimentResult {
   sentiment: 'positive' | 'negative' | 'neutral';
   confidence: number;
@@ -16,102 +40,55 @@ export interface SentimentResult {
 }
 
 export async function analyzeSentiment(text: string): Promise<SentimentResult> {
+  // Try HuggingFace first
   try {
-    // Try using Hugging Face sentiment model first
     const hfResult = await hf.textClassification({
       model: 'nlptown/bert-base-multilingual-uncased-sentiment',
-      inputs: text
+      inputs: text,
     });
-    
-    // Convert 5-star rating to sentiment
     const starRating = parseInt(hfResult[0].label.split(' ')[0]);
-    let sentiment: 'positive' | 'negative' | 'neutral';
-    if (starRating >= 4) sentiment = 'positive';
-    else if (starRating <= 2) sentiment = 'negative';
-    else sentiment = 'neutral';
-    
-    // Try emotion analysis with another model
-    let emotions = {
-      joy: 0.2,
-      sadness: 0.2,
-      anger: 0.2,
-      fear: 0.2,
-      surprise: 0.2,
-    };
-    
-    // Estimate emotions based on star rating
-    if (sentiment === 'positive') {
-      emotions.joy = 0.7;
-      emotions.surprise = 0.3;
-    } else if (sentiment === 'negative') {
-      emotions.sadness = 0.5;
-      emotions.anger = 0.3;
-      emotions.fear = 0.2;
-    }
-    
+    const sentiment: SentimentResult['sentiment'] =
+      starRating >= 4 ? 'positive' : starRating <= 2 ? 'negative' : 'neutral';
+    const emotions = { joy: 0.2, sadness: 0.2, anger: 0.2, fear: 0.2, surprise: 0.2 };
+    if (sentiment === 'positive') { emotions.joy = 0.7; emotions.surprise = 0.3; }
+    else if (sentiment === 'negative') { emotions.sadness = 0.5; emotions.anger = 0.3; emotions.fear = 0.2; }
+    return { sentiment, confidence: hfResult[0].score, emotions };
+  } catch {
+    // fall through to Groq
+  }
+
+  const prompt = `Analyze the sentiment of this text. Respond with ONLY a JSON object, no other text.
+
+Text: "${text.slice(0, 2000)}"
+
+JSON format:
+{"sentiment":"positive|negative|neutral","confidence":0.0-1.0,"emotions":{"joy":0.0-1.0,"sadness":0.0-1.0,"anger":0.0-1.0,"fear":0.0-1.0,"surprise":0.0-1.0}}`;
+
+  const raw = await groqChat(prompt, 200);
+  try {
+    return JSON.parse(extractJson(raw));
+  } catch {
+    // Simple rule-based fallback
+    const lower = text.toLowerCase();
+    const pos = ['good', 'great', 'excellent', 'happy', 'love', 'amazing', 'wonderful', 'fantastic'].filter(w => lower.includes(w)).length;
+    const neg = ['bad', 'terrible', 'awful', 'hate', 'horrible', 'worst', 'poor', 'disappointing'].filter(w => lower.includes(w)).length;
+    const sentiment: SentimentResult['sentiment'] = pos > neg ? 'positive' : neg > pos ? 'negative' : 'neutral';
     return {
       sentiment,
-      confidence: hfResult[0].score,
-      emotions
+      confidence: 0.65,
+      emotions: {
+        joy: sentiment === 'positive' ? 0.6 : 0.1,
+        sadness: sentiment === 'negative' ? 0.5 : 0.1,
+        anger: sentiment === 'negative' ? 0.3 : 0.05,
+        fear: 0.05,
+        surprise: 0.1,
+      },
     };
-  } catch (hfError) {
-    console.log('HF sentiment failed, using fallback:', hfError);
-    
-    // Fallback to AI client
-    const prompt = `Analyze the sentiment of the following text and provide a detailed breakdown:
-
-Text: "${text}"
-
-Please respond with a JSON object in the following format:
-{
-  "sentiment": "positive" | "negative" | "neutral",
-  "confidence": 0.0-1.0,
-  "emotions": {
-    "joy": 0.0-1.0,
-    "sadness": 0.0-1.0,
-    "anger": 0.0-1.0,
-    "fear": 0.0-1.0,
-    "surprise": 0.0-1.0
-  }
-}`;
-
-    const response = await aiClient.chatCompletion({
-      messages: [{ role: 'user', content: prompt }],
-      temperature: 0.1,
-      maxTokens: 500,
-    });
-
-    let responseContent: string;
-    if ('choices' in response) {
-      responseContent = response.choices[0]?.message?.content || '';
-    } else if ('content' in response) {
-      responseContent = Array.isArray(response.content)
-        ? (response.content[0] && 'text' in response.content[0] ? response.content[0].text : '')
-        : response.content;
-    } else {
-      responseContent = (response as any).generated_text || (response as any).response || '';
-    }
-
-    try {
-      return JSON.parse(responseContent);
-    } catch (error) {
-      // Fallback parsing
-      return {
-        sentiment: 'neutral',
-        confidence: 0.5,
-        emotions: {
-          joy: 0.2,
-          sadness: 0.2,
-          anger: 0.2,
-          fear: 0.2,
-          surprise: 0.2,
-        },
-      };
-    }
   }
 }
 
-// Text Summarization
+// ─── Text Summarization ───────────────────────────────────────────────────────
+
 export interface SummaryOptions {
   length?: 'short' | 'medium' | 'long';
   style?: 'bullet-points' | 'paragraph' | 'executive';
@@ -119,106 +96,41 @@ export interface SummaryOptions {
 
 export async function summarizeText(text: string, options: SummaryOptions = {}): Promise<string> {
   const { length = 'medium', style = 'paragraph' } = options;
-  
+
+  // Try HuggingFace BART first
   try {
-    // Try using Hugging Face summarization model first
-    let maxLength = 150;
-    let minLength = 30;
-    
-    switch (length) {
-      case 'short':
-        maxLength = 50;
-        minLength = 20;
-        break;
-      case 'medium':
-        maxLength = 150;
-        minLength = 50;
-        break;
-      case 'long':
-        maxLength = 300;
-        minLength = 100;
-        break;
-    }
-    
+    const maxLen = length === 'short' ? 60 : length === 'long' ? 300 : 150;
+    const minLen = length === 'short' ? 20 : length === 'long' ? 100 : 40;
     const hfResult = await hf.summarization({
       model: 'facebook/bart-large-cnn',
-      inputs: text,
-      parameters: {
-        max_length: maxLength,
-        min_length: minLength,
-        do_sample: false
-      }
+      inputs: text.slice(0, 1024),
+      parameters: { max_length: maxLen, min_length: minLen, do_sample: false },
     });
-    
     let summary = hfResult.summary_text;
-    
-    // Format based on style
     if (style === 'bullet-points') {
-      const sentences = summary.split('. ').filter(s => s.trim());
-      summary = sentences.map(s => `• ${s.trim()}${s.endsWith('.') ? '' : '.'}`).join('\n');
+      summary = summary.split('. ').filter(s => s.trim()).map(s => `• ${s.trim()}${s.endsWith('.') ? '' : '.'}`).join('\n');
     } else if (style === 'executive') {
-      summary = `Executive Summary:\n\n${summary}\n\nKey Takeaway: ${summary.split('.')[0]}.`;
+      summary = `**Executive Summary**\n\n${summary}\n\n**Key Takeaway:** ${summary.split('.')[0]}.`;
     }
-    
     return summary;
-  } catch (hfError) {
-    console.log('HF summarization failed, using fallback:', hfError);
-    
-    // Fallback to AI client
-    let lengthInstruction = '';
-    switch (length) {
-      case 'short':
-        lengthInstruction = 'in 1-2 sentences';
-        break;
-      case 'medium':
-        lengthInstruction = 'in 3-5 sentences';
-        break;
-      case 'long':
-        lengthInstruction = 'in a comprehensive paragraph';
-        break;
-    }
-
-    let styleInstruction = '';
-    switch (style) {
-      case 'bullet-points':
-        styleInstruction = 'Format the summary as bullet points.';
-        break;
-      case 'paragraph':
-        styleInstruction = 'Format the summary as a coherent paragraph.';
-        break;
-      case 'executive':
-        styleInstruction = 'Format as an executive summary with key takeaways.';
-        break;
-    }
-
-    const prompt = `Summarize the following text ${lengthInstruction}. ${styleInstruction}
-
-Text: "${text}"
-
-Summary:`;
-
-    const response = await aiClient.chatCompletion({
-      messages: [{ role: 'user', content: prompt }],
-      temperature: 0.3,
-      maxTokens: 1000,
-    });
-
-    let responseContent: string;
-    if ('choices' in response) {
-      responseContent = response.choices[0]?.message?.content || '';
-    } else if ('content' in response) {
-      responseContent = Array.isArray(response.content)
-        ? (response.content[0] && 'text' in response.content[0] ? response.content[0].text : '')
-        : response.content;
-    } else {
-      responseContent = (response as any).generated_text || (response as any).response || '';
-    }
-
-    return responseContent.trim();
+  } catch {
+    // fall through to Groq
   }
+
+  const lengthGuide = length === 'short' ? '1–2 sentences' : length === 'long' ? 'a detailed paragraph of 5–8 sentences' : '3–4 sentences';
+  const styleGuide = style === 'bullet-points' ? 'Format as bullet points.' : style === 'executive' ? 'Format as an executive summary with a bold header and a key takeaway line at the end.' : 'Write as flowing prose.';
+
+  const prompt = `Summarize the following text in ${lengthGuide}. ${styleGuide} Return only the summary.
+
+Text:
+${text.slice(0, 3000)}`;
+
+  const result = await groqChat(prompt, 400);
+  return result || 'Unable to generate summary.';
 }
 
-// NLP Entity Extraction
+// ─── NER Entity Extraction ────────────────────────────────────────────────────
+
 export interface Entity {
   text: string;
   type: 'PERSON' | 'ORG' | 'GPE' | 'DATE' | 'MONEY' | 'PERCENT' | 'EMAIL' | 'URL' | 'PHONE';
@@ -228,136 +140,54 @@ export interface Entity {
 }
 
 export async function extractEntities(text: string): Promise<Entity[]> {
+  const entities: Entity[] = [];
+
+  // Try HuggingFace NER first
   try {
-    // Try using Hugging Face NER model first
     const hfResult = await hf.tokenClassification({
       model: 'dbmdz/bert-large-cased-finetuned-conll03-english',
-      inputs: text
+      inputs: text,
     });
-    
-    // Convert HF results to our Entity format
-    const entities: Entity[] = hfResult.map((entity: any) => {
-      // Map HF entity types to our types
+    for (const e of hfResult as any[]) {
       let type: Entity['type'] = 'ORG';
-      switch (entity.entity_group) {
-        case 'PER':
-          type = 'PERSON';
-          break;
-        case 'ORG':
-          type = 'ORG';
-          break;
-        case 'LOC':
-        case 'GPE':
-          type = 'GPE';
-          break;
-        case 'MISC':
-          // Check if it's a date, money, or percent
-          if (/\d{1,2}\/\d{1,2}\/\d{2,4}|\d{4}-\d{2}-\d{2}/.test(entity.word)) {
-            type = 'DATE';
-          } else if (/\$|€|£|¥/.test(entity.word)) {
-            type = 'MONEY';
-          } else if (/%/.test(entity.word)) {
-            type = 'PERCENT';
-          } else {
-            type = 'ORG';
-          }
-          break;
-      }
-      
-      return {
-        text: entity.word,
-        type,
-        confidence: entity.score,
-        startIndex: entity.start || 0,
-        endIndex: entity.end || entity.word.length
-      };
-    });
-    
-    // Also check for emails, URLs, and phone numbers using regex
-    const emailRegex = /[a-zA-Z0-9._%+-]+@[a-zA-Z0-9.-]+\.[a-zA-Z]{2,}/g;
-    const urlRegex = /https?:\/\/(www\.)?[-a-zA-Z0-9@:%._\+~#=]{1,256}\.[a-zA-Z0-9()]{1,6}\b([-a-zA-Z0-9()@:%_\+.~#?&//=]*)/g;
-    const phoneRegex = /(\+\d{1,3}[-.\s]?)?\(?\d{1,4}\)?[-.\s]?\d{1,4}[-.\s]?\d{1,4}[-.\s]?\d{1,9}/g;
-    
-    let match;
-    while ((match = emailRegex.exec(text)) !== null) {
-      entities.push({
-        text: match[0],
-        type: 'EMAIL',
-        confidence: 0.95,
-        startIndex: match.index,
-        endIndex: match.index + match[0].length
-      });
+      if (e.entity_group === 'PER') type = 'PERSON';
+      else if (e.entity_group === 'LOC' || e.entity_group === 'GPE') type = 'GPE';
+      entities.push({ text: e.word, type, confidence: e.score, startIndex: e.start || 0, endIndex: e.end || e.word.length });
     }
-    
-    while ((match = urlRegex.exec(text)) !== null) {
-      entities.push({
-        text: match[0],
-        type: 'URL',
-        confidence: 0.95,
-        startIndex: match.index,
-        endIndex: match.index + match[0].length
-      });
-    }
-    
-    while ((match = phoneRegex.exec(text)) !== null) {
-      if (match[0].length >= 10) { // Basic phone number validation
-        entities.push({
-          text: match[0],
-          type: 'PHONE',
-          confidence: 0.85,
-          startIndex: match.index,
-          endIndex: match.index + match[0].length
-        });
-      }
-    }
-    
-    return entities;
-  } catch (hfError) {
-    console.log('HF NER failed, using fallback:', hfError);
-    
-    // Fallback to AI client
-    const prompt = `Extract named entities from the following text. Identify persons, organizations, locations, dates, monetary amounts, percentages, emails, URLs, and phone numbers.
-
-Text: "${text}"
-
-Please respond with a JSON array of entities in the following format:
-[
-  {
-    "text": "extracted text",
-    "type": "PERSON|ORG|GPE|DATE|MONEY|PERCENT|EMAIL|URL|PHONE",
-    "confidence": 0.0-1.0,
-    "startIndex": number,
-    "endIndex": number
+  } catch {
+    // fall through to Groq
   }
-]`;
 
-    const response = await aiClient.chatCompletion({
-      messages: [{ role: 'user', content: prompt }],
-      temperature: 0.1,
-      maxTokens: 1000,
-    });
+  // Always add regex-detected contact info
+  const emailRe = /[a-zA-Z0-9._%+-]+@[a-zA-Z0-9.-]+\.[a-zA-Z]{2,}/g;
+  const urlRe = /https?:\/\/[^\s]+/g;
+  const phoneRe = /(\+\d{1,3}[-.\s]?)?\(?\d{3}\)?[-.\s]?\d{3}[-.\s]?\d{4}/g;
 
-    let responseContent: string;
-    if ('choices' in response) {
-      responseContent = response.choices[0]?.message?.content || '';
-    } else if ('content' in response) {
-      responseContent = Array.isArray(response.content)
-        ? (response.content[0] && 'text' in response.content[0] ? response.content[0].text : '')
-        : response.content;
-    } else {
-      responseContent = (response as any).generated_text || (response as any).response || '';
-    }
+  for (const m of text.matchAll(emailRe)) entities.push({ text: m[0], type: 'EMAIL', confidence: 0.97, startIndex: m.index!, endIndex: m.index! + m[0].length });
+  for (const m of text.matchAll(urlRe)) entities.push({ text: m[0], type: 'URL', confidence: 0.97, startIndex: m.index!, endIndex: m.index! + m[0].length });
+  for (const m of text.matchAll(phoneRe)) { if (m[0].replace(/\D/g, '').length >= 10) entities.push({ text: m[0], type: 'PHONE', confidence: 0.85, startIndex: m.index!, endIndex: m.index! + m[0].length }); }
 
-    try {
-      return JSON.parse(responseContent);
-    } catch (error) {
-      console.error('Entity extraction parsing error:', error);
-      return [];
-    }
+  if (entities.length > 0) return entities;
+
+  // Groq fallback
+  const prompt = `Extract named entities from this text. Return ONLY a JSON array, no other text.
+
+Entity types: PERSON, ORG, GPE (location), DATE, MONEY, PERCENT, EMAIL, URL, PHONE
+
+Text: "${text.slice(0, 2000)}"
+
+JSON format: [{"text":"...","type":"...","confidence":0.0-1.0,"startIndex":0,"endIndex":0}]`;
+
+  const raw = await groqChat(prompt, 600);
+  try {
+    return JSON.parse(extractJson(raw));
+  } catch {
+    return [];
   }
 }
 
-// Text Classification
+// ─── Text Classification ──────────────────────────────────────────────────────
+
 export interface ClassificationResult {
   category: string;
   confidence: number;
@@ -365,48 +195,26 @@ export interface ClassificationResult {
 }
 
 export async function classifyText(text: string, categories: string[]): Promise<ClassificationResult> {
-  const prompt = `Classify the following text into one of these categories: ${categories.join(', ')}
+  const prompt = `Classify this text into exactly one of: ${categories.join(', ')}. Return ONLY a JSON object.
 
-Text: "${text}"
+Text: "${text.slice(0, 2000)}"
 
-Please respond with a JSON object in the following format:
-{
-  "category": "most likely category",
-  "confidence": 0.0-1.0,
-  "allScores": {
-    ${categories.map(cat => `"${cat}": 0.0-1.0`).join(',\n    ')}
-  }
-}`;
+JSON format: {"category":"chosen category","confidence":0.0-1.0,"allScores":{${categories.map(c => `"${c}":0.0`).join(',')}}}`;
 
-  const response = await aiClient.chatCompletion({
-    messages: [{ role: 'user', content: prompt }],
-    temperature: 0.1,
-    maxTokens: 500,
-  });
-
-  let responseContent: string;
-  if ('choices' in response) {
-    responseContent = response.choices[0]?.message?.content || '';
-  } else if ('content' in response) {
-    responseContent = Array.isArray(response.content) 
-      ? (response.content[0] && 'text' in response.content[0] ? response.content[0].text : '')
-      : response.content;
-  } else {
-    responseContent = (response as any).generated_text || (response as any).response || '';
-  }
-
+  const raw = await groqChat(prompt, 300);
   try {
-    return JSON.parse(responseContent);
-  } catch (error) {
+    return JSON.parse(extractJson(raw));
+  } catch {
     return {
       category: categories[0] || 'unknown',
       confidence: 0.5,
-      allScores: Object.fromEntries(categories.map(cat => [cat, 1 / categories.length])),
+      allScores: Object.fromEntries(categories.map(c => [c, 1 / categories.length])),
     };
   }
 }
 
-// Language Detection
+// ─── Language Detection ───────────────────────────────────────────────────────
+
 export interface LanguageResult {
   language: string;
   confidence: number;
@@ -414,94 +222,39 @@ export interface LanguageResult {
 }
 
 export async function detectLanguage(text: string): Promise<LanguageResult> {
-  const prompt = `Detect the language of the following text:
+  const prompt = `Detect the language of this text. Return ONLY a JSON object.
 
-Text: "${text}"
+Text: "${text.slice(0, 500)}"
 
-Please respond with a JSON object in the following format:
-{
-  "language": "language name (e.g., 'English', 'Spanish', 'French')",
-  "confidence": 0.0-1.0,
-  "allLanguages": {
-    "English": 0.0-1.0,
-    "Spanish": 0.0-1.0,
-    "French": 0.0-1.0,
-    "German": 0.0-1.0,
-    "Other": 0.0-1.0
-  }
-}`;
+JSON format: {"language":"English","confidence":0.0-1.0,"allLanguages":{"English":0.0,"Spanish":0.0,"French":0.0,"German":0.0,"Other":0.0}}`;
 
-  const response = await aiClient.chatCompletion({
-    messages: [{ role: 'user', content: prompt }],
-    temperature: 0.1,
-    maxTokens: 300,
-  });
-
-  let responseContent: string;
-  if ('choices' in response) {
-    responseContent = response.choices[0]?.message?.content || '';
-  } else if ('content' in response) {
-    responseContent = Array.isArray(response.content) 
-      ? (response.content[0] && 'text' in response.content[0] ? response.content[0].text : '')
-      : response.content;
-  } else {
-    responseContent = (response as any).generated_text || (response as any).response || '';
-  }
-
+  const raw = await groqChat(prompt, 200);
   try {
-    return JSON.parse(responseContent);
-  } catch (error) {
-    return {
-      language: 'English',
-      confidence: 0.5,
-      allLanguages: {
-        English: 0.5,
-        Spanish: 0.1,
-        French: 0.1,
-        German: 0.1,
-        Other: 0.2,
-      },
-    };
+    return JSON.parse(extractJson(raw));
+  } catch {
+    return { language: 'English', confidence: 0.7, allLanguages: { English: 0.7, Spanish: 0.1, French: 0.05, German: 0.05, Other: 0.1 } };
   }
 }
 
-// Keyword Extraction
+// ─── Keyword Extraction ───────────────────────────────────────────────────────
+
 export async function extractKeywords(text: string, count: number = 10): Promise<string[]> {
-  const prompt = `Extract the top ${count} most important keywords from the following text:
+  const prompt = `Extract the ${count} most important keywords from this text. Return ONLY a JSON array of strings.
 
-Text: "${text}"
+Text: "${text.slice(0, 2000)}"
 
-Please respond with a JSON array of keywords:
-["keyword1", "keyword2", "keyword3", ...]`;
+Example: ["keyword1","keyword2","keyword3"]`;
 
-  const response = await aiClient.chatCompletion({
-    messages: [{ role: 'user', content: prompt }],
-    temperature: 0.1,
-    maxTokens: 300,
-  });
-
-  let responseContent: string;
-  if ('choices' in response) {
-    responseContent = response.choices[0]?.message?.content || '';
-  } else if ('content' in response) {
-    responseContent = Array.isArray(response.content) 
-      ? (response.content[0] && 'text' in response.content[0] ? response.content[0].text : '')
-      : response.content;
-  } else {
-    responseContent = (response as any).generated_text || (response as any).response || '';
-  }
-
+  const raw = await groqChat(prompt, 200);
   try {
-    return JSON.parse(responseContent);
-  } catch (error) {
-    // Fallback: extract words and return them
-    return text.split(/\W+/)
-      .filter(word => word.length > 3)
-      .slice(0, count);
+    return JSON.parse(extractJson(raw));
+  } catch {
+    return text.split(/\W+/).filter(w => w.length > 4).slice(0, count);
   }
 }
 
-// Question Answering
+// ─── Question Answering ───────────────────────────────────────────────────────
+
 export interface QAResult {
   answer: string;
   confidence: number;
@@ -510,82 +263,36 @@ export interface QAResult {
 }
 
 export async function answerQuestion(question: string, context: string): Promise<QAResult> {
+  // Try HuggingFace QA model first
   try {
-    // Try using Hugging Face QA model first
     const hfResult = await hf.questionAnswering({
       model: 'deepset/roberta-base-squad2',
-      inputs: {
-        question: question,
-        context: context
-      }
+      inputs: { question, context: context.slice(0, 512) },
     });
-    
-    return {
-      answer: hfResult.answer,
-      confidence: hfResult.score,
-      startIndex: hfResult.start,
-      endIndex: hfResult.end
-    };
-  } catch (hfError) {
-    console.log('HF QA failed, using fallback:', hfError);
-    
-    // Fallback to AI client
-    const prompt = `Based on the following context, answer the question. If the answer cannot be found in the context, say "I cannot find the answer in the provided context."
+    return { answer: hfResult.answer, confidence: hfResult.score, startIndex: hfResult.start, endIndex: hfResult.end };
+  } catch {
+    // fall through to Groq
+  }
 
-Context: "${context}"
+  const prompt = `Answer the question based only on the context provided. If the answer is not in the context, say "The answer is not found in the provided context."
 
-Question: "${question}"
+Context:
+${context.slice(0, 3000)}
+
+Question: ${question}
 
 Answer:`;
 
-    const response = await aiClient.chatCompletion({
-      messages: [{ role: 'user', content: prompt }],
-      temperature: 0.1,
-      maxTokens: 500,
-    });
-
-    let responseContent: string;
-    if ('choices' in response) {
-      responseContent = response.choices[0]?.message?.content || '';
-    } else if ('content' in response) {
-      responseContent = Array.isArray(response.content)
-        ? (response.content[0] && 'text' in response.content[0] ? response.content[0].text : '')
-        : response.content;
-    } else {
-      responseContent = (response as any).generated_text || (response as any).response || '';
-    }
-
-    return {
-      answer: responseContent.trim(),
-      confidence: 0.8 // Default confidence for fallback
-    };
-  }
+  const answer = await groqChat(prompt, 400);
+  return { answer: answer || 'Unable to find an answer.', confidence: 0.8 };
 }
 
-// Text Translation
+// ─── Text Translation ─────────────────────────────────────────────────────────
+
 export async function translateText(text: string, targetLanguage: string): Promise<string> {
-  const prompt = `Translate the following text to ${targetLanguage}:
+  const prompt = `Translate the following text to ${targetLanguage}. Return only the translation, no explanation.
 
-Text: "${text}"
+Text: "${text.slice(0, 2000)}"`;
 
-Translation:`;
-
-  const response = await aiClient.chatCompletion({
-    messages: [{ role: 'user', content: prompt }],
-    temperature: 0.1,
-    maxTokens: 1000,
-  });
-
-  let responseContent: string;
-  if ('choices' in response) {
-    responseContent = response.choices[0]?.message?.content || '';
-  } else if ('content' in response) {
-    responseContent = Array.isArray(response.content) 
-      ? (response.content[0] && 'text' in response.content[0] ? response.content[0].text : '')
-      : response.content;
-  } else {
-    responseContent = (response as any).generated_text || (response as any).response || '';
-  }
-
-  return responseContent.trim();
+  return (await groqChat(prompt, 1000)) || 'Translation unavailable.';
 }

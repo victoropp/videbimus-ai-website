@@ -531,68 +531,45 @@ export class EnterpriseChatService {
 
   private buildSystemContext(session: EnhancedChatSession, knowledgeDocuments?: KnowledgeDocument[]): string {
     const context = session.context;
-    const businessInfo = enterpriseKnowledgeBase.getBusinessContext();
+    const recentTopics = context.previousTopics.slice(-5);
 
-    let systemContext = `You are an enterprise-grade AI assistant for ${businessInfo.get('company_name')}, a leading ${businessInfo.get('industry')} firm specializing in ${businessInfo.get('specialties')}.
+    let systemContext = `You are the AI assistant for Videbimus AI — a specialist AI consulting and development firm founded in 2023, with teams in the UK and Ghana serving clients globally.
 
-## Your Role & Capabilities:
-- Provide accurate, professional information about AI consulting services
-- Offer technical guidance on machine learning and data science solutions
-- Discuss pricing and project scoping with business stakeholders
-- Maintain a ${context.conversationTone} conversation tone
-- Focus on business value and practical implementation
+## Verified company facts — use only these, never invent others
+- Services: Custom ML development, NLP, computer vision, data science & analytics, process automation, AI strategy
+- Clients/case studies: Petroverse (oil & gas, 45% downtime reduction via predictive maintenance), INSURE360 (insurance, 70% faster claims processing, 98.5% fraud detection accuracy)
+- Industries served: oil & gas, insurance, healthcare, retail, manufacturing, logistics, professional services
+- Pricing: discovery projects from £5,000–£15,000; implementations from £25,000–£150,000+; no fixed public rates
+- Contact: consulting@videbimusai.com | UK +44 7442 852675 | Ghana +233 248769377 | videbimusai.com
+- DO NOT claim: offices in Silicon Valley, New York, Singapore, or Sydney; "500+ implementations"; "98% satisfaction"; "former Google/Amazon engineers"; any statistic not listed above
 
-## Current Conversation Context:
-- User Intent: ${context.intent.type} (${Math.round(context.intent.confidence * 100)}% confidence)
-- Sentiment: ${context.intent.sentiment}
-- Topics Discussed: ${context.previousTopics.join(', ') || 'None'}
-- Business Context: ${Object.keys(context.businessContext).length > 0 ? JSON.stringify(context.businessContext) : 'General inquiry'}
+## Conversation context
+- Tone: ${context.conversationTone}
+- Topics so far: ${recentTopics.length > 0 ? recentTopics.join(', ') : 'none yet'}${Object.keys(context.businessContext).length > 0 ? `\n- User's industry context: ${JSON.stringify(context.businessContext)}` : ''}
 
-## Guidelines:
-1. **Accuracy**: Use the provided knowledge base information when available
-2. **Professionalism**: Maintain enterprise-level communication standards
-3. **Value Focus**: Emphasize business outcomes and ROI
-4. **Technical Balance**: Match technical depth to user's apparent expertise level
-5. **Call-to-Action**: Include relevant next steps when appropriate`;
+## Response rules
+1. Answer the specific question asked — don't pad with information they didn't ask for
+2. Use markdown formatting (bold, bullets, headers) to structure longer answers
+3. Vary your responses — if a topic has been covered, add new angles or ask a clarifying question instead of repeating
+4. Be direct and specific — avoid filler phrases like "Great question!", "Absolutely!", "Certainly!"
+5. For pricing questions: give honest guidance on what affects cost and offer a discovery call — don't dodge the topic
+6. For technical questions: match depth to apparent expertise; offer to go deeper if useful
+7. Always be honest — if something is outside our expertise or unknown, say so
+8. Keep responses focused and appropriately concise — not every answer needs to be 300 words`;
 
     if (knowledgeDocuments && knowledgeDocuments.length > 0) {
-      systemContext += `\n\n## Knowledge Base Context:\n`;
-      knowledgeDocuments.forEach((doc, index) => {
+      systemContext += `\n\n## Relevant knowledge base\n`;
+      knowledgeDocuments.forEach(doc => {
         systemContext += `### ${doc.title}\n${doc.content}\n\n`;
       });
-    }
-
-    if (context.escalationNeeded) {
-      systemContext += `\n\n## Escalation Note: Complex query detected. Consider suggesting a consultation with our technical team.`;
     }
 
     return systemContext;
   }
 
   private postProcessResponse(content: string, context: ConversationContext): string {
-    let processedContent = content;
-
-    // Add personalization based on context
-    if (context.businessContext.industry) {
-      const industry = context.businessContext.industry;
-      const industryInsights = {
-        'healthcare': 'Our healthcare AI solutions comply with HIPAA and focus on patient outcomes.',
-        'finance': 'We ensure financial AI solutions meet regulatory requirements and risk management standards.',
-        'retail': 'Our retail AI focuses on customer experience optimization and inventory management.',
-        'manufacturing': 'We specialize in quality control AI and predictive maintenance for manufacturing.',
-      };
-
-      if (industryInsights[industry] && !processedContent.includes('healthcare') && !processedContent.includes('finance')) {
-        processedContent += `\n\n💡 *Industry Insight*: ${industryInsights[industry]}`;
-      }
-    }
-
-    // Add conversational elements based on tone
-    if (context.conversationTone === 'professional' && !processedContent.includes('Would you like')) {
-      processedContent += '\n\nWould you like to schedule a consultation to discuss your specific requirements in detail?';
-    }
-
-    return processedContent;
+    // Clean up any double blank lines the model might produce
+    return content.replace(/\n{3,}/g, '\n\n').trim();
   }
 
   private updateAnalytics(session: EnhancedChatSession, response: ProviderResponse, intent: QueryIntent) {
