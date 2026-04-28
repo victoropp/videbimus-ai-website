@@ -11,7 +11,24 @@ const OWNER_EMAILS = (process.env.CONTACT_OWNER_EMAIL || 'info@videbimusai.com,v
 const NOTIFY_TEMPLATE_ID = parseInt(process.env.LISTMONK_CONTACT_NOTIFY_TEMPLATE || '12')
 const AUTOREPLY_TEMPLATE_ID = parseInt(process.env.LISTMONK_CONTACT_AUTOREPLY_TEMPLATE || '13')
 
+// Listmonk v6 requires the recipient to be a confirmed subscriber on a list.
+// This upserts the subscriber into list ID 1 (Default list) before sending.
+async function ensureListmonkSubscriber(email: string, name: string) {
+  await fetch(`${LISTMONK_URL}/api/subscribers`, {
+    method: 'POST',
+    headers: { 'Content-Type': 'application/json', Authorization: LISTMONK_AUTH },
+    body: JSON.stringify({
+      email,
+      name,
+      status: 'enabled',
+      lists: [1],
+      preconfirm_subscriptions: true,
+    }),
+  }).catch(() => {})
+}
+
 async function sendListmonkTx(templateId: number, toEmail: string, toName: string, data: Record<string, string>) {
+  await ensureListmonkSubscriber(toEmail, toName)
   const res = await fetch(`${LISTMONK_URL}/api/tx`, {
     method: 'POST',
     headers: { 'Content-Type': 'application/json', Authorization: LISTMONK_AUTH },
