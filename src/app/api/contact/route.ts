@@ -7,7 +7,7 @@ const LISTMONK_AUTH = 'Basic ' + Buffer.from(
 ).toString('base64')
 const NTFY_URL = process.env.NTFY_URL || 'https://notify.chrysoliteai.com'
 const NTFY_TOPIC = process.env.NTFY_TOPIC || 'videbimus-contact'
-const OWNER_EMAIL = process.env.CONTACT_OWNER_EMAIL || 'info@videbimusai.com'
+const OWNER_EMAILS = (process.env.CONTACT_OWNER_EMAIL || 'info@videbimusai.com,victoropp@gmail.com').split(',')
 const NOTIFY_TEMPLATE_ID = parseInt(process.env.LISTMONK_CONTACT_NOTIFY_TEMPLATE || '12')
 const AUTOREPLY_TEMPLATE_ID = parseInt(process.env.LISTMONK_CONTACT_AUTOREPLY_TEMPLATE || '13')
 
@@ -62,9 +62,9 @@ export async function POST(req: NextRequest) {
       message: message || '',
     }
 
-    // 2 & 3. Email Victor + auto-reply (parallel, fire-and-forget)
+    // 2 & 3. Email owners + auto-reply (parallel, fire-and-forget)
     Promise.all([
-      sendListmonkTx(NOTIFY_TEMPLATE_ID, OWNER_EMAIL, 'Victor Collins Oppon', txData),
+      ...OWNER_EMAILS.map(e => sendListmonkTx(NOTIFY_TEMPLATE_ID, e.trim(), 'Victor Collins Oppon', txData)),
       sendListmonkTx(AUTOREPLY_TEMPLATE_ID, email, name, txData),
     ]).catch(console.error)
 
