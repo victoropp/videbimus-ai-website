@@ -456,7 +456,435 @@ The sequencing logic that has proven most effective:
 *If you are an operator, a services company, or a technology provider in oil and gas and want to understand how domain AI agents can be deployed in your specific context, [speak with our team](/contact).*`,
   })
 
-  console.log('✅ Blog seeded with 6 articles, 5 categories, and 12 tags')
+  // ── New tags for new articles ──────────────────────────────────────────────
+  const newTagNames = ['Claude', 'OpenAI', 'Google Gemini', 'Manufacturing', 'Compliance', 'Regulation', 'GPT-5', 'Anthropic']
+  for (const name of newTagNames) {
+    const slug = name.toLowerCase().replace(/[^a-z0-9]+/g, '-').replace(/(^-|-$)/g, '')
+    const tag = await prisma.blogTag.upsert({
+      where: { slug },
+      update: {},
+      create: { name, slug },
+    })
+    tagMap[name] = tag.id
+  }
+
+  // ── New Articles (April 2026) ──────────────────────────────────────────────
+
+  await upsertPost({
+    slug: 'claude-opus-47-enterprise-ai',
+    featured: true,
+    publishedAt: new Date('2026-04-22'),
+    readTime: 7,
+    categoryId: catResearch.id,
+    featuredImage: '/images/blog/posts/claude-opus-47.jpg',
+    tagNames: ['Claude', 'Anthropic', 'Enterprise AI', 'LLMs'],
+    title: 'Claude Opus 4.7 Is Here: What the 10-Point Coding Leap Means for Enterprise AI',
+    excerpt: 'Anthropic released Claude Opus 4.7 on April 16, 2026, with a 10.9-point jump on SWE-bench Pro and self-verification capabilities. For enterprises running complex software operations, this is not a minor update.',
+    content: `## A 10-Point Jump in Six Weeks
+
+On April 16, 2026, Anthropic released Claude Opus 4.7 — and the performance numbers are worth pausing on.
+
+On SWE-bench Pro, the most demanding benchmark for real-world software engineering tasks, Opus 4.7 scored **64.3%**, up from 53.4% on Opus 4.6. That is a **10.9-point gain** in a single release cycle. On SWE-bench Verified, it moved from 80.8% to 87.6%. On CursorBench — which tests AI coding performance inside real developer environments — it jumped 12 points, from 58% to 70%.
+
+These are not incremental improvements. They represent a step-change in what AI can do autonomously with complex, real-world code.
+
+## The Feature That Changes the Equation: Self-Verification
+
+The headline capability in Opus 4.7 is not a benchmark number. It is **self-verification**.
+
+Previous models would complete a task and declare it done. Opus 4.7 proactively verifies its own outputs before reporting completion. For software engineering tasks, this means the model writes tests, runs them, identifies failures, and fixes the code — without prompting. It loops until the tests pass or it identifies a genuine blocker that requires human input.
+
+For enterprises, this matters enormously. Human oversight of AI-generated code has been the primary bottleneck in scaling AI-assisted development. If the model can reliably catch its own errors, the ratio of AI work to human review shifts dramatically.
+
+## Multi-File Coherence at Scale
+
+Opus 4.7 also significantly improved its handling of large codebases. Earlier models would lose coherence when editing multiple related files simultaneously — making a change in one file without correctly propagating it to dependent files.
+
+For organisations with legacy systems — the kind of multi-decade, multi-million-line codebases common in Oil & Gas, Finance, and Manufacturing — this has been the practical ceiling on AI-assisted modernisation. Opus 4.7 raises that ceiling materially.
+
+Companies including Replit, Notion, and Databricks have confirmed improvements in domain-specific tasks, including legal document analysis and financial modelling.
+
+## Vision Gets Sharper
+
+Alongside the coding improvements, Anthropic delivered a **3x improvement in vision resolution and analysis**. For industries that rely heavily on document interpretation — insurance claims processing, engineering drawings in manufacturing, geological data in upstream oil and gas — this is a meaningful capability upgrade.
+
+## Availability and Pricing
+
+Opus 4.7 is available at the same price as Opus 4.6 across all Claude platforms and cloud providers: Microsoft Azure, Google Cloud, and Amazon Bedrock. There is no cost premium for the performance improvement.
+
+Anthropic also announced **Claude Mythos Preview** — described as more powerful than Opus 4.7 — but it is not generally available. Opus 4.7 remains the production-ready flagship for enterprise deployments.
+
+## The Practical Takeaway
+
+The AI model landscape is now on quarterly improvement cycles, not annual ones. Enterprises that built business cases on last year's capabilities are working with outdated assumptions.
+
+The specific improvements in Opus 4.7 — self-verification, multi-file coherence, improved vision — directly address the three most common friction points in enterprise AI deployments: reliability of autonomous output, integration with complex existing systems, and document-heavy workflows.
+
+If your organisation has been waiting for AI to be "good enough" for production software work, the goalposts moved again on April 16.
+
+---
+
+*We help enterprises evaluate and deploy AI models like Claude Opus 4.7 in production environments. [Talk to our team](/contact) about what the latest capabilities mean for your specific operations.*`,
+  })
+
+  await upsertPost({
+    slug: 'enterprise-ai-agents-production-2026',
+    featured: false,
+    publishedAt: new Date('2026-04-24'),
+    readTime: 9,
+    categoryId: catStrategy.id,
+    featuredImage: '/images/blog/posts/ai-agents-production.jpg',
+    tagNames: ['AI Agents', 'Agentic AI', 'Enterprise AI'],
+    title: '86% of Enterprise AI Agent Pilots Never Reach Production. Here Is Why.',
+    excerpt: 'Salesforce Agentforce has 12,000+ production customers. EY Canvas processes 1.4 trillion lines of audit data. JPMorgan orchestrates trillions of data points. Yet 86-89% of enterprise AI agent pilots fail to scale. The technology is not the bottleneck.',
+    content: `## The Deployment Gap Nobody Is Talking About
+
+The numbers look extraordinary. Salesforce Agentforce has crossed **12,000 production customers**. EY Canvas processes **1.4 trillion lines of audit data** annually across 160,000 global engagements. JPMorgan orchestrates AI agents across trillions of data points in complex financial workflows.
+
+And yet: **86 to 89% of enterprise AI agent pilots never reach production at scale**.
+
+This gap — between the showcase deployments and the graveyard of failed pilots — is the most important story in enterprise AI right now. Understanding it is the difference between becoming a case study and becoming a cautionary tale.
+
+## What Is Actually Working
+
+The deployments that have scaled share a specific pattern.
+
+**Reddit and Salesforce Agentforce:** Reddit deployed Agentforce as its "Customer Zero" — using the product internally before releasing it. The result was an **84% reduction in case resolution times** and more than **$100 million in annual operational savings**. Within the first two weeks, 83% of customer support queries were resolved without human escalation. Human escalation rates dropped 50%.
+
+**EY Canvas:** The professional services firm built a proprietary agent orchestration platform that now spans 150 countries, supports 130,000 professionals, and handles audit workflows at a scale no human team could match. One-third of successful implementations are driven by a forward-deployed engineering partner network — specialists who embed in client organisations and build alongside them.
+
+**Manufacturing and Finance:** Companies like Volkswagen (1,200+ AI applications across 43 plants) and JPMorgan have demonstrated that agent orchestration at enterprise scale is achievable — but only with significant infrastructure investment.
+
+## Why 86% Fail
+
+The research is consistent: **technology is not the bottleneck**. The barriers are operational.
+
+**Integration with existing systems** is cited by 46% of organisations as the primary deployment challenge. Enterprise data lives in systems built over decades — ERPs, legacy databases, operational technology networks, data warehouses with inconsistent schemas. AI agents require clean, real-time data access. Most enterprise data architectures were not built for this.
+
+**Workflow redesign** is the second barrier. AI agents do not slot into existing human workflows — they require those workflows to be fundamentally reconceived. Organisations that attempt to automate existing processes without redesigning them find that agents amplify the inefficiencies rather than eliminating them.
+
+**Real-time data architecture** is the third. Agents operating on stale data make poor decisions. Building the data infrastructure required for real-time agent operation is a significant engineering investment that is often underestimated at the pilot stage.
+
+**Organisational change** is the fourth. The introduction of agents that can autonomously complete tasks previously done by humans requires change management at a level most technology deployments do not. Teams need to understand what agents can and cannot do, how to supervise them, and how to handle exceptions.
+
+## The Adoption Curve Is Steep
+
+Despite the failure rate, adoption is accelerating. **54% of organisations** are actively deploying AI agents across core operations — up from 11% two years ago. Gartner predicts that **40% of business applications** will embed AI agents by end of 2026.
+
+The organisations that are succeeding are not necessarily the ones with the largest technology budgets. They are the ones that treated agent deployment as an organisational transformation project, not a technology procurement exercise.
+
+## What This Means for Your Organisation
+
+If you are evaluating AI agents, the questions that matter most are not about the technology:
+
+- Do you have real-time access to the data the agent needs to make good decisions?
+- Have you identified which workflows are genuinely automatable versus which ones require human judgment?
+- Do you have the change management capacity to support the teams whose work will change?
+- Do you have someone who can embed with the technology and build alongside your teams?
+
+The technology is ready. The question is whether your organisation is.
+
+---
+
+*We specialise in enterprise AI deployments that actually reach production. If you want an honest assessment of your organisation's readiness, [speak with our team](/contact).*`,
+  })
+
+  await upsertPost({
+    slug: 'gpt-5-5-enterprise-model-race-2026',
+    featured: false,
+    publishedAt: new Date('2026-04-25'),
+    readTime: 6,
+    categoryId: catResearch.id,
+    featuredImage: '/images/blog/posts/gpt-55-model-race.jpg',
+    tagNames: ['OpenAI', 'GPT-5', 'LLMs', 'Enterprise AI'],
+    title: 'GPT-5.5 Lands Six Weeks After GPT-5.4. What Quarterly AI Releases Mean for Enterprise Procurement',
+    excerpt: 'OpenAI released GPT-5.5 on April 23, 2026 — just six weeks after GPT-5.4. With a 6x price gap between standard and Pro tiers and integration across 60+ enterprise apps, the model race is now a quarterly event. Here is what that means for your AI strategy.',
+    content: `## Six Weeks. A New Flagship.
+
+On April 23, 2026, OpenAI released GPT-5.5 and GPT-5.5 Pro — six weeks after GPT-5.4. The rapid cadence is intentional. OpenAI, Anthropic, and Google are now on quarterly improvement cycles, and the competitive pressure is keeping all three on an accelerating release schedule.
+
+For enterprise procurement teams, this creates a new problem: the model you evaluated three months ago may no longer be the best option, but switching costs are real and contracts do not flex on a quarterly basis.
+
+## What GPT-5.5 Actually Delivers
+
+OpenAI describes GPT-5.5 as "the smartest and most intuitive to use model yet," with particular strength in:
+
+- Writing and debugging code across large codebases
+- Online research and synthesis across multiple sources
+- Document and spreadsheet creation and analysis
+- Long-horizon task completion without human checkpoints
+- Software operation across multiple tools simultaneously
+
+The headline enterprise feature is integration with **60+ applications** including Slack, Google Drive, SharePoint, GitHub, and Atlassian — making GPT-5.5 operable across the software stack most enterprises already run.
+
+## The Pricing Architecture Is a Strategic Signal
+
+The cost structure of GPT-5.5 tells you something important about OpenAI's enterprise strategy:
+
+| Model | Input | Output | Available To |
+|-------|-------|--------|-------------|
+| GPT-5.5 | $5/1M tokens | $30/1M tokens | Plus, Business, Enterprise |
+| GPT-5.5 Pro | $30/1M tokens | $180/1M tokens | Pro, Business, Enterprise |
+
+That is a **6x price multiplier** between the standard and Pro tiers. OpenAI is commoditising base model access — making GPT-5.5 affordable for broad deployment — while capturing premium value from enterprises that need the highest-capability version for complex, autonomous workflows.
+
+For procurement teams, this signals that AI model pricing will increasingly bifurcate: cheap tokens for routine tasks, premium pricing for genuinely complex autonomous work.
+
+## The Enterprise Feature Set
+
+GPT-5.5 Enterprise includes:
+- Unlimited GPT-5.5 messages
+- SAML SSO and MFA
+- Dedicated workspace isolation
+- GDPR, CCPA, CSA STAR, and SOC 2 Type 2 compliance
+- Credit-based expansion for high-volume periods
+
+The compliance certifications matter most for regulated industries — Finance, Insurance, Healthcare — where data residency and audit trails are non-negotiable requirements.
+
+## The Procurement Dilemma
+
+The real challenge created by quarterly model releases is contractual. Enterprise AI contracts typically run 12-24 months. If the model you contracted for is superseded three times before renewal, you have two options: pay to upgrade mid-contract, or continue running on an increasingly outdated capability baseline.
+
+The organisations handling this best are building **model-agnostic architectures** — abstraction layers that allow the underlying model to be swapped without rebuilding the entire application. This adds complexity upfront but provides the flexibility to adopt improvements without procurement cycles.
+
+A second strategy is **tiered deployment**: use the most capable (and expensive) model for the tasks that justify the cost — complex reasoning, autonomous multi-step workflows — while running cheaper models for routine classification and generation tasks. GPT-5.5's pricing structure is explicitly designed to support this pattern.
+
+## Avoiding Lock-In
+
+The 60+ app integrations in GPT-5.5 are a double-edged sword. Deep integration with your existing software stack is operationally convenient. It is also the architecture of lock-in. The more your workflows are built on OpenAI-specific integrations, the more expensive switching to Claude or Gemini becomes.
+
+Enterprises that are thinking carefully about this are building on open standards — Model Context Protocol (MCP), standard API interfaces — rather than proprietary integration frameworks. The short-term convenience of vendor-specific tooling is real. So is the long-term cost.
+
+---
+
+*We help enterprises design AI architectures that stay flexible as the model landscape evolves. [Talk to our team](/contact) about building for the next three years, not just the next three months.*`,
+  })
+
+  await upsertPost({
+    slug: 'eu-ai-act-august-2026-deadline',
+    featured: false,
+    publishedAt: new Date('2026-04-26'),
+    readTime: 8,
+    categoryId: catRegulation.id,
+    featuredImage: '/images/blog/posts/eu-ai-act-2026.jpg',
+    tagNames: ['EU AI Act', 'Compliance', 'Regulation', 'Enterprise AI'],
+    title: 'The EU AI Act August 2026 Deadline Is 96 Days Away. Most Enterprises Are Not Ready.',
+    excerpt: 'August 2, 2026 is the hard deadline for full EU AI Act compliance on high-risk AI systems. Penalties reach €35 million or 7% of global turnover. Over half of organisations have not completed a systematic inventory of their AI systems. The clock is running.',
+    content: `## 96 Days
+
+August 2, 2026 is not a proposed date or a provisional milestone. It is the legally binding deadline for full EU AI Act compliance on Annex III high-risk AI systems. As of late April 2026, that is 96 days away.
+
+Over half of organisations with European operations or EU customers have not completed a systematic inventory of their AI systems currently in production. Most face compliance gaps they have not yet quantified. The penalties are not theoretical: **up to €35 million or 7% of global annual turnover**, whichever is higher.
+
+## What Gets Regulated on August 2
+
+The EU AI Act classifies AI systems into risk tiers. The Annex III high-risk category — the one with the August 2 deadline — covers AI systems used in:
+
+- **Employment decisions**: hiring, promotion, task allocation, performance monitoring
+- **Credit and financial risk assessment**: loan decisions, insurance underwriting, fraud detection
+- **Education and training**: access decisions, assessment, adaptive learning
+- **Law enforcement**: risk scoring, evidence assessment, predictive policing
+- **Migration and border control**: document verification, risk assessment
+- **Biometric categorisation and emotion recognition**: any system that infers personal characteristics from biometric data
+
+If your organisation uses AI in any of these domains for EU residents, you are in scope.
+
+## What Compliance Actually Requires
+
+For in-scope systems, the August 2 deadline activates requirements across six domains:
+
+**Quality management systems.** High-risk AI must be developed and operated within a documented QMS that covers data governance, testing, monitoring, and change management.
+
+**Risk management frameworks.** A documented, iterative process for identifying, estimating, evaluating, and mitigating risks throughout the AI system lifecycle.
+
+**Technical documentation.** Design specifications, development methodology, training data characteristics, testing protocols, and performance metrics — all documented and maintained.
+
+**EU database registration.** High-risk systems must be registered in the EU's public AI database before deployment.
+
+**Article 50 transparency obligations.** AI chatbots must disclose their artificial nature. Emotion recognition systems require user notification. AI-generated content, including deepfakes, requires machine-readable watermarks.
+
+**Conformity assessments.** For the highest-risk systems (biometrics, critical infrastructure), third-party assessment is required before deployment.
+
+## The Enforcement Architecture
+
+The European AI Office and Member State authorities have enforcement powers that are already operational. The European Artificial Intelligence Board coordinates implementation across member states. Several national authorities have publicly stated their intention to prioritise enforcement in Q4 2026.
+
+One important note: the European Commission's "Digital Omnibus" package, proposed in late 2025, could potentially postpone Annex III obligations to December 2027. However, this proposal is not finalised. Prudent compliance planning treats August 2 as the binding deadline.
+
+## The Real Cost of Non-Compliance
+
+Beyond the headline penalty numbers, non-compliance carries operational costs that are harder to quantify:
+
+- Mandatory withdrawal of non-compliant AI systems from the EU market
+- Reputational damage in a regulatory environment where AI governance is increasingly a procurement consideration
+- First-mover disadvantage as competitors who invested in compliance use it as a trust differentiator
+
+For regulated industries — Finance, Insurance, Healthcare — the compliance requirements overlap significantly with existing regulatory frameworks (GDPR, MiFID II, Solvency II). Organisations in these sectors can often leverage existing GRC infrastructure, reducing the incremental compliance cost substantially.
+
+## What To Do In The Next 96 Days
+
+A realistic 96-day sprint looks like this:
+
+**Weeks 1-2: Inventory.** Map every AI system in production or active development. Classify each against Annex III criteria. This is the step most organisations have not completed.
+
+**Weeks 3-6: Gap assessment.** For each high-risk system, assess current state against the six compliance domains. Quantify gaps.
+
+**Weeks 7-12: Remediation.** Prioritise gaps by risk and implement controls. For systems that cannot be brought into compliance before August 2, develop a decision framework: remediate, restrict to non-EU use cases, or withdraw.
+
+**Weeks 13-14: Documentation and registration.** Complete technical documentation and register qualifying systems in the EU database.
+
+The organisations that treat this as a governance opportunity — building AI risk frameworks that exceed minimum requirements — will be in a stronger competitive position than those treating it as a compliance checkbox.
+
+---
+
+*We help organisations understand their AI Act obligations and build governance frameworks that go beyond minimum compliance. [Speak with our team](/contact) before the clock runs out.*`,
+  })
+
+  await upsertPost({
+    slug: 'ai-manufacturing-predictive-maintenance-roi-2026',
+    featured: false,
+    publishedAt: new Date('2026-04-23'),
+    readTime: 7,
+    categoryId: catIndustry.id,
+    featuredImage: '/images/blog/posts/ai-manufacturing-2026.jpg',
+    tagNames: ['Predictive Analytics', 'Enterprise AI', 'Manufacturing'],
+    title: 'AI in Manufacturing: Volkswagen Connected 43 Plants. Lenovo Cut Lead Times 85%. What Are You Waiting For?',
+    excerpt: 'Nearly half of manufacturing executives report AI delivering measurable business value. Predictive maintenance alone shows 10:1 to 30:1 ROI within 18 months. Hannover Messe 2026 confirmed what the data has been saying for two years: the competitive gap between AI adopters and non-adopters is now structural.',
+    content: `## The Gap Is Now Structural
+
+Hannover Messe 2026 — the world's largest industrial technology exhibition — sent an unambiguous signal in April 2026: AI in manufacturing is no longer a pilot programme or a future aspiration. It is a competitive baseline.
+
+**49% of industrial manufacturing executives** report active AI use cases delivering measurable business value. **68%** expect to deploy AI at scale within the next 12 months. The AI in manufacturing market is projected to grow from $33.5 billion in 2024 to **$366 billion by 2032** — a 36% compound annual growth rate.
+
+The organisations that have already deployed are building advantages that compound. The organisations that have not are watching the gap widen.
+
+## What Volkswagen Did With 43 Plants
+
+Volkswagen Group's deployment is the most instructive case study at scale. The company connected **43 plants** through a unified factory cloud and has deployed **more than 1,200 AI applications** across its global manufacturing network.
+
+The applications span quality control, production optimisation, predictive maintenance, and supply chain coordination. The factory cloud provides a unified data layer that individual plant applications can draw on — meaning each new deployment benefits from the data and learnings of every previous one.
+
+The strategic insight is not the individual applications. It is the architecture: a unified data infrastructure that makes each subsequent AI deployment faster, cheaper, and more effective than the last.
+
+## What Lenovo Proved at Scale
+
+At Hannover Messe 2026, Lenovo showcased production-scale AI at its largest North American facility. The headline number: an **85% reduction in lead times**.
+
+Lead time reduction of this magnitude reshapes the economics of manufacturing. It enables smaller batch sizes, faster response to demand signals, reduced inventory carrying costs, and improved customer delivery performance. In competitive markets where lead time is a key differentiator, an 85% reduction is not an operational improvement — it is a strategic repositioning.
+
+## Where the ROI Is Clearest: Predictive Maintenance
+
+For manufacturers evaluating where to start, predictive maintenance delivers the most clearly quantifiable return on investment.
+
+The economics are consistent across industries and plant sizes:
+
+- **Unplanned downtime reduction: 30-50%** at mature deployments
+- **Overall Equipment Effectiveness gains: 5-10%**
+- **Maintenance cost reduction: 18-25%** versus reactive maintenance
+- **Equipment lifespan extension: 20-40%**
+- **ROI: 10:1 to 30:1 within 12-18 months**
+
+For a mid-market plant with 10-30 critical assets, the annual benefit range is **$150,000 to $400,000** with a payback period of 8-18 months. These numbers are conservative estimates from real deployments — not vendor projections.
+
+The mechanism is straightforward: sensors on critical equipment feed real-time data into AI models that detect degradation patterns before they become failures. Maintenance is scheduled based on actual equipment condition rather than fixed time intervals. Unplanned failures drop. Maintenance labour is used more efficiently. Equipment lasts longer.
+
+## BMW and the Humanoid Frontier
+
+BMW's Leipzig plant made history in 2026 as the site of the first humanoid robot assembly operations in German manufacturing. While humanoid robotics remain at the frontier rather than the mainstream, the deployment signals where the trajectory leads: AI-directed physical automation that can handle the unstructured tasks that traditional robots cannot.
+
+For most manufacturers, humanoid robotics are 3-5 years from practical deployment. Predictive maintenance, quality control computer vision, and production optimisation are available today.
+
+## The Implementation Reality
+
+KPMG's 2026 Global Tech Report identifies the manufacturing sector's deployment paradox: **98% of manufacturers are exploring AI**, but only **20% are fully prepared** to deploy it at scale. The gap is not awareness or ambition — it is implementation capability.
+
+The three most common barriers:
+
+**Data infrastructure.** AI requires clean, real-time data from equipment, production systems, and supply chain. Most manufacturing data architectures were built for reporting, not real-time AI inference. Bridging this gap is the largest upfront investment.
+
+**Domain expertise integration.** AI models that understand manufacturing processes perform dramatically better than general-purpose models. The best deployments combine AI capability with deep domain knowledge — engineers who understand both the physics of equipment and the mathematics of machine learning.
+
+**Change management.** Maintenance teams whose workflows change, quality inspectors whose roles evolve, and plant managers whose decision-making is augmented by AI recommendations all require active change management. Technology without adoption is an expensive failure.
+
+---
+
+*We work with manufacturers to deploy AI in production environments — predictive maintenance, quality control, and production optimisation. [Talk to our team](/contact) about what is achievable in your plant.*`,
+  })
+
+  await upsertPost({
+    slug: 'google-gemini-deep-research-enterprise-2026',
+    featured: false,
+    publishedAt: new Date('2026-04-27'),
+    readTime: 6,
+    categoryId: catResearch.id,
+    featuredImage: '/images/blog/posts/google-gemini-deep-research.jpg',
+    tagNames: ['Google Gemini', 'AI Agents', 'Enterprise AI', 'LLMs'],
+    title: 'Google\'s Deep Research Agents Are Now in the Gemini API. What This Means for Knowledge-Intensive Industries',
+    excerpt: 'On April 21-22, 2026, Google launched Deep Research and Deep Research Max — autonomous research agents powered by Gemini 3.1 Pro — directly through the Gemini API. Integrations with FactSet, S&P Global, and PitchBook signal where this is going for Finance and Insurance.',
+    content: `## Autonomous Research, Available via API
+
+On April 21-22, 2026, Google made its Deep Research agents generally available through the Gemini API. Powered by Gemini 3.1 Pro — which scored **77.1% on ARC-AGI-2**, more than double its predecessor's performance — these are not enhanced chatbots. They are autonomous research agents capable of multi-hour workflows across both public web data and proprietary enterprise sources.
+
+The launch is significant not just for what it delivers today, but for what it signals about where enterprise AI is heading for knowledge-intensive industries.
+
+## What Deep Research Actually Does
+
+Deep Research and its more powerful sibling Deep Research Max operate differently from a conversational AI model. You do not ask them a question and receive an answer. You assign them a research objective and they execute it autonomously:
+
+- Searching across public web sources and proprietary data simultaneously
+- Synthesising information across dozens or hundreds of sources
+- Generating dynamic charts, infographics, and visualisations from complex datasets
+- Producing professional-grade analytical output — not summaries, but structured analysis
+- Operating without human checkpoints for multi-hour research workflows
+
+The output is the kind of work that currently requires a team of analysts several days to produce. Deep Research does it in hours.
+
+## The Enterprise Data Integrations Are the Real Story
+
+The product announcement matters. The partnership announcements matter more.
+
+Google is actively integrating Deep Research with:
+
+- **FactSet** — institutional financial data
+- **S&P Global** — market intelligence and credit ratings
+- **PitchBook** — venture capital, private equity, and M&A data
+
+These are the data sources that Finance, Insurance, and Investment Management firms pay significant sums to access and analyse. Integrating them directly into an autonomous research agent means organisations can combine their proprietary data with cutting-edge reasoning without building custom integrations.
+
+For an investment bank doing M&A due diligence, this means autonomous agents that can synthesise PitchBook transaction data, S&P credit analysis, and internal deal memos into a structured assessment. For an insurer doing market analysis, it means agents that draw on FactSet market data alongside internal claims and actuarial data.
+
+## MCP Support: The Flexibility Signal
+
+Deep Research supports the **Model Context Protocol (MCP)** — an open standard for connecting AI models to third-party data sources. This is a deliberate architectural choice that matters for enterprise procurement decisions.
+
+MCP support means organisations can connect Deep Research to their own proprietary databases, internal knowledge bases, and operational systems without relying on Google-specific integration frameworks. It is Google's explicit signal that it is competing on openness — a direct counterpoint to the lock-in risk that comes with deeply integrated proprietary platforms.
+
+For enterprises evaluating AI research tools, MCP compatibility is the equivalent of SQL compatibility in the database world: it means your workflows are not permanently tied to a single vendor.
+
+## Gemini 3.1 Pro: The Model Behind the Agents
+
+Deep Research runs on Gemini 3.1 Pro, which Google launched alongside the research agents. The headline benchmark — 77.1% on ARC-AGI-2, versus 35% for Gemini 3 Pro — represents the kind of reasoning improvement that translates directly to research quality.
+
+Gemini 3.1 Pro also supports real-time voice and image analysis simultaneously with text, enabling multimodal research workflows that earlier models could not sustain without degraded performance.
+
+## DeepMind's Robotics Extension
+
+In the same week, DeepMind unveiled Gemini Robotics-ER 1.6 via the Gemini API — advancing robot spatial reasoning, object detection, and autonomous operation. While industrial robotics applications are not in immediate scope for most enterprises, the integration of research-grade AI with physical automation is a trajectory worth monitoring for manufacturing and logistics operations.
+
+## What This Means for Knowledge-Intensive Industries
+
+The practical implication for Finance, Insurance, Healthcare, and professional services is straightforward: the research and analysis workflows that currently require junior analyst teams are becoming automatable.
+
+This does not mean analysts become redundant. It means the ratio of analyst time spent on data gathering and synthesis versus judgment and decision-making shifts dramatically. The organisations that restructure their workflows to take advantage of this shift will operate at lower cost and higher output than those that do not.
+
+The competitive advantage of proprietary data — the FactSet subscription, the S&P access, the internal knowledge base built over years — increases when AI can synthesise it faster and more comprehensively than human teams.
+
+---
+
+*We help organisations in Finance, Insurance, and professional services deploy AI research and analysis capabilities in production. [Speak with our team](/contact) about what Deep Research and Gemini 3.1 can do in your specific context.*`,
+  })
+
+  console.log('✅ Blog seeded with 12 articles, 5 categories, and 20 tags')
 }
 
 main()
